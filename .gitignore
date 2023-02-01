@@ -1,0 +1,14 @@
+# Misc cache files
+*.tmp
+
+# Do not track binary archives
+*.deb
+*.gz
+*.jar
+*.rpm
+*.tar
+*.zip
+
+# OSX and Windows folder configs
+.DS_Store
+Thumbs.db
