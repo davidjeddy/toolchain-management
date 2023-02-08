@@ -118,7 +118,7 @@ function binary_based_tools() {
     then
         # this one ia problem child due to the URL and non-standard use of x86_64 > amd64. AND the '_' delimiter makes bash think variable variables are present
         printf "INFO: Installing terrascan.\n"
-        curl -L "https://github.com/tenable/terrascan/releases/download/v${TRSCAN_VER}/terrascan_${TRSCAN_VER}_${PLATFORM}_${ALTARCH}.tar.gz" -o "terrascan.tar.gz"
+        curl -sL --show-error"https://github.com/tenable/terrascan/releases/download/v${TRSCAN_VER}/terrascan_${TRSCAN_VER}_${PLATFORM}_${ALTARCH}.tar.gz" -o "terrascan.tar.gz"
         tar -xf terrascan.tar.gz terrascan
         sudo rm -rf "$BIN_DIR/terrascan" || true
         sudo install --target-directory="$BIN_DIR" terrascan
@@ -128,7 +128,7 @@ function binary_based_tools() {
     if [[ ( ! $(which tfsec) && "$TFSEC_VER" ) || "$UPDATE" = "true" ]]
     then
         printf "INFO: Installing tfsec.\n"
-        curl -L "https://github.com/liamg/tfsec/releases/download/v$TFSEC_VER/tfsec-$PLATFORM-$ARCH" -o "tfsec"
+        curl -sL --show-error"https://github.com/liamg/tfsec/releases/download/v$TFSEC_VER/tfsec-$PLATFORM-$ARCH" -o "tfsec"
         # no unpacking needed, the download is a binary
         sudo rm -rf "$BIN_DIR/tfsec" || true
         sudo install --target-directory="$BIN_DIR" tfsec
@@ -138,7 +138,7 @@ function binary_based_tools() {
     if [[ ( ! $(which infracost) && "$INFRACOST_VER" ) || "$UPDATE" = "true" ]]
     then
         printf "INFO: Installing infracost.\n"
-        curl -L "https://github.com/infracost/infracost/releases/download/v$INFRACOST_VER/infracost-$PLATFORM-$ARCH.tar.gz" -o "infracost.tar.gz"
+        curl -sL --show-error"https://github.com/infracost/infracost/releases/download/v$INFRACOST_VER/infracost-$PLATFORM-$ARCH.tar.gz" -o "infracost.tar.gz"
         tar -xf infracost.tar.gz
         mv "infracost-$PLATFORM-$ARCH" infracost || exit 1
         sudo rm -rf "$BIN_DIR/infracost" || true
@@ -150,7 +150,7 @@ function binary_based_tools() {
     then
         # Must use {} around PLATFORM else Bash thinks varitable variable is presetn
         printf "INFO: Installing tflint.\n"
-        curl -L "https://github.com/terraform-linters/tflint/releases/download/v$TFLINT_VER/tflint_${PLATFORM}_$ARCH.zip" -o "tflint.zip"
+        curl -sL --show-error"https://github.com/terraform-linters/tflint/releases/download/v$TFLINT_VER/tflint_${PLATFORM}_$ARCH.zip" -o "tflint.zip"
         unzip -o tflint.zip
         sudo rm -rf "$BIN_DIR/tflint" || true
         sudo install --target-directory="$BIN_DIR" tflint
@@ -160,7 +160,7 @@ function binary_based_tools() {
     if [[ ( ! $(which terraform-docs) && "$TFDOCS_VER" ) || "$UPDATE" = "true" ]]
     then
         printf "INFO: Installing terraform-docs.\n"
-        curl -L "https://github.com/terraform-docs/terraform-docs/releases/download/v$TFDOCS_VER/terraform-docs-v$TFDOCS_VER-$PLATFORM-$ARCH.tar.gz" -o "terraform-docs.tar.gz"
+        curl -sL --show-error"https://github.com/terraform-docs/terraform-docs/releases/download/v$TFDOCS_VER/terraform-docs-v$TFDOCS_VER-$PLATFORM-$ARCH.tar.gz" -o "terraform-docs.tar.gz"
         tar -xf terraform-docs.tar.gz terraform-docs
         sudo rm -rf "$BIN_DIR/terraform-docs" || true
         sudo install --target-directory="$BIN_DIR" terraform-docs

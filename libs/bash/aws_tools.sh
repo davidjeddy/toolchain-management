@@ -9,7 +9,7 @@ function install_aws_tools() {
     if [[ ( !  $(which aws) && "${AWS_VER}") || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing aws cli.\n"
-        curl "https://awscli.amazonaws.com/awscli-exe-$PLATFORM-$ALTARCH-$AWSCLI_VER.zip" -o "awscliv2.zip"
+        curl -sL --show-error"https://awscli.amazonaws.com/awscli-exe-$PLATFORM-$ALTARCH-$AWSCLI_VER.zip" -o "awscliv2.zip"
         unzip -o awscliv2.zip
         sudo ./aws/install -b "$BIN_DIR" || sudo ./aws/install -b "$BIN_DIR" --update
         rm -rf aws*
@@ -19,7 +19,7 @@ function install_aws_tools() {
     if [[ ( !  $(which iam-policy-json-to-terraform) && "$IPJTT_VER") || $UPDATE == "true" ]]
     then
         printf "INFO: Installing iam-policy-json-to-terraform.\n"
-        curl -L "https://github.com/flosell/iam-policy-json-to-terraform/releases/download/$IPJTT_VER/iam-policy-json-to-terraform_$ARCH" -o "iam-policy-json-to-terraform"
+        curl -sL --show-error"https://github.com/flosell/iam-policy-json-to-terraform/releases/download/$IPJTT_VER/iam-policy-json-to-terraform_$ARCH" -o "iam-policy-json-to-terraform"
         sudo install iam-policy-json-to-terraform "$BIN_DIR"
         rm -rf iam-policy-json-to-terraform*
     fi

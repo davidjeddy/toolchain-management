@@ -50,7 +50,7 @@ function install_python3() {
 
     if [[ ( !  $(which python3) && "$PYTHON_VER" ) || "$UPDATE" == "true" ]]
     then
-        curl -L "https://www.python.org/ftp/python/$PYTHON_VER/Python-$PYTHON_VER.tgz" -o "Python-$PYTHON_VER.tgz"
+        curl -sL --show-error"https://www.python.org/ftp/python/$PYTHON_VER/Python-$PYTHON_VER.tgz" -o "Python-$PYTHON_VER.tgz"
         tar xzf "Python-$PYTHON_VER.tgz"
         cd "Python-$PYTHON_VER" || exit 1
         ./configure \
@@ -89,7 +89,7 @@ function install_pip3() {
         export PATH=$PATH:/home/$(whoami)/.local/bin
 
         printf "INFO: Download pip3 installer.\n"
-        curl -L "https://bootstrap.pypa.io/get-pip.py" -o get-pip.py
+        curl -sL --show-error"https://bootstrap.pypa.io/get-pip.py" -o get-pip.py
 
         printf "INFO: Install pip3 via python3.\n"
         python3 get-pip.py
