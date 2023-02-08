@@ -1,35 +1,47 @@
 #!groovy
 //- Library Imports
 @Library('jenkins-pipeline')
-import com.ingenico.epayments.ci.common
+import com.ingenico.epayments.ci.common.PipelineCommon
 
 // String var config
-String workerNode       = 'bambora-aws-slave-terraform'
-String gitRepoUrl       = 'git@'+ env.GITLAB_HOST + ':cicd/terraform/toolchain-management'
+String gitBranch  = 'enh/ICON-33307/add_jenkins_pipeline'
+String gitRepoUrl = 'git@'+ env.GITLAB_HOST + ':cicd/terraform/toolchain-management'
+String workerNode = 'bambora-aws-slave-terraform'
 
 pipeline {
     agent {
         node workerNode
     }
+    environment {
+        GITLAB_CREDENTIALSID = credentials('GL_PAT_TF_MODULE_MIRRORING')
+    }
     stages {
-        stage('Checkout') {
+        stage('Git: checkout') {
             steps {
                 script {
-                    
-                    git = new git(steps, env)
-                    // PipelineCommon.groovy def gitCheckout(def reopUrl, def targetDir, def branchTag, def credentialsId, boolean noTags) {
-                    gitCheckout(gitRepoUrl, ".", "main", false)
+                    pipelineCommon = new PipelineCommon(steps, env)
+                    pipelineCommon.gitCheckout(gitRepoUrl, ".", gitBranch, env.GITLAB_CREDENTIALSID)
                 }
             }
         }
-        stage('Install toolchain') {
+        // This stage must be first to ensure system packages and language runtimes are availabe
+        stage('Toolchain Mngr: run.sh --update only for System tools') {
             steps {
-                sh './lib/bash/run.sh'
+                // RHEL users do not typically have /usr/local/bin in the PATH. Override with the available /usr/bin location.
+                // Jenkins worker nodes have [cracklib](https://github.com/cracklib/cracklib) system package installed.
+                // It provides a `packer` in the PATH, ie name collision with Hashcorp Packer.
+                // So, skip installing misc tools for now
+                sh './libs/bash/run.sh --bin_dir /usr/bin --skip_aws_tools true --skip_misc_tools true --skip_terraform_tools true --update true'
             }
         }
-        stage('Update toolchain') {
+        stage('Toolchain Mngr: run.sh --update only for AWS tools') {
             steps {
-                sh './lib/bash/run.sh --update true'
+                sh './libs/bash/run.sh --bin_dir /usr/bin --skip_misc_tools true --skip_terraform_tools true --skip_system_tools true --update true'
+            }
+        }
+        stage('Toolchain Mngr: run.sh --update only for Terraform tools') {
+            steps {
+                sh './libs/bash/run.sh --bin_dir /usr/bin --skip_aws_tools true --skip_misc_tools true --skip_system_tools true --update true'
             }
         }
     }
