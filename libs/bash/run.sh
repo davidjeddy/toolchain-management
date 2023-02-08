@@ -185,4 +185,4 @@ fi
 
 printf "INFO: Please start your shell session to ensure the PATH value is reloaded.\n"
 
-printf "Completed successfully.\n"
+printf "Toolchain run.sh completed successfully.\n"

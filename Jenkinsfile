@@ -4,7 +4,7 @@
 import com.ingenico.epayments.ci.common.PipelineCommon
 
 // String var config
-String gitBranch  = 'enh/ICON-33307/add_jenkins_pipeline'
+String gitBranch  = 'main'
 String gitRepoUrl = 'git@'+ env.GITLAB_HOST + ':cicd/terraform/toolchain-management'
 String workerNode = 'bambora-aws-slave-terraform'
 

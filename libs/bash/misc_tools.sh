@@ -8,7 +8,7 @@ function install_misc_tools() {
     if [[ ( !  $(which packer) && "${PACKER_VER}" || "$UPDATE" == "true") || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing Packer.\n"
-        curl -L "https://releases.hashicorp.com/packer/$PKR_VER/packer_$PKR_VER_$PLATFORM_$ARCH.zip" -o "packer_$PKR_VER_$PLATFORM_$ARCH.zip"
+        curl -sL --show-error"https://releases.hashicorp.com/packer/$PKR_VER/packer_$PKR_VER_$PLATFORM_$ARCH.zip" -o "packer_$PKR_VER_$PLATFORM_$ARCH.zip"
         unzip "packer_$PKR_VER_$PLATFORM_$ARCH.zip"
         sudo install packer $BIN_DIR
         rm -rf packer*
