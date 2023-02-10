@@ -1,6 +1,7 @@
 #!groovy
 //- Library Imports
 @Library('jenkins-pipeline')
+import com.ingenico.epayments.ci.common.Slack
 import com.ingenico.epayments.ci.common.PipelineCommon
 
 // String var config
