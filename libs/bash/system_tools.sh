@@ -21,6 +21,7 @@ function apt_systems() {
         libncursesw5-dev \
         libgdbm-dev \
         liblzma-dev \
+        libssl-dev \
         libsqlite3-dev \
         tk-dev \
         libgdbm-compat-dev \
@@ -38,6 +39,7 @@ function yum_systems() {
         gnupg \
         jq \
         libbz2-dev \
+        libssl-dev \
         unzip \
         yum-utils \
         zlib-devel
@@ -62,7 +64,7 @@ function install_python3() {
             printf "INFO: Creating symlink from %s/python3.8 binary to %s/python3.\n" "$BIN_DIR" "$BIN_DIR"
             sudo ln -sfn "$BIN_DIR/python3.8" "$BIN_DIR/python3"
         } || {
-            printf "CRITICAL: Could create symlink for python3.x. Exiting with error"
+            printf "CRITICAL: Could NOT create symlink from %s/python3.8 to %s/python3. Exiting with error" "$BIN_DIR" "$BIN_DIR"
             exit 1
         } 
 
