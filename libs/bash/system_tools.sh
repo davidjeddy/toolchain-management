@@ -17,15 +17,16 @@ function apt_systems() {
     printf "INFO: System packages for Python3.\n"
     sudo apt install -y \
         libbz2-dev \
-        libncurses-dev \
-        libncursesw5-dev \
+        libffi-dev \
+        libgdbm-compat-dev \
         libgdbm-dev \
         liblzma-dev \
-        libssl-dev \
+        libncurses-dev \
+        libncursesw5-dev \
+        libreadline-dev \
         libsqlite3-dev \
+        libssl-dev \
         tk-dev \
-        libgdbm-compat-dev \
-        libreadline-dev
 }
 
 function yum_systems() {
@@ -39,6 +40,7 @@ function yum_systems() {
         gnupg \
         jq \
         libbz2-dev \
+        libffi-dev \
         libssl-dev \
         unzip \
         yum-utils \

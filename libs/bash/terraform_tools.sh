@@ -187,7 +187,7 @@ function install_terraform_tools() {
     echo "checkov $(checkov --version)"
     echo "tfsec $(tfsec --version)"
 
-    echo "terrascan $(terrascan --version)"
+    echo "terrascan $(terrascan version)"
 
     infracost --version
     terraform --version
