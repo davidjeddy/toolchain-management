@@ -26,7 +26,7 @@ function apt_systems() {
         libreadline-dev \
         libsqlite3-dev \
         libssl-dev \
-        tk-dev \
+        tk-dev
 }
 
 function yum_systems() {
