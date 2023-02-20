@@ -81,7 +81,7 @@ pipeline {
                 slack.slackNotification(
                     slackChannel,
                     "Terraform Toolchain Management ",
-                    ":white_check_mark: Terraform PToolchain Management  pipeline successful. All changes module changes validated and ready for apply.",
+                    ":white_check_mark: Terraform Toolchain Management  pipeline successful. All changes module changes validated and ready for apply.",
                     ':jenkins:'
                 )
             }
