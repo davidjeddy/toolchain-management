@@ -76,21 +76,21 @@ function install_python3() {
 
 function install_pip3() {
 
-    # For Python3/pip3 site-packages at the user scope
-    # shellcheck disable=SC2143
-    if [[ ! $(grep "export PATH=\$PATH:\$HOME/.local/bin" "$SHELL_PROFILE") ]]
-    then
-        printf "INFO: Add pip3 site-package to PATH"
-        echo "export PATH=\$PATH:\$HOME/.local/bin" >> "$SHELL_PROFILE"
-        #shellcheck disable=SC1090
-        source "$SHELL_PROFILE"
-    fi
-
     if [[ ( ! $(which pip3) ) || "$UPDATE" == "true" ]]
     then
         # Because pipelines do not have a full shell, be sure to include the PATH to the Python binaries
         # shellcheck disable=SC2155
         export PATH=$PATH:/home/$(whoami)/.local/bin
+
+        # For Python3/pip3 site-packages at the user scope
+        # shellcheck disable=SC2143
+        if [[ ! $(grep "export PATH=\$PATH:\$HOME/.local/bin" "$SHELL_PROFILE") ]]
+        then
+            printf "INFO: Add pip3 site-package to PATH"
+            echo "export PATH=\$PATH:\$HOME/.local/bin" >> "$SHELL_PROFILE"
+            #shellcheck disable=SC1090
+            source "$SHELL_PROFILE"
+        fi
 
         printf "INFO: Download pip3 installer.\n"
         curl -sL --show-error "https://bootstrap.pypa.io/get-pip.py" -o get-pip.py
