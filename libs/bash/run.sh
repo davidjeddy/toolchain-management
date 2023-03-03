@@ -41,7 +41,7 @@ PROJECT_ROOT="$(pwd)"
 while [ $# -gt 0 ]; do
     if [[ $1 == "--help" ]]
     then
-        echo "INFO: Open the script, check the header section for."
+        printf "INFO: Open the script, check the header section for."
         exit 0
     elif [[ $1 == "--"* ]]
     then
