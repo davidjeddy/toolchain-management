@@ -17,6 +17,9 @@ pipeline {
     environment {
         GITLAB_CREDENTIALSID = credentials('GL_PAT_TF_MODULE_MIRRORING')
     }
+    options {
+        timestamps ()
+    }
     post {
         failure {
             steps {
@@ -87,5 +90,5 @@ pipeline {
             }
         }
     }
-    triggers { cron('H */4 * * 1-5') }
+    triggers { cron('H 4/* * * 1-5') }
 }

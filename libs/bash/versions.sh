@@ -32,7 +32,7 @@ export AWSCLI_VER="2.0.30"
 export IPJTT_VER="1.8.1"
 
 # Terraform related tools
-export CHECKOV_VER="2.2.337"
+export CHECKOV_VER="2.3.57"
 export INFRACOST_VER="0.10.15"
 export TF_VER="1.3.0"
 export TFDOCS_VER="0.16.0"
