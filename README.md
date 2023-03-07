@@ -12,7 +12,8 @@
   - [Usage](#usage)
     - [Install](#install)
     - [Usage](#usage-1)
-    - [Change / Update](#change--update)
+    - [Update Toolchain](#update-toolchain)
+  - [Development](#development)
   - [Additional Information](#additional-information)
 
 ## Badges
@@ -66,13 +67,29 @@ Take from ./libs/bash/run.sh header section.
 ./libs/bash/run.sh --skip_system_tools true --skip_terraform_tools true --skip_misc_tools true
 ```
 
-### Change / Update
+### Update Toolchain
 
 ```sh
 ./libs/bash/run.sh --update true
 ```
 
 Note: `--skip_*_tools` and `--update` can be used together to update specific tool groups
+
+## Development
+
+Start a shell session at the root of the project. Then source the default configurations.
+
+```sh
+source libs/bash/versions.sh
+ARCH="amd64"
+ALTARCH="x86_64"
+PLATFORM="linux"
+SHELL_PROFILE="$HOME/.bash_profile"
+BIN_DIR="/usr/local/bin"
+UPDATE="false"
+```
+
+Now you should be ready to run all the commands manually.
 
 ## Additional Information
 
