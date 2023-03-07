@@ -47,10 +47,31 @@ function yum_systems() {
         zlib-devel
 }
 
-# installing Python3 and pip3
+function install_golang() {
+
+    printf "INFO: Processing Golang system tool from source.\n"
+
+    if [[ ( !  $(which go) && "$GOLANG_VER" ) || "$UPDATE" == "true" ]]
+    then
+        curl -sL --show-error "https://go.dev/dl/go${GOLANG_VER}.${PLATFORM}-${ARCH}.tar.gz" -o "go${GOLANG_VER}.${PLATFORM}-${ARCH}.tar.gz"
+        tar -xf "go${GOLANG_VER}.${PLATFORM}-${ARCH}.tar.gz"
+        install --target-directory="$BIN_DIR" go/bin/go
+        rm -rf go* || exit 1
+
+        # shellcheck disable=SC2143
+        if [[ ! $(grep "export GOROOT" "$SHELL_PROFILE") ]]
+        then
+            printf "INFO: Add GOROOT to PATH via %s.\n" "$SHELL_PROFILE"
+            echo "export GOROOT=$BIN_DIR" >> "$SHELL_PROFILE"
+            #shellcheck disable=SC1090
+            source "$SHELL_PROFILE"
+        fi
+    fi
+}
+
 function install_python3() {
 
-    printf "INFO: Processing SYSTEM tools.\n"
+    printf "INFO: Processing Python system tools.\n"
 
     if [[ ( !  $(which python3) && "$PYTHON_VER" ) || "$UPDATE" == "true" ]]
     then
@@ -103,10 +124,9 @@ function install_pip3() {
     fi
 }
 
-# usage install_system_tools
 function install_system_tools() {
 
-    printf "INFO: Installing system tools.\n"
+    printf "INFO: Installing system tool from source.\n"
 
     if [[ $(which apt) ]]
     then
@@ -120,12 +140,14 @@ function install_system_tools() {
         exit 1
     fi
 
+    install_golang
     install_python3
     install_pip3
 
     sudo rm -rf Python*
     sudo rm -rf get-pip.py
 
+    go version
     pip3 --version
     python3 --version
 }

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# usage install_aws_tools
 function install_aws_tools() {
 
     printf "INFO: Processing AWS tools.\n"
@@ -10,7 +9,7 @@ function install_aws_tools() {
     then
         printf "INFO: Installing aws cli.\n"
         curl -sL --show-error "https://awscli.amazonaws.com/awscli-exe-$PLATFORM-$ALTARCH-$AWSCLI_VER.zip" -o "awscliv2.zip"
-        unzip -o awscliv2.zip
+        unzip -qq "awscliv2.zip"
         sudo ./aws/install -b "$BIN_DIR" || sudo ./aws/install -b "$BIN_DIR" --update
         rm -rf aws*
     fi

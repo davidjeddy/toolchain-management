@@ -11,6 +11,35 @@ function configure_terraform_runtime() {
     fi
 }
 
+function golang_based_terraform_tools() {
+        # Because pipelines do not have a full shell, be sure to include the PATH in the execution shell
+        # shellcheck disable=SC1090
+        source "$SHELL_PROFILE"
+
+        printf "INFO: Installing kics.\n"
+        curl -sL --show-error "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" -o "kics.tar.gz"
+        tar -xf kics.tar.gz
+        cd "kics-${KICS_VER}" || exit 1
+
+        # the build process is extracted from https://github.com/Checkmarx/kics/blob/acc15c70004cfd7a94def4887cc7c57ae470fcc5/docker/Dockerfile.debian
+        export CGO_ENABLED=0
+        export GOARCH="amd64"
+        export GOOS="linux"
+        export GOPATH"=$HOME/go"
+
+        go mod download -x
+
+        go build \
+            -a -installsuffix cgo \
+            -o bin/kics cmd/console/main.go
+
+        sudo install bin/kics "$BIN_DIR"
+
+        printf "INFO: Clearn up KICS resources"
+        cd "${PROJECT_ROOT}/.tmp" || exit 1
+        rm -rf kics*
+}
+
 function python_based_terraform_tools() {
     # Because pipelines do not have a full shell, be sure to include the PATH to the Python binaries
     # shellcheck disable=SC2155
@@ -151,7 +180,7 @@ function binary_based_tools() {
         # Must use {} around PLATFORM else Bash thinks varitable variable is presetn
         printf "INFO: Installing tflint.\n"
         curl -sL --show-error "https://github.com/terraform-linters/tflint/releases/download/v$TFLINT_VER/tflint_${PLATFORM}_$ARCH.zip" -o "tflint.zip"
-        unzip -o tflint.zip
+        unzip -qq "tflint.zip"
         sudo rm -rf "$BIN_DIR/tflint" || true
         sudo install --target-directory="$BIN_DIR" tflint
         rm -rf tflint*
@@ -168,7 +197,6 @@ function binary_based_tools() {
     fi
 }
 
-# usage install_terraform_tools
 function install_terraform_tools() {
 
     printf "INFO: Processing TERRAFORM tools.\n"
@@ -194,4 +222,6 @@ function install_terraform_tools() {
     terragrunt --version
     tfenv --version
     tgenv --version
+
+    kics version
 }
