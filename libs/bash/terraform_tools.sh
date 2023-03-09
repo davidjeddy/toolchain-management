@@ -207,6 +207,7 @@ function install_terraform_tools() {
 
     # do not change order
     configure_terraform_runtime
+    golang_based_terraform_tools
     tfenv_and_terraform
     tgenv_and_terragrunt
     binary_based_tools
