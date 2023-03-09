@@ -49,7 +49,9 @@ export TFENV_VER="3.0.0"
 ## https://github.com/terraform-linters/tflint/releases
 export TFLINT_VER="0.45.0"
 ## https://github.com/aquasecurity/tfsec/releases
-export TFSEC_VER="1.28.1"
+# https://github.com/aquasecurity/tfsec/issues/1935
+# https://github.com/aquasecurity/tfsec/issues/1936
+export TFSEC_VER="1.28.0"
 ## https://github.com/gruntwork-io/terragrunt/releases
 export TG_VER="0.43.2"
 ## https://github.com/cunymatthieu/tgenv/releases
