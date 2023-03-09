@@ -33,10 +33,14 @@ function golang_based_terraform_tools() {
             -a -installsuffix cgo \
             -o bin/kics cmd/console/main.go
 
+        # install KICS assets
+        mkdir -p "$PROJECT_ROOT/libs/kics"
+        cp -rf "assets" "$PROJECT_ROOT/libs/kics" || exit 1
+
         sudo install bin/kics "$BIN_DIR"
 
         printf "INFO: Clearn up KICS resources"
-        cd "${PROJECT_ROOT}/.tmp" || exit 1
+        cd "$PROJECT_ROOT/.tmp" || exit 1
         rm -rf kics*
 }
 

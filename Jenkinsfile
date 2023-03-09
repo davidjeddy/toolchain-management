@@ -90,5 +90,7 @@ pipeline {
             }
         }
     }
-    triggers { cron('H 4/* * * 1-5') }
+    triggers {
+        cron('0 4 * * 1-5')
+    }
 }

@@ -1,5 +1,10 @@
+# Do not track KICS assets
+libs/kics/assets
+
+# Keep /tmp di clear
 .tmp
 !.tmp/.keep
 
+# Do not track archives
 .gz
 .zip

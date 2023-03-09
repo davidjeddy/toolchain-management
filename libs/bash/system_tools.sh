@@ -53,6 +53,7 @@ function install_golang() {
 
     if [[ ( !  $(which go) && "$GOLANG_VER" ) || "$UPDATE" == "true" ]]
     then
+        printf "INFO: Golang runtime not detected or needs updated.\n"
         curl -sL --show-error "https://go.dev/dl/go${GOLANG_VER}.${PLATFORM}-${ARCH}.tar.gz" -o "go${GOLANG_VER}.${PLATFORM}-${ARCH}.tar.gz"
         tar -xf "go${GOLANG_VER}.${PLATFORM}-${ARCH}.tar.gz"
         install --target-directory="$BIN_DIR" go/bin/go
@@ -75,6 +76,7 @@ function install_python3() {
 
     if [[ ( !  $(which python3) && "$PYTHON_VER" ) || "$UPDATE" == "true" ]]
     then
+        printf "INFO: Python3 runtime not detected or needs updated.\n"
         curl -sL --show-error "https://www.python.org/ftp/python/$PYTHON_VER/Python-$PYTHON_VER.tgz" -o "Python-$PYTHON_VER.tgz"
         tar xzf "Python-$PYTHON_VER.tgz"
         cd "Python-$PYTHON_VER" || exit 1
@@ -97,8 +99,11 @@ function install_python3() {
 
 function install_pip3() {
 
+    printf "INFO: Processing pip3 system tools.\n"
+
     if [[ ( ! $(which pip3) ) || "$UPDATE" == "true" ]]
     then
+        printf "INFO: pip3 package manager not detected, installing.\n"
         # Because pipelines do not have a full shell, be sure to include the PATH to the Python binaries
         # shellcheck disable=SC2155
         export PATH=$PATH:/home/$(whoami)/.local/bin
