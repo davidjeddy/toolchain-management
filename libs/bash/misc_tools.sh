@@ -4,6 +4,12 @@ function install_misc_tools() {
 
     printf "INFO: Processing MISC tools.\n"
 
+    if [[ $(which yum) ]]
+    then
+        echo "WARN: Not insalling Hashicorp Packer on RHEL basd systems due to package name collision"
+        exit 0
+    fi
+
     if [[ ( !  $(which packer) && "${PKR_VER}" || "$UPDATE" == "true") || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing Packer.\n"

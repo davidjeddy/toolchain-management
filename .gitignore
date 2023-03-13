@@ -1,5 +1,5 @@
 # Do not track KICS assets
-libs/kics/assets
+libs/kics
 
 # Keep /tmp di clear
 .tmp

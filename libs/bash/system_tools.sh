@@ -39,35 +39,42 @@ function yum_systems() {
         curl \
         gnupg \
         jq \
-        libbz2-dev \
-        libffi-dev \
-        libssl-dev \
         unzip \
         yum-utils \
         zlib-devel
 }
 
-function install_golang() {
-
-    printf "INFO: Processing Golang system tool from source.\n"
-
-    if [[ ( !  $(which go) && "$GOLANG_VER" ) || "$UPDATE" == "true" ]]
+function install_goenv() {
+    if [[ ( !  $(which goenv) && ! -d "$HOME/.goenv" && $GOENV_VER) || "$UPDATE" == "true" ]]
     then
-        printf "INFO: Golang runtime not detected or needs updated.\n"
-        curl -sL --show-error "https://go.dev/dl/go${GOLANG_VER}.${PLATFORM}-${ARCH}.tar.gz" -o "go${GOLANG_VER}.${PLATFORM}-${ARCH}.tar.gz"
-        tar -xf "go${GOLANG_VER}.${PLATFORM}-${ARCH}.tar.gz"
-        install --target-directory="$BIN_DIR" go/bin/go
-        rm -rf go* || exit 1
+        printf "INFO: Installing goenv.\n"
+        cd "$HOME" || exit
+        rm -rf "$HOME/.goenv" || true
+        git clone "https://github.com/syndbg/goenv.git" "$HOME/.goenv"
 
-        # shellcheck disable=SC2143
-        if [[ ! $(grep "export GOROOT" "$SHELL_PROFILE") ]]
-        then
-            printf "INFO: Add GOROOT to PATH via %s.\n" "$SHELL_PROFILE"
-            echo "export GOROOT=$BIN_DIR" >> "$SHELL_PROFILE"
-            #shellcheck disable=SC1090
-            source "$SHELL_PROFILE"
-        fi
+        {
+            echo "export PATH=$PATH:$HOME/.goenv/bin"
+            echo "eval $(goenv init -)"
+            echo "export GOENV_ROOT=$HOME/.goenv"
+            echo "export PATH=$GOENV_ROOT/bin:$PATH"
+        } >> "$SHELL_PROFILE"
+
+        goenv install --force "$GO_VER"
+
+    elif [[ -d "$HOME/.goenv" && $GOENV_VER && "$UPDATE" == "true" ]]
+    then
+        printf "INFO: Updating goenv.\n"
+        cd "$HOME/.goenv" || exit
+        git reset master --hard
+        git fetch --all --tags
+        git checkout "$GOENV_VER"
+
+        goenv install --force "$GO_VER"
+        
+        cd "$PROJECT_ROOT" || exit
     fi
+
+    goenv global "$GO_VER"
 }
 
 function install_python3() {
@@ -145,14 +152,15 @@ function install_system_tools() {
         exit 1
     fi
 
-    install_golang
-    install_python3
+    install_goenv
     install_pip3
+    install_python3
 
     sudo rm -rf Python*
     sudo rm -rf get-pip.py
 
-    go version
+    goenv version
+    goenv exec go version
     pip3 --version
     python3 --version
 }

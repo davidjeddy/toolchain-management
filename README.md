@@ -77,16 +77,18 @@ Note: `--skip_*_tools` and `--update` can be used together to update specific to
 
 ## Development
 
-Start a shell session at the root of the project. Then source the default configurations.
+Start a shell session at the root of the project. Then set the required default ENV VARs.
 
 ```sh
-source libs/bash/versions.sh
-ARCH="amd64"
 ALTARCH="x86_64"
-PLATFORM="linux"
-SHELL_PROFILE="$HOME/.bash_profile"
+ARCH="amd64"
 BIN_DIR="/usr/local/bin"
+PLATFORM="linux"
+PROJECT_ROOT=$(git rev-parse --show-toplevel)
+SHELL_PROFILE="$HOME/.bash_profile"
 UPDATE="false"
+
+source "$PROJECT_ROOT/libs/bash/versions.sh"
 ```
 
 Now you should be ready to run all the commands manually.
@@ -96,3 +98,4 @@ Now you should be ready to run all the commands manually.
 - Adding visual aids to any / all the above sections above is recommended.
 - [ROADMAP](./ROADMAP.md) example from [all-contributors/all-contributors](https://github.com/all-contributors/all-contributors/blob/master/MAINTAINERS.md).
 - Based on [README Maturity Model](https://github.com/LappleApple/feedmereadmes/blob/master/README-maturity-model.md); strive for a Level 5 `Product-oriented README`.
+

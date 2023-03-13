@@ -21,19 +21,11 @@ function golang_based_terraform_tools() {
         tar -xf kics.tar.gz
         cd "kics-${KICS_VER}" || exit 1
 
-        # the build process is extracted from https://github.com/Checkmarx/kics/blob/acc15c70004cfd7a94def4887cc7c57ae470fcc5/docker/Dockerfile.debian
-        export CGO_ENABLED=0
-        export GOARCH="amd64"
-        export GOOS="linux"
-        export GOPATH"=$HOME/go"
-
-        go mod download -x
-
-        go build \
-            -a -installsuffix cgo \
-            -o bin/kics cmd/console/main.go
+        goenv exec go mod download -x
+        goenv exec go build -o bin/kics cmd/console/main.go
 
         # install KICS assets
+        rm -rf "$PROJECT_ROOT/libs/kics" || true
         mkdir -p "$PROJECT_ROOT/libs/kics"
         cp -rf "assets" "$PROJECT_ROOT/libs/kics" || exit 1
 

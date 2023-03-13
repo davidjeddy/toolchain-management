@@ -18,6 +18,7 @@ declare TFSEC_VER
 declare TG_VER
 declare TGENV_VER
 declare TRSCAN_VER
+declare GOENV_VER
 
 # Misc tools
 declare PKR_VER
@@ -49,8 +50,9 @@ export TFENV_VER="3.0.0"
 ## https://github.com/terraform-linters/tflint/releases
 export TFLINT_VER="0.45.0"
 ## https://github.com/aquasecurity/tfsec/releases
-# https://github.com/aquasecurity/tfsec/issues/1935
-# https://github.com/aquasecurity/tfsec/issues/1936
+### Keep tfsec @ 1.28.0 until these issues are resilved
+### https://github.com/aquasecurity/tfsec/issues/1935
+### https://github.com/aquasecurity/tfsec/issues/1936
 export TFSEC_VER="1.28.0"
 ## https://github.com/gruntwork-io/terragrunt/releases
 export TG_VER="0.43.2"
@@ -65,6 +67,39 @@ export PKR_VER="1.8.6"
 
 # System Tools
 
+## https://github.com/syndbg/goenv
+export GOENV_VER="2.0.6"
+## https://github.com/golang/go/tags
+### KICS only supports up to GO 1.18.2 as of 2023-03-10
+export GO_VER="1.18.2"
 ## https://go.dev/dl/
 export PYTHON_VER="3.8.12"
-export GOLANG_VER="1.20.1"
+
+# output versions to end-user visibility
+printf "INFO: Output tool target versions.\n"
+
+# System Tools
+echo "GOENV_VER: $GOENV_VER"
+echo "GO_VER: $GO_VER"
+echo "PYTHON_VER: $PYTHON_VER"
+
+# AWS tools
+echo "AWSCLI_VER: $AWSCLI_VER"
+echo "IPJTT_VER: $IPJTT_VER"
+
+# Misc tools
+echo "PKR_VER: $PKR_VER"
+
+# Terraform/Terragrunt version controlers
+echo "TFENV_VER: $TFENV_VER"
+echo "TF_VER: $TF_VER"
+echo "TGENV_VER: $TGENV_VER"
+echo "TG_VER: $TG_VER"
+
+# Terraform Compliance
+echo "INFRACOST_VER: $INFRACOST_VER"
+echo "KICS_VER: $KICS_VER"
+echo "TFDOCS_VER: $TFDOCS_VER"
+echo "TFLINT_VER: $TFLINT_VER"
+echo "TFSEC_VER: $TFSEC_VER"
+echo "TRSCAN_VER: $TRSCAN_VER"
