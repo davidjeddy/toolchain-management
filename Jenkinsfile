@@ -1,12 +1,12 @@
 #!groovy
 //- Library Imports
 @Library('jenkins-pipeline')
-import com.ingenico.epayments.ci.common.Slack
 import com.ingenico.epayments.ci.common.PipelineCommon
+import com.ingenico.epayments.ci.common.Slack
 
 // String var config
 String gitBranch    = 'main'
-String gitRepoUrl   = 'git@'+ env.GITLAB_HOST + ':cicd/terraform/toolchain-management'
+String gitRepoUrl   = 'git@'+ env.GITLAB_HOST + ':cicd/terraform/tools/toolchain-management.git'
 String slackChannel = 'nl-pros-centaurus-squad-releases'
 String workerNode   = 'bambora-aws-slave-terraform'
 
@@ -20,44 +20,31 @@ pipeline {
     options {
         timestamps ()
     }
+    // source https://stackoverflow.com/questions/36651432/how-to-implement-post-build-stage-using-jenkins-pipeline-plug-in
+    // source https://plugins.jenkins.io/gitlab-plugin/
     post {
+        // TODO: send to commit author via email. use commit email to get slack username to send msg. this req. a feature add to the Groovy Slack class as it does not currently support this feature
+        // always, changed, fixed, regression, aborted, failure, success, unstable, unsuccessful, and cleanup
         failure {
-            steps {
-                script {
-                    if (env.branch == 'main') {
-                        script {
-                            def slack = new Slack(this.steps, this.env)
-                            slack.slackNotification(
-                                slackChannel,
-                                "Terraform Toolchain Management MAIN branch failed",
-                                ":alert: :alert: :alert: Terraform Toolchain Management MAIN branch failed. This is critical and needs fixed ASAP.",
-                                ':jenkins:'
-                            )
-                        }
-                    } else {
-                        script {
-                            def slack = new Slack(this.steps, this.env)
-                            slack.slackNotification(
-                                slackChannel,
-                                "Terraform Toolchain Management  working branch failed",
-                                ":alert: Terraform Toolchain Management  pipeline for a working branch failed. Please contact the module owner.",
-                                ':jenkins:'
-                            )
-                        }
-                    }
+            script {
+                if (env.gitlabBranch == 'main') {
+                    // if main, send to nl-pros-equad-releases
+                    def slack = new Slack(this.steps, this.env)
+                    slack.slackNotification(
+                        slackChannel,
+                        "Terraform Toolchain",
+                        ":alert: Terraform Toolchain main branch pipeline failed.",
+                        ':jenkins:'
+                    )
                 }
             }
+            updateGitlabCommitStatus name: 'build', state: 'failed'
         }
-        success {
-            script {
-                def slack = new Slack(this.steps, this.env)
-                slack.slackNotification(
-                    slackChannel,
-                    "Terraform Toolchain Management ",
-                    ":white_check_mark: Terraform Toolchain Management  pipeline successful. All changes module changes validated and ready for apply.",
-                    ':jenkins:'
-                )
-            }
+        success{
+            updateGitlabCommitStatus name: 'build', state: 'success'
+        }
+        unstable {
+            updateGitlabCommitStatus name: 'build', state: 'success'
         }
     }
     stages {
@@ -72,25 +59,27 @@ pipeline {
         // This stage must be first to ensure system packages and language runtimes are availabe
         stage('Toolchain Mngr: run.sh --update only for System tools') {
             steps {
-                // RHEL users do not typically have /usr/local/bin in the PATH. Override with the available /usr/bin location.
                 // Jenkins worker nodes have [cracklib](https://github.com/cracklib/cracklib) system package installed.
                 // It provides a `packer` in the PATH, ie name collision with Hashcorp Packer.
-                // So, skip installing misc tools for now
-                sh './libs/bash/run.sh --bin_dir /usr/bin --skip_aws_tools true --skip_misc_tools true --skip_terraform_tools true --update true'
+                // So, skip installing misc tools for now until a resolution is found
+                sh './libs/bash/run.sh --skip_aws_tools true --skip_misc_tools true --skip_terraform_tools true --update true'
             }
         }
+        // Then we install the AWS CLI and related tools
         stage('Toolchain Mngr: run.sh --update only for AWS tools') {
             steps {
-                sh './libs/bash/run.sh --bin_dir /usr/bin --skip_misc_tools true --skip_terraform_tools true --skip_system_tools true --update true'
+                sh './libs/bash/run.sh --skip_misc_tools true --skip_terraform_tools true --skip_system_tools true --update true'
             }
         }
+        // We do not install misc tools due to a name collision with the package `packer` on RHEL based machines
+        // Finally TG and related tools
         stage('Toolchain Mngr: run.sh --update only for Terraform tools') {
             steps {
-                sh './libs/bash/run.sh --bin_dir /usr/bin --skip_aws_tools true --skip_misc_tools true --skip_system_tools true --update true'
+                sh './libs/bash/run.sh --skip_aws_tools true --skip_misc_tools true --skip_system_tools true --update true'
             }
         }
     }
     triggers {
-        cron('0 4 * * 1-5')
+        cron('H 4 * * 1-5')
     }
 }
