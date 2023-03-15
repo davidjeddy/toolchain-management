@@ -21,6 +21,9 @@ function golang_based_terraform_tools() {
         tar -xf kics.tar.gz
         cd "kics-${KICS_VER}" || exit 1
 
+        # Make sure GO >=1.11 modules are enabled
+        declare GO111MODULE
+        export GO111MODULE="on"
         goenv exec go mod download -x
         goenv exec go build -o bin/kics cmd/console/main.go
 
@@ -71,7 +74,7 @@ function python_based_terraform_tools() {
 }
 
 function tfenv_and_terraform() {
-    if [[ ( !  $(which tfenv) && ! -d "$HOME/.tfenv" && $TFENV_VER) || "$UPDATE" == "true" ]]
+    if [[ ( !  $(which tfenv) && $TFENV_VER) || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing tfenv.\n"
         cd "$HOME" || exit
@@ -106,7 +109,7 @@ function tfenv_and_terraform() {
 }
 
 function tgenv_and_terragrunt() {
-    if [[ ( !  $(which tfgnv) && ! -d "$HOME/.tgenv" && $TGENV_VER) || "$UPDATE" == "true" ]]
+    if [[ ( !  $(which tfgnv) && $TGENV_VER) || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing tgenv.\n"
         cd "$HOME" || exit
