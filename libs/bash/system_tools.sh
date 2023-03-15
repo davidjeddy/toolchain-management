@@ -45,7 +45,7 @@ function yum_systems() {
 }
 
 function install_goenv() {
-    if [[ ( !  $(which goenv) && ! -d "$HOME/.goenv" && $GOENV_VER) || "$UPDATE" == "true" ]]
+    if [[ ( ! $(which goenv) && $GOENV_VER) || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing goenv.\n"
         cd "$HOME" || exit
