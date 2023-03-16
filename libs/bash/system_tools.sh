@@ -88,7 +88,7 @@ function install_python3() {
 
     printf "INFO: Processing Python system tools.\n"
 
-    if [[ ( !  $(which python3) && "$PYTHON_VER" ) || "$UPDATE" == "true" ]]
+    if [[ ( ! $(which python3) && "$PYTHON_VER" ) || "$UPDATE" == "true" ]]
     then
         printf "INFO: Python3 runtime not detected or needs updated.\n"
         curl -sL --show-error "https://www.python.org/ftp/python/$PYTHON_VER/Python-$PYTHON_VER.tgz" -o "Python-$PYTHON_VER.tgz"
