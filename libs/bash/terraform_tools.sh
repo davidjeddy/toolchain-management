@@ -78,7 +78,7 @@ function python_based_terraform_tools() {
 }
 
 function tfenv_and_terraform() {
-    if [[ ( !  $(which tfenv) && $TFENV_VER) || "$UPDATE" == "true" ]]
+    if [[ ( ! $(which tfenv) && $TFENV_VER) || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing tfenv.\n"
         cd "$HOME" || exit
@@ -113,7 +113,7 @@ function tfenv_and_terraform() {
 }
 
 function tgenv_and_terragrunt() {
-    if [[ ( !  $(which tfgnv) && $TGENV_VER) || "$UPDATE" == "true" ]]
+    if [[ ( ! $(which tfgnv) && $TGENV_VER) || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing tgenv.\n"
         cd "$HOME" || exit

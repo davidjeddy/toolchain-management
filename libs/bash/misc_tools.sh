@@ -7,10 +7,10 @@ function install_misc_tools() {
     if [[ $(which yum) ]]
     then
         echo "WARN: Not insalling Hashicorp Packer on RHEL basd systems due to package name collision"
-        exit 0
+        return 0
     fi
 
-    if [[ ( !  $(which packer) && "${PKR_VER}" || "$UPDATE" == "true") || "$UPDATE" == "true" ]]
+    if [[ ( ! $(which packer) && "${PKR_VER}" || "$UPDATE" == "true") || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing Packer.\n"
         curl -sL --show-error "https://releases.hashicorp.com/packer/${PKR_VER}/packer_${PKR_VER}_${PLATFORM}_${ARCH}.zip" -o "packer_${PKR_VER}_${PLATFORM}_${ARCH}.zip"
