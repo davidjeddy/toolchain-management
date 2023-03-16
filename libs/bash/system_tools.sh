@@ -45,19 +45,25 @@ function yum_systems() {
 }
 
 function install_goenv() {
+    # shellcheck disable=SC2143
+    if [[ ! $(grep "export PATH=\$PATH:\$HOME/.goenv/bin" "$SHELL_PROFILE") ]]
+    then
+        printf "INFO: Add goenv bin dir to PATH via %s.\n" "$SHELL_PROFILE"
+        {
+            echo "export PATH=\$PATH:\$HOME/.goenv/bin"
+            echo "export GOENV_ROOT=$HOME/.goenv"
+            echo "eval $("$HOME"/.goenv/bin/goenv init -)"
+        } >> "$SHELL_PROFILE"
+        #shellcheck disable=SC1090
+        source "$SHELL_PROFILE"
+    fi
+
     if [[ ( ! $(which goenv) && $GOENV_VER) || "$UPDATE" == "true" ]]
     then
-        printf "INFO: Installing goenv.\n"
+        printf "INFO: Installing goenv to %s \n" "$HOME/.goenv"
         cd "$HOME" || exit
         rm -rf "$HOME/.goenv" || true
         git clone "https://github.com/syndbg/goenv.git" "$HOME/.goenv"
-
-        {
-            echo "export PATH=$PATH:$HOME/.goenv/bin"
-            echo "eval $(goenv init -)"
-            echo "export GOENV_ROOT=$HOME/.goenv"
-            echo "export PATH=$GOENV_ROOT/bin:$PATH"
-        } >> "$SHELL_PROFILE"
 
         goenv install --force "$GO_VER"
 
@@ -71,7 +77,7 @@ function install_goenv() {
 
         goenv install --force "$GO_VER"
         
-        cd "$PROJECT_ROOT" || exit
+        cd "$PROJECT_ROOT" || exit 1
     fi
 
     goenv global "$GO_VER"

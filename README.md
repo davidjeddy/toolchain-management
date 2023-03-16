@@ -85,7 +85,7 @@ ARCH="amd64"
 BIN_DIR="/usr/local/bin"
 PLATFORM="linux"
 PROJECT_ROOT=$(git rev-parse --show-toplevel)
-SHELL_PROFILE="$HOME/.bash_profile"
+SHELL_PROFILE="$HOME/.profile"
 UPDATE="false"
 
 source "$PROJECT_ROOT/libs/bash/versions.sh"
@@ -98,4 +98,3 @@ Now you should be ready to run all the commands manually.
 - Adding visual aids to any / all the above sections above is recommended.
 - [ROADMAP](./ROADMAP.md) example from [all-contributors/all-contributors](https://github.com/all-contributors/all-contributors/blob/master/MAINTAINERS.md).
 - Based on [README Maturity Model](https://github.com/LappleApple/feedmereadmes/blob/master/README-maturity-model.md); strive for a Level 5 `Product-oriented README`.
-
