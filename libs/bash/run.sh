@@ -121,19 +121,20 @@ source "./libs/bash/versions.sh"
 # Does $SHELL_PROFILE exist?
 if [[ ! -f $SHELL_PROFILE ]]
 then 
-    printf "INFO: Creating toolchain shell .profile at %s" "$SHELL_PROFILE"
+    printf "INFO: Creating toolchain shell .profile at %s.\n" "$SHELL_PROFILE"
     touch "$SHELL_PROFILE" || exit 1
 
     printf "INFO: Add BIN_DIR to PATH via in %s.\n" "$SHELL_PROFILE"
     echo "export PATH=\$PATH:$BIN_DIR" >> "$SHELL_PROFILE"
 fi
 
-# add tribe profile to .bashrc if it exists
+# Add tribe profile to .bashrc if it exists
+# Other tribes can add additional shell profiles as $HOME/[[business_unit]]_[[tribe]]_profile
 # shellcheck disable=SC2143
-if [[ -f "$HOME/.bashrc" && ! $(grep "export PATH=\$PATH:\$SHELL_PROFILE" "$HOME/.bashrc") ]]
+if [[ -f "$HOME/.bashrc" && ! $(grep "source $SHELL_PROFILE" "$HOME/.bashrc") ]]
 then
-    printf "INFO: Add %s to PATH via addition to %s.\n" "$SHELL_PROFILE" "$HOME/.bashrc"
-    echo "export PATH=\$PATH:\$SHELL_PROFILE" >> "$SHELL_PROFILE"
+    printf "INFO: Adding source %s to %s.\n" "$SHELL_PROFILE" "$HOME/.bashrc"
+    echo "source $SHELL_PROFILE" >> "$HOME/.bashrc"
     #shellcheck disable=SC1091
     source "$HOME/.bashrc" || exit 1
 fi

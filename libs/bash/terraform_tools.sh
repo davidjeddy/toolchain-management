@@ -12,9 +12,12 @@ function configure_terraform_runtime() {
 }
 
 function golang_based_terraform_tools() {
-        # Because pipelines do not have a full shell, be sure to include the PATH in the execution shell
-        # shellcheck disable=SC1090
-        source "$SHELL_PROFILE"
+    # Because pipelines do not have a full shell, be sure to include the PATH in the execution shell
+    # shellcheck disable=SC1090
+    source "$SHELL_PROFILE"
+
+    if [[ ( ! $(which kics) && $KICS_VER) || "$UPDATE" == "true" ]]
+    then
 
         printf "INFO: Installing kics.\n"
         curl -sL --show-error "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" -o "kics.tar.gz"
@@ -34,9 +37,10 @@ function golang_based_terraform_tools() {
 
         sudo install bin/kics "$BIN_DIR"
 
-        printf "INFO: Clearn up KICS resources"
+        printf "INFO: Clean up KICS resources"
         cd "$PROJECT_ROOT/.tmp" || exit 1
         rm -rf kics*
+    fi
 }
 
 function python_based_terraform_tools() {
