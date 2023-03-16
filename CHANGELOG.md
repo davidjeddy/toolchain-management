@@ -15,6 +15,7 @@ Action Keywords:
 
 ## [0.10.0] - 2023-03-15 - goenv and KICS fix
 
-- UPDATED SHELL_PROFILE to use ~/.profile
-- FIXED goenv install process
+- FIXED `goenv` install process
+- - UPDATED SHELL_PROFILE to use ~/.worldline_pps_profile
 
+NOTE: Please remove any toolchain related commands in $HOME/.bash_profile as they have been migrated to `.worldline_pps_profile`.
