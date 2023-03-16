@@ -91,13 +91,13 @@ function tfenv_and_terraform() {
         git reset master --hard
         git fetch --all --tags
         git checkout "v$TFENV_VER"
-        cd "$PROJECT_ROOT" || exit
+        cd "$PROJECT_ROOT" || exit 1
     fi
 
     # shellcheck disable=SC2143
     if [[ ! $(grep "export PATH=\$PATH:\$HOME/.tfenv/bin" "$SHELL_PROFILE") ]]
     then
-        printf "INFO: Add tfenv bindir to PATH via %s.\n" "$SHELL_PROFILE"
+        printf "INFO: Add tfenv bin dir to PATH via %s.\n" "$SHELL_PROFILE"
         echo "export PATH=\$PATH:\$HOME/.tfenv/bin" >> "$SHELL_PROFILE"
         #shellcheck disable=SC1090
         source "$SHELL_PROFILE"
@@ -124,7 +124,7 @@ function tgenv_and_terragrunt() {
         git reset master --hard
         git fetch --all --tags
         git checkout "v$TGENV_VER"
-        cd "$PROJECT_ROOT" || exit
+        cd "$PROJECT_ROOT" || exit 1
     fi
 
     # shellcheck disable=SC2143

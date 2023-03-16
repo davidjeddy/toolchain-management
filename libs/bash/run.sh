@@ -73,7 +73,7 @@ fi
 
 if [[ "$SHELL_PROFILE" == "" ]]
 then
-    SHELL_PROFILE="$HOME/.bash_profile"
+    SHELL_PROFILE="$HOME/.worldline_pps_profile"
 fi
 
 if [[ "${BIN_DIR}" == "" ]]
@@ -90,6 +90,8 @@ fi
 
 ORIG_PWD="$(pwd)"
 PROJECT_ROOT=$(git rev-parse --show-toplevel)
+export ORIG_PWD
+export PROJECT_ROOT
 
 ## output runtime configuration
 printf "INFO: Executing with the following argument configurations.\n"
@@ -112,19 +114,28 @@ echo "SKIP_MISC_TOOLS: $SKIP_MISC_TOOLS"
 printf "INFO: Changing to project root.\n"
 cd "$PROJECT_ROOT" || exit 1
 
-printf "INFO: Sourcing tool versions.\n"
+printf "INFO: Sourcing tool versions.sh in run.sh.\n"
 # shellcheck disable=SC1091
 source "./libs/bash/versions.sh"
 
-# Add $BIN_DIR to $PATH if not already present in SHELL_PROFILE.
-# Good for CI runtime ENV.
-# shellcheck disable=SC2143
-if [[ ! $(grep "export PATH=\$PATH:$BIN_DIR" "$SHELL_PROFILE") ]]
-then
-    printf "INFO: Add BIN_DIR to PATH via %s.\n" "$SHELL_PROFILE"
+# Does $SHELL_PROFILE exist?
+if [[ ! -f $SHELL_PROFILE ]]
+then 
+    printf "INFO: Creating toolchain shell .profile at %s" "$SHELL_PROFILE"
+    touch "$SHELL_PROFILE" || exit 1
+
+    printf "INFO: Add BIN_DIR to PATH via in %s.\n" "$SHELL_PROFILE"
     echo "export PATH=\$PATH:$BIN_DIR" >> "$SHELL_PROFILE"
-    #shellcheck disable=SC1090
-    source "$SHELL_PROFILE"
+fi
+
+# add tribe profile to .bashrc if it exists
+# shellcheck disable=SC2143
+if [[ -f "$HOME/.bashrc" && ! $(grep "export PATH=\$PATH:\$SHELL_PROFILE" "$HOME/.bashrc") ]]
+then
+    printf "INFO: Add %s to PATH via addition to %s.\n" "$SHELL_PROFILE" "$HOME/.bashrc"
+    echo "export PATH=\$PATH:\$SHELL_PROFILE" >> "$SHELL_PROFILE"
+    #shellcheck disable=SC1091
+    source "$HOME/.bashrc" || exit 1
 fi
 
 # System tools MUST be first
