@@ -13,9 +13,13 @@ Action Keywords:
 `REMOVE` : Functionality is no longer available.
 `UPDATED`: Functionality capability expanded with additional abilities.
 
-## [0.10.0] - 2023-03-15 - goenv and KICS fix
+## [0.10.0] - 2023-03-15
+
+NOTE: This version required the removal of configuration in ~/.bash_profile if using previous versions.
 
 - FIXED `goenv` install process
 - - UPDATED SHELL_PROFILE to use ~/.worldline_pps_profile
 
-NOTE: Please remove any toolchain related commands in $HOME/.bash_profile as they have been migrated to `.worldline_pps_profile`.
+## [0.9.0] - 2023-02-01 - Unreleased
+
+- Everything before 0.10.0
