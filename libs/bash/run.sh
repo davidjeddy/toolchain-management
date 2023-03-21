@@ -126,6 +126,7 @@ then
 
     printf "INFO: Add BIN_DIR to PATH via in %s.\n" "$SHELL_PROFILE"
     echo "export PATH=\$PATH:$BIN_DIR" >> "$SHELL_PROFILE"
+    echo "export PATH=$PROJECT_ROOT/libs/bash" >> "$SHELL_PROFILE"
 fi
 
 # Add tribe profile to .bashrc if it exists
