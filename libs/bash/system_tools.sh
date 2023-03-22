@@ -26,6 +26,7 @@ function apt_systems() {
         libreadline-dev \
         libsqlite3-dev \
         libssl-dev \
+        python3-distutils \
         tk-dev
 }
 
@@ -39,6 +40,7 @@ function yum_systems() {
         curl \
         gnupg \
         jq \
+        python3-distutils \
         unzip \
         yum-utils \
         zlib-devel
