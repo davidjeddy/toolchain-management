@@ -4,36 +4,35 @@
 
 - [Toolchain Management](#toolchain-management)
   - [Table of Contents](#table-of-contents)
-  - [Badges](#badges)
   - [Description](#description)
-  - [WARNING](#warning)
   - [Purpose](#purpose)
-  - [Requirements](#requirements)
+  - [Requirements / Supported Platforms](#requirements--supported-platforms)
+  - [Tools Includes (but are not limited to)](#tools-includes-but-are-not-limited-to)
+    - [AWS](#aws)
+    - [Terraform](#terraform)
+    - [Language Run-times](#language-run-times)
   - [Usage](#usage)
+    - [WARNING](#warning)
     - [Install](#install)
     - [Usage](#usage-1)
     - [Update Toolchain](#update-toolchain)
   - [Development](#development)
   - [Additional Information](#additional-information)
 
-## Badges
-
-Build Status, Code Coverage, PR stats/time frame, Project status, etc.
-
 ## Description
 
-Collection of resources used to manage Terraform related tools.
-
-## WARNING
-
-- System packages managed by `apt` or `yum` will be installed / updated to the latest version on every execution.
-- Toolchain packages will be replaced with the version defined in `./libs/bash/versions.sh` when `--update true` argument is provided.
+Collection of resources and tolls used to manage Terraform projects.
 
 ## Purpose
 
-Ensure compliance, consistency, and quality in Terraform projects.
+Ensure compliance in Terraform based projects via the shift-left pattern of presenting violations regarding organizational auditing, linting, security, and style guides as soon as an engineer attempts to save code. Additionally, toolchain has to ability to enforce the version of the tools installed. Ensure the engineering teams can stay up to date without messing around updating each to individually.
 
-## Requirements
+Currently only local machine and Jenkins pipeline tools are supported. 
+
+Engineer saved code -> toolchain triggered (pre-commit hook) -> scanning tools execute -> if violations are found, the save is aborted
+
+
+## Requirements / Supported Platforms
 
 - [Linux](https://en.wikipedia.org/wiki/Linux) (kernal >= 4.x)
   - `sudo` ability
@@ -41,7 +40,36 @@ Ensure compliance, consistency, and quality in Terraform projects.
 - [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) >= 5.x
 - [Git](https://git-scm.com/) >= 2.x
 
+## Tools Includes (but are not limited to)
+
+### AWS
+
+- AWS CLI
+- iam-policy-json-to-terraform
+
+### Terraform
+
+- Checkov
+- Infracost
+- KICS
+- Terraform version manager
+- Terragrunt version manager
+- terrascan
+- tf-docs
+- tflint
+
+### Language Run-times
+
+- Golang version manager
+- Pythong / Pip
+
+
 ## Usage
+
+### WARNING
+
+- System packages managed by `apt` or `yum` will be installed / updated to the latest version on every execution.
+- Toolchain packages will be replaced with the version defined in `./libs/bash/versions.sh` when `--update true` argument is provided.
 
 ### Install
 
