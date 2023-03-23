@@ -113,7 +113,7 @@ function tfenv_and_terraform() {
 }
 
 function tgenv_and_terragrunt() {
-    if [[ ( ! $(which tfgnv) && $TGENV_VER) || "$UPDATE" == "true" ]]
+    if [[ ( ! $(which tgenv) && $TGENV_VER) || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing tgenv.\n"
         cd "$HOME" || exit
@@ -121,6 +121,7 @@ function tgenv_and_terragrunt() {
         git clone https://github.com/tgenv/tgenv.git "$HOME/.tgenv"
         cd .tgenv || exit
         sudo ln -s ~/.tgenv/bin/* "$BIN_DIR" || true
+        tgenv install "$TG_VER"
     elif [[ -d "$HOME/.tgenv" && $TGENV_VER && "$UPDATE" == "true" ]]
     then
         printf "INFO: Updating tgenv.\n"
@@ -141,7 +142,6 @@ function tgenv_and_terragrunt() {
     fi
 
     printf "INFO: Installing Terragrunt via tgenv.\n"
-    tgenv install "$TG_VER"
     tgenv use "$TG_VER"
 }
 
