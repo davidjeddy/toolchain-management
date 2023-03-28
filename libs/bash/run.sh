@@ -4,6 +4,7 @@
 # Note `--skip_*_tools` and `--update` can be used together to update specific tool groups
 # ./libs/bash/run.sh
 # ./libs/bash/run.sh --arch amd64 --platform darwin
+# ./libs/bash/run.sh --arch amd64 --alt-arch arm --platform darwin
 # ./libs/bash/run.sh --arch amd64 --platform darwin --update true
 # ./libs/bash/run.sh --arch arm32 --platform linux
 # ./libs/bash/run.sh --arch arm32 --platform linux --shell_profile "$HOME/.zshell_profile"
@@ -48,17 +49,16 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-# Argument defaults
+# Argument Defaults
 
 if [[ "$ARCH" == "" ]]
 then
     ARCH="amd64"
+fi
 
-    if [[ "$ARCH" == "amd64" ]]
-    then
-        # shellcheck disable=SC2034
-        ALTARCH="x86_64"
-    fi
+if [[ "$ALTARCH" == "" ]]
+then
+    ALTARCH="x86_64"
 fi
 
 if [[ "$PLATFORM" == "" ]]
