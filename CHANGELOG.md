@@ -13,6 +13,14 @@ Action Keywords:
 `REMOVE` : Functionality is no longer available.
 `UPDATED`: Functionality capability expanded with additional abilities.
 
+## [TODO]
+
+ADD AWS CLI SSM plugin
+
+- https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html#install-plugin-linux
+- build from source due to binary packages not following the wider community naming convention
+- https://github.com/aws/session-manager-plugin/archive/refs/tags/1.2.463.0.tar.gz
+
 ## [0.10.0] - 2023-03-15
 
 NOTE: This version required the removal of configuration in ~/.bash_profile if using previous versions.
