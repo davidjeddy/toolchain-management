@@ -30,7 +30,7 @@ declare PYTHON_VER
 
 # AWS related tools
 ## https://docs.aws.amazon.com/cli/latest/userguide/getting-started-version.html
-export AWSCLI_VER="2.0.30"
+export AWSCLI_VER="2.9.13"
 ## https://github.com/flosell/iam-policy-json-to-terraform/releases
 export IPJTT_VER="1.8.2"
 
