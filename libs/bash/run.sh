@@ -4,7 +4,7 @@
 # Note `--skip_*_tools` and `--update` can be used together to update specific tool groups
 # ./libs/bash/run.sh
 # ./libs/bash/run.sh --arch amd64 --platform darwin
-# ./libs/bash/run.sh --arch amd64 --alt-arch arm --platform darwin
+# ./libs/bash/run.sh --arch amd64 --altarch arm --platform darwin
 # ./libs/bash/run.sh --arch amd64 --platform darwin --update true
 # ./libs/bash/run.sh --arch arm32 --platform linux
 # ./libs/bash/run.sh --arch arm32 --platform linux --shell_profile "$HOME/.zshell_profile"
