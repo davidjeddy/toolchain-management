@@ -6,7 +6,7 @@ function configure_terraform_runtime() {
     then
         # source https://www.tailored.cloud/devops/cache-terraform-providers/
         printf "INFO: Configuring Terraform provider shared cache.\n"
-        mkdir "$HOME/.terraform.d/plugin-cache/" || true
+        mkdir -p "$HOME/.terraform.d/plugin-cache/" || true
         echo "export TF_PLUGIN_CACHE_DIR=\"$HOME/.terraform.d/plugin-cache/\"" >> "$SHELL_PROFILE"
     fi
 }
