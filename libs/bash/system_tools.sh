@@ -59,8 +59,8 @@ function install_goenv() {
         then
             printf "INFO: Add goenv bin dir to PATH via %s.\n" "$SHELL_PROFILE"
             {
-                echo "export PATH=$PATH:$HOME/.goenv/bin"
-                echo "export GOENV_ROOT=$HOME/.goenv"
+                echo "export PATH=\$PATH:\$HOME/.goenv/bin"
+                echo "export GOENV_ROOT=\$HOME/.goenv"
                 echo "eval $("$HOME"/.goenv/bin/goenv init -)"
             } >> "$SHELL_PROFILE"
         fi
@@ -79,7 +79,7 @@ function install_goenv() {
         git checkout "$GOENV_VER"
 
         goenv install --force "$GO_VER"
-        
+
         cd "$PROJECT_ROOT" || exit 1
     fi
 
@@ -107,7 +107,7 @@ function install_python3() {
         } || {
             printf "CRITICAL: Could NOT create symlink from %s/python3.8 to %s/python3. Exiting with error" "$BIN_DIR" "$BIN_DIR"
             exit 1
-        } 
+        }
 
         cd "../" || true
     fi
