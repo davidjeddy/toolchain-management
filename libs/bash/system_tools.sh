@@ -6,16 +6,19 @@ function apt_systems() {
 
     # shellcheck disable=SC2086
     sudo apt-get install -y \
+        buildah \
         ca-certificates \
         curl \
         gnupg \
         jq \
         libbz2-dev \
+        parallel \
         unzip
 
     # source https://number1.co.za/how-to-build-python-3-from-source-on-ubuntu-22-04/
     printf "INFO: System packages for Python3.\n"
     sudo apt install -y \
+        buildah \
         libbz2-dev \
         libffi-dev \
         libgdbm-compat-dev \
@@ -26,6 +29,7 @@ function apt_systems() {
         libreadline-dev \
         libsqlite3-dev \
         libssl-dev \
+        parallel \
         python3-distutils \
         tk-dev
 }
