@@ -23,9 +23,11 @@ function get_cmd_options() {
         if [[ "-${_SHORT_OPTS[$i]//:/}" = "${1}" || "--${_LONG_OPTS[$i]//:/}" = "${1}" ]]; then
           key="${_LONG_OPTS[$i]//:/}"
           if [[ "${_LONG_OPTS[$i]}" == *: ]]; then
+            # Argument has value
             declare -rg "${key^^}"="$2"
             shift
           else
+            # Argument has no value (flag)
             declare -rg "${key^^}=true"
           fi
         fi
@@ -34,17 +36,10 @@ function get_cmd_options() {
     shift
   done
 
-  # Check if the service_name was provided
-
-  SERVICE_NAME="$1"
-  if [[ "$SERVICE_NAME" == "" ]]; then
-    printf "ERR: no service_name provided. Exiting with error.\n"
-    print_usage
-    exit 1
-  fi
+  # Get service_name
+  export SERVICE_NAME="$1"
 
   # Fill missing variables with default values
-
   for i in "${!_LONG_OPTS[@]}"; do
     if [[ ${_LONG_OPTS[$i]} =~ ':'$ ]]; then
       key=${_LONG_OPTS[$i]//:/}

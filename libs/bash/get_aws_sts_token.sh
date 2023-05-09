@@ -1,9 +1,15 @@
-#!/bin/bash -x
+#!/bin/bash -e
 
-# usage: source /path/to/script/getAWSSessionToken.sh MFA_DEVICE_ARN TOKEN_CODE
+# Parameters:
+#   - MFA_DEVICE_ARN    the ARN of your MFA device (optional - if not provided, the script will try to get this information from user's account)
+#   - TOKEN_CODE        the token provided by the MFA device (optional - if not provided, the user will be asked for it)
+# usage: source /path/to/script/getAWSSessionToken.sh
+#        source /path/to/script/getAWSSessionToken.sh MFA_DEVICE_ARN
+#        source /path/to/script/getAWSSessionToken.sh MFA_DEVICE_ARN TOKEN_CODE
+# example: source /path/to/script/getAWSSessionToken.sh
 # example: source /path/to/script/getAWSSessionToken.sh arn:aws:iam::433890542894:mfa/david.eddy
-# example: source /path/to/script/getAWSSessionToken.sharn:aws:iam::433890542894:mfa/david.eddy 123456
-# todo: Add testing via https://bach.sh, https://shellspec.info/, https://github.com/kward/shunit2 or simialr modern BASH testing framework
+# example: source /path/to/script/getAWSSessionToken.sh arn:aws:iam::433890542894:mfa/david.eddy 123456
+# todo: Add testing via https://bach.sh, https://shellspec.info/, https://github.com/kward/shunit2 or similar modern BASH testing framework
 
 # Versions
 # 0.4.0 - 2022-10-11 - Selin Eryilmaz || David Eddy
@@ -24,25 +30,45 @@ TOKEN_CODE="$2"
 
 if [[ "$sourced" == 0 ]]
 then
-    printf "ERR: Script must be sources to function properly. Please invoke pre-prended with 'source /path/to/script YOUR_MFA_DEVICE_ARN'.\n"
+    printf "ERR: Script must be sources to function properly. Please invoke prepended with 'source', e.g.: 'source /path/to/script YOUR_MFA_DEVICE_ARN'.\n"
     exit 1
 fi
 
 if [[ $MFA_DEVICE_ARN == "" ]]
 then
-    printf "ERR: MFA device ARN required."
-    exit 1
+    printf "INFO: MFA device not provided, getting the information from account\n"
+    # shellcheck disable=SC2207
+    LIST_MFA_DEVICE_ARN=($(aws iam list-mfa-devices --query 'MFADevices[*].SerialNumber' --output text))
+    NUMBER_OF_ARNS="${#LIST_MFA_DEVICE_ARN[@]}"
+    if ((NUMBER_OF_ARNS == 0)); then
+      printf "ERR: Could not find MFA device for user %s\n" "$(aws iam get-user --query "User.UserName" --output text)"
+      exit 0
+    elif ((NUMBER_OF_ARNS == 1)); then
+      MFA_DEVICE_ARN="${LIST_MFA_DEVICE_ARN[0]}"
+    else
+      printf "Select you MFA device:\n"
+      select CHOICE in "${MFA_DEVICE_ARN[@]}"; do
+        # shellcheck disable=SC2076
+        if [[ " ${MFA_DEVICE_ARN[*]} " =~ " ${CHOICE} " ]]; then
+          MFA_DEVICE_ARN=${CHOICE}
+          break
+        else
+          printf "Invalid MFA device selected, try again.\n"
+        fi
+      done
+    fi
+    printf "INFO: Using MFA device: %s\n" "$MFA_DEVICE_ARN"
 fi
 
 # Request MFA token value
 
 if [[ $TOKEN_CODE == "" ]]
 then
-    echo "Enter mfa token (input hidden):"
+    echo "Enter MFA token (input hidden):"
     read -rs TOKEN_CODE
 fi
 
-# execution logic 
+# execution logic
 
 # execute sts request
 
@@ -79,4 +105,3 @@ then
 
     printf "INFO: This shell is now ready to use API credentials via the AWS CLI.\n"
 fi
-
