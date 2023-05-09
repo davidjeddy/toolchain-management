@@ -1,8 +1,0 @@
-[
-  {
-    "queryName": "Athena Database Not Encrypted",
-    "severity": "HIGH",
-    "line": 5,
-    "filename": "positive1.tf"
-  }
-]

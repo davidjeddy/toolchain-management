@@ -61,8 +61,7 @@ Engineer saved code -> toolchain triggered (pre-commit hook) -> scanning tools e
 ### Language Run-times
 
 - Golang version manager
-- Pythong / Pip
-
+- Python / Pip
 
 ## Usage
 
@@ -79,26 +78,26 @@ git clone [project URL]
 
 ### Usage
 
-Take from ./libs/bash/run.sh header section.
+Take from ./libs/bash/install.sh header section.
 
 ```sh
 # Example usage:
 
-./libs/bash/run.sh
-./libs/bash/run.sh --arch amd64 --platform darwin
-./libs/bash/run.sh --arch amd64 --platform darwin --update true
-./libs/bash/run.sh --arch arm32 --platform linux
-./libs/bash/run.sh --arch arm32 --platform linux --shell_profile "$HOME/.zshell_profile"
-./libs/bash/run.sh --arch arm32 --platform linux --skip_misc_tools true
-./libs/bash/run.sh --bin_dir "/usr/bin" --skip_aws_tools true --update true
-./libs/bash/run.sh --skip_aws_tools true --update true
-./libs/bash/run.sh --skip_system_tools true --skip_terraform_tools true --skip_misc_tools true
+./libs/bash/install.sh
+./libs/bash/install.sh --arch amd64 --platform darwin
+./libs/bash/install.sh --arch amd64 --platform darwin --update true
+./libs/bash/install.sh --arch arm32 --platform linux
+./libs/bash/install.sh --arch arm32 --platform linux --shell_profile "$HOME/.zshell_profile"
+./libs/bash/install.sh --arch arm32 --platform linux --skip_misc_tools true
+./libs/bash/install.sh --bin_dir "/usr/bin" --skip_aws_tools true --update true
+./libs/bash/install.sh --skip_aws_tools true --update true
+./libs/bash/install.sh --skip_system_tools true --skip_terraform_tools true --skip_misc_tools true
 ```
 
 ### Update Toolchain
 
 ```sh
-./libs/bash/run.sh --update true
+./libs/bash/install.sh --update true
 ```
 
 Note: `--skip_*_tools` and `--update` can be used together to update specific tool groups

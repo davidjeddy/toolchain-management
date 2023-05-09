@@ -1,7 +1,0 @@
-[
-  {
-    "queryName": "CodeBuild Project Encrypted With AWS Managed Key",
-    "severity": "HIGH",
-    "line": 35
-  }
-]

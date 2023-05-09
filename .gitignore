@@ -2,6 +2,9 @@
 .tmp
 !.tmp/.keep
 
+# ignore libraries we download from vendors
+libs/kics
+
 # Do not track archives
 .gz
 .zip
