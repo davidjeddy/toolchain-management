@@ -1,5 +1,14 @@
 #!/bin/bash -e
 
+# usage: /path/to/script/connect_to_ecs_task.sh
+#        /path/to/script/connect_to_ecs_task.sh -l
+#        /path/to/script/connect_to_ecs_task.sh gateway
+#        /path/to/script/connect_to_ecs_task.sh -s hazelcast
+# example: /path/to/script/connect_to_ecs_task.sh -c "snd-connect-shared-ecs-nygw" gateway
+# example: /path/to/script/connect_to_ecs_task.sh -s "eu-west-1" gateway
+# example: /path/to/script/connect_to_ecs_task.sh -c "snd-connect-shared-ecs-nygw" -r "eu-west-1" gateway
+# example: /path/to/script/connect_to_ecs_task.sh --cluster_name "snd-connect-shared-ecs-nygw" --region_name "eu-west-1" gateway
+
 ## Default values
 declare DEFAULT_CLUSTER_NAME
 declare DEFAULT_REGION_NAME
@@ -21,6 +30,7 @@ declare LIST_TASK_ARN
 declare NUMBER_OF_ARNS
 declare TASK_ARN
 declare TASK_ID
+declare LIST_SERVICES
 declare CHOICE
 
 # functions
@@ -32,6 +42,7 @@ function print_usage() {
   printf "\n"
   printf "Options:\n"
   printf "  <service_name>                        the ECS service name\n"
+  printf "  -l, --list_services                   list the services available and exit\n"
   printf "  -c, --cluster_name <cluster_name>     ECS cluster name (default: %s)\n" "${DEFAULT_CLUSTER_NAME}"
   printf "  -r, --region_name <region_name>       AWS region name  (default: aws cli configured region. Currently: %s)\n" "${DEFAULT_REGION_NAME}"
   printf "  -s, --select_task                     when there are multiple tasks, list them for user to select (default: %s)\n" "${DEFAULT_SELECT_TASK}"
@@ -42,15 +53,28 @@ function print_usage() {
 source get_cmd_options.sh
 
 # shellcheck disable=SC2034 # We use the value to call get_cmd_options
-SHORT_OPTS=("h" "c:" "r:" "s")
+SHORT_OPTS=("h" "l" "c:" "r:" "s")
 # shellcheck disable=SC2034 # We use the value to call get_cmd_options
-LONG_OPTS=("help" "cluster_name:" "region_name:" "select_task")
+LONG_OPTS=("help" "list_services" "cluster_name:" "region_name:" "select_task")
 # shellcheck disable=SC2034 # We use the value to call get_cmd_options
 CMD_LINE_ARGS=("$@")
 
 get_cmd_options SHORT_OPTS LONG_OPTS CMD_LINE_ARGS
 
 # execution logic
+if [[ "${LIST_SERVICES}" =~ "true" ]]; then
+  printf %s "$(aws ecs list-services \
+    --region "${REGION_NAME}" \
+    --cluster "${CLUSTER_NAME}" \
+    --output text)" | cut -d "/" -f 3
+  exit 0
+fi;
+
+if [[ "$SERVICE_NAME" == "" ]]; then
+  printf "ERR: no service_name provided. Exiting with error.\n"
+  print_usage
+  exit 1
+fi
 
 # execute ecs requests
 # shellcheck disable=SC2207
@@ -98,3 +122,4 @@ aws ecs execute-command \
   --command "/bin/sh" \
   --interactive \
   --task "${TASK_ID}"
+

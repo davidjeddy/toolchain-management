@@ -39,6 +39,7 @@ function print_usage() {
   printf "  -H, --db_host <db_host>               Database host name   (default: %s)\n" "${DEFAULT_DB_HOST}"
   printf "  -P, --db_port <db_port>               Database port number (default: %s)\n" "${DEFAULT_DB_PORT}"
   printf "  -l, --local_port <local_port>         Local port number    (default: %s)\n" "${DEFAULT_LOCAL_PORT}"
+  printf "  -h, --help                            print help and exit\n"
   printf "\n"
 }
 
@@ -52,6 +53,12 @@ LONG_OPTS=("help" "cluster_name:" "region_name:" "db_host:" "db_port:" "local_po
 CMD_LINE_ARGS=("$@")
 
 get_cmd_options SHORT_OPTS LONG_OPTS CMD_LINE_ARGS
+
+if [[ "$SERVICE_NAME" == "" ]]; then
+  printf "ERR: no service_name provided. Exiting with error.\n"
+  print_usage
+  exit 1
+fi
 
 # execute ecs requests
 
