@@ -121,7 +121,6 @@ function tgenv_and_terragrunt() {
         git clone https://github.com/tgenv/tgenv.git "$HOME/.tgenv"
         cd .tgenv || exit
         sudo ln -s ~/.tgenv/bin/* "$BIN_DIR" || true
-        tgenv install "$TG_VER"
     elif [[ -d "$HOME/.tgenv" && $TGENV_VER && "$UPDATE" == "true" ]]
     then
         printf "INFO: Updating tgenv.\n"
@@ -142,6 +141,7 @@ function tgenv_and_terragrunt() {
     fi
 
     printf "INFO: Installing Terragrunt via tgenv.\n"
+    tgenv install "$TG_VER"
     tgenv use "$TG_VER"
 }
 

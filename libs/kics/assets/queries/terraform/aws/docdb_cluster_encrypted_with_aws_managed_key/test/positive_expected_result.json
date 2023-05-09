@@ -1,7 +1,0 @@
-[
-  {
-    "queryName": "DOCDB Cluster Encrypted With AWS Managed Key",
-    "severity": "MEDIUM",
-    "line": 16
-  }
-]

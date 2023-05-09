@@ -1,7 +1,0 @@
-[
-  {
-    "queryName": "EBS Default Encryption Disabled",
-    "severity": "HIGH",
-    "line": 2
-  }
-]
