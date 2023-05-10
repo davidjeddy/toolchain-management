@@ -37,7 +37,7 @@ function golang_based_terraform_tools() {
 
         sudo install bin/kics "$BIN_DIR"
 
-        printf "INFO: Clean up KICS resources"
+        printf "INFO: Clean up KICS resources.\n"
         cd "$PROJECT_ROOT/.tmp" || exit 1
         rm -rf kics*
     fi
