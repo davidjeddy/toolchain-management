@@ -56,7 +56,7 @@ function install_goenv() {
         printf "INFO: Installing goenv to %s \n" "$HOME/.goenv"
         cd "$HOME" || exit 1
         rm -rf "$HOME/.goenv" || true
-        git clone "https://github.com/syndbg/goenv.git" "$HOME/.goenv"
+        git clone --quiet "https://github.com/syndbg/goenv.git" "$HOME/.goenv"
 
         # shellcheck disable=SC2143
         if [[ ! $(grep "export PATH=\$PATH:\$HOME/.goenv/bin" "$SHELL_PROFILE") ]]
@@ -103,7 +103,7 @@ function install_python3() {
         ./configure \
             --bindir="$BIN_DIR" \
             --enable-optimizations
-        sudo make altinstall
+        sudo make install
 
         {
             printf "INFO: Creating symlink from %s/python3.8 binary to %s/python3.\n" "$BIN_DIR" "$BIN_DIR"

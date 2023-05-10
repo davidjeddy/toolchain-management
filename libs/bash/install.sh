@@ -101,22 +101,23 @@ export SKIP_AWS_TOOLS
 export SKIP_MISC_TOOLS
 export SKIP_SYSTEM_TOOLS
 export SKIP_TERRAFORM_TOOLS
+export UPDATE
 
 ## output runtime configuration
 printf "INFO: Executing with the following argument configurations.\n"
-echo "ARCH: $ARCH"
+
 echo "ALTARCH: $ALTARCH"
+echo "ARCH: $ARCH"
 echo "BIN_DIR: $BIN_DIR"
+echo "ORIG_PWD: $ORIG_PWD"
 echo "PLATFORM: $PLATFORM"
 echo "PROJECT_ROOT: $PROJECT_ROOT"
-echo "ORIG_PWD: $ORIG_PWD"
 echo "SHELL_PROFILE: $SHELL_PROFILE"
-echo "UPDATE: $UPDATE"
-
-echo "SKIP_SYSTEM_TOOLS: $SKIP_SYSTEM_TOOLS"
 echo "SKIP_AWS_TOOLS: $SKIP_AWS_TOOLS"
-echo "SKIP_TERRAFORM_TOOLS: $SKIP_TERRAFORM_TOOLS"
 echo "SKIP_MISC_TOOLS: $SKIP_MISC_TOOLS"
+echo "SKIP_SYSTEM_TOOLS: $SKIP_SYSTEM_TOOLS"
+echo "SKIP_TERRAFORM_TOOLS: $SKIP_TERRAFORM_TOOLS"
+echo "UPDATE: $UPDATE"
 
 ## Execute
 

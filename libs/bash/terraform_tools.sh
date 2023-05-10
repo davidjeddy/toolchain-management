@@ -83,7 +83,7 @@ function tfenv_and_terraform() {
         printf "INFO: Installing tfenv.\n"
         cd "$HOME" || exit
         rm -rf "$HOME/.tfenv" || true
-        git clone https://github.com/tfutils/tfenv.git "$HOME/.tfenv"
+        git clone --quiet "https://github.com/tfutils/tfenv.git" "$HOME/.tfenv"
         cd .tfenv || exit
 
         sudo ln -sfn ~/.tfenv/bin/* "$BIN_DIR" || true
@@ -118,7 +118,7 @@ function tgenv_and_terragrunt() {
         printf "INFO: Installing tgenv.\n"
         cd "$HOME" || exit
         rm -rf "$HOME/.tgenv" || true
-        git clone https://github.com/tgenv/tgenv.git "$HOME/.tgenv"
+        git clone --quiet "https://github.com/tgenv/tgenv.git" "$HOME/.tgenv"
         cd .tgenv || exit
         sudo ln -s ~/.tgenv/bin/* "$BIN_DIR" || true
     elif [[ -d "$HOME/.tgenv" && $TGENV_VER && "$UPDATE" == "true" ]]
