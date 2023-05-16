@@ -113,7 +113,8 @@ function install_python3() {
             exit 1
         }
 
-        cd "../" || true
+        cd "../" || exit 1
+        sudo rm -rf Python*
     fi
 }
 
@@ -146,6 +147,7 @@ function install_pip3() {
 
         printf "INFO: Update pip3 via itself.\n"
         python3 -m pip install --upgrade pip
+        sudo rm -rf get-pip.py
     fi
 }
 
@@ -168,9 +170,6 @@ function install_system_tools() {
     install_goenv
     install_pip3
     install_python3
-
-    sudo rm -rf Python*
-    sudo rm -rf get-pip.py
 
     goenv version
     goenv exec go version
