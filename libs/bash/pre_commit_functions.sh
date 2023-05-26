@@ -71,7 +71,7 @@ function terraformCompliance() {
     kics scan \
         --no-progress \
         --cloud-provider "aws" \
-        --exclude-paths "./*/*" \
+        --exclude-paths "*" \
         --no-color \
         --path "./" \
         --queries-path "$PROJECT_ROOT/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
