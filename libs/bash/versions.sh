@@ -5,11 +5,14 @@
 # AWS tools
 declare AWSCLI_VER
 declare IPJTT_VER
+declare ONELOGIN_AWS_CLI_VER
 
 # Terraform tools
+declare BLAST_RADIUS_VER
 declare CHECKOV_VER
-declare KICS_VER
+declare GOENV_VER
 declare INFRACOST_VER
+declare KICS_VER
 declare TF_VER
 declare TFDOCS_VER
 declare TFENV_VER
@@ -18,7 +21,6 @@ declare TFSEC_VER
 declare TG_VER
 declare TGENV_VER
 declare TRSCAN_VER
-declare GOENV_VER
 
 # Misc tools
 declare PKR_VER
@@ -33,8 +35,12 @@ declare PYTHON_VER
 export AWSCLI_VER="2.9.13"
 ## https://github.com/flosell/iam-policy-json-to-terraform/releases
 export IPJTT_VER="1.8.2"
+## https://github.com/physera/onelogin-aws-cli
+export ONELOGIN_AWS_CLI_VER="0.1.19"
 
 # Terraform related tools
+## https://github.com/28mm/blast-radius
+export BLAST_RADIUS_VER="0.1.23"
 ## https://github.com/bridgecrewio/checkov/releases
 export CHECKOV_VER="2.3.28"
 ## https://github.com/infracost/infracost/releases
@@ -86,6 +92,7 @@ echo "PYTHON_VER: $PYTHON_VER"
 # AWS tools
 echo "AWSCLI_VER: $AWSCLI_VER"
 echo "IPJTT_VER: $IPJTT_VER"
+echo "ONELOGIN_AWS_CLI_VER: $ONELOGIN_AWS_CLI_VER"
 
 # Misc tools
 echo "PKR_VER: $PKR_VER"
@@ -97,6 +104,7 @@ echo "TGENV_VER: $TGENV_VER"
 echo "TG_VER: $TG_VER"
 
 # Terraform Compliance
+echo "BLAST_RADIUS_VER: $BLAST_RADIUS_VER"
 echo "INFRACOST_VER: $INFRACOST_VER"
 echo "KICS_VER: $KICS_VER"
 echo "TFDOCS_VER: $TFDOCS_VER"
