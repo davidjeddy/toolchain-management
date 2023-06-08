@@ -38,16 +38,30 @@ function yum_systems() {
     printf "INFO: Updating and installing system tools via yum.\n"
     sudo yum update -y
 
-    # shellcheck disable=SC2086
-    sudo yum install -y \
-        ca-certificates \
-        curl \
-        gnupg \
-        jq \
-        python3-distutils \
-        unzip \
-        yum-utils \
-        zlib-devel
+    if [[ $(cat "/etc/redhat-release") == *Fedora* ]]
+    then
+        # Fedora (Developer DWS Workstations Linux VM)
+        sudo yum install -y \
+            ca-certificates \
+            curl \
+            gnupg \
+            jq \
+            python3-distutils-extra \
+            unzip \
+            yum-utils \
+            zlib-devel
+    else
+        # Red Hat (Jenkins worker)
+        sudo yum install -y \
+            ca-certificates \
+            curl \
+            gnupg \
+            jq \
+            python3-distutils \
+            unzip \
+            yum-utils \
+            zlib-devel
+    fi
 }
 
 function install_goenv() {

@@ -21,6 +21,11 @@ ADD AWS CLI SSM plugin
 - build from source due to binary packages not following the wider community naming convention
 - https://github.com/aws/session-manager-plugin/archive/refs/tags/1.2.463.0.tar.gz
 
+## [0.11.0] - 2023-06-08
+
+- FIXED incorrect var reference to eval to install AWSCL
+- ADDED eval for Fedora vs Red Hat in system tool install
+
 ## [0.10.0] - 2023-03-15
 
 NOTE: This version required the removal of configuration in ~/.bash_profile if using previous versions.
