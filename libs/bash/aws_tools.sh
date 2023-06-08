@@ -23,10 +23,27 @@ function install_aws_tools() {
         rm -rf iam-policy-json-to-terraform*
     fi
 
+    # https://pypi.org/project/onelogin-aws-cli/
+    if [[ ! $(which onelogin-aws-cli) && "${ONELOGIN_AWS_CLI_VER}" || "$UPDATE" == "true" ]]
+    then
+        printf "INFO: Remove old onelogin-aws-cli if it exists.\n"
+        pip3 uninstall -y onelogin-aws-cli || true
+
+        # We always want the latest vesrsion of tools installed via pip3
+        printf "INFO: Installing onelogin-aws-cli compliance tool.\n"
+        # https://github.com/bridgecrewio/checkov
+        pip3 install -U onelogin-aws-cli=="$ONELOGIN_AWS_CLI_VER" --user
+
+        # Do diff distro's put the Python package bins in different locations?
+        # Why does this package name entry script different than the package name?
+        chmod +x "$HOME/.local/bin/onelogin-aws-login"
+    fi
+
     # output versions - grouped based on the syntax/alphabetical of the tool name
     printf "INFO: Output AWS tool versions.\n"
 
     echo "iam-policy-json-to-terraform $(iam-policy-json-to-terraform --version)"
+    echo "onelogin-aws-cli $(pip show onelogin-aws-cli)"
 
     aws --version
 }

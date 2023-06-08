@@ -48,7 +48,7 @@ function python_based_terraform_tools() {
     # shellcheck disable=SC2155
     export PATH=$PATH:/home/$(whoami)/.local/bin
 
-    if [[ ! $(which blast-radius) || "$UPDATE" == "true" ]]
+    if [[ ! $(which blast-radius) && "${BLAST_RADIUS_VER}" || "$UPDATE" == "true" ]]
     then
         printf "INFO: Remove old Blast Radius viz tool if it exists.\n"
         pip3 uninstall -y blastradius || true
@@ -56,10 +56,10 @@ function python_based_terraform_tools() {
         # We always want the latest vesrsion of tools installed via pip3
         printf "INFO: Installing Blast Radius viz tool.\n"
         # https://github.com/28mm/blast-radius
-        pip3 install -U blastradius --user
+        pip3 install -U blastradius=="$BLAST_RADIUS_VER" --user
 
         # Do diff distro's put the Python package bins in different locations?
-        chmod +x "$HOME/.local/bin/blast-radius"
+        chmod +x "$HOME/.local/bin/blast-radius" # Does nto publish version
     fi
 
     if [[ ! $(which checkov) && "${CHECKOV_VER}" || "$UPDATE" == "true" ]]
@@ -215,7 +215,7 @@ function install_terraform_tools() {
     # output versions - grouped based on the syntax/alphabetical of the tool name
     printf "INFO: Output Terraform tool versions.\n"
 
-    echo "blast-radius --latest version available--"
+    echo "blast-radius $(pip show blast-radius)"
     echo "checkov $(checkov --version)"
     echo "tfsec $(tfsec --version)"
 
