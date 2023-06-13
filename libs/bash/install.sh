@@ -74,10 +74,8 @@ then
     PLATFORM="linux"
 fi
 
-if [[ "$PROJECT_ROOT" == "" ]]
-then
-    PROJECT_ROOT=$(git rev-parse --show-toplevel)
-fi
+# ALWAYS set PROJECT_ROOT to local project path
+PROJECT_ROOT=$(git rev-parse --show-toplevel)
 
 if [[ "$SHELL_PROFILE" == "" ]]
 then
