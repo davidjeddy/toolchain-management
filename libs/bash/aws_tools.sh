@@ -27,12 +27,12 @@ function install_aws_tools() {
     if [[ ! $(which onelogin-aws-cli) && "${ONELOGIN_AWS_CLI_VER}" || "$UPDATE" == "true" ]]
     then
         printf "INFO: Remove old onelogin-aws-cli if it exists.\n"
-        pip3 uninstall -y onelogin-aws-cli || true
+        pip uninstall -y onelogin-aws-cli || true
 
-        # We always want the latest vesrsion of tools installed via pip3
+        # We always want the latest vesrsion of tools installed via pip
         printf "INFO: Installing onelogin-aws-cli compliance tool.\n"
         # https://github.com/bridgecrewio/checkov
-        pip3 install -U onelogin-aws-cli=="$ONELOGIN_AWS_CLI_VER" --user
+        pip install -U onelogin-aws-cli=="$ONELOGIN_AWS_CLI_VER" --user
 
         # Do diff distro's put the Python package bins in different locations?
         # Why does this package name entry script different than the package name?

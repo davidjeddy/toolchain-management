@@ -48,29 +48,15 @@ function python_based_terraform_tools() {
     # shellcheck disable=SC2155
     export PATH=$PATH:/home/$(whoami)/.local/bin
 
-    if [[ ! $(which blast-radius) && "${BLAST_RADIUS_VER}" || "$UPDATE" == "true" ]]
-    then
-        printf "INFO: Remove old Blast Radius viz tool if it exists.\n"
-        pip3 uninstall -y blastradius || true
-
-        # We always want the latest vesrsion of tools installed via pip3
-        printf "INFO: Installing Blast Radius viz tool.\n"
-        # https://github.com/28mm/blast-radius
-        pip3 install -U blastradius=="$BLAST_RADIUS_VER" --user
-
-        # Do diff distro's put the Python package bins in different locations?
-        chmod +x "$HOME/.local/bin/blast-radius" # Does nto publish version
-    fi
-
     if [[ ! $(which checkov) && "${CHECKOV_VER}" || "$UPDATE" == "true" ]]
     then
         printf "INFO: Remove old Checkovl if it exists.\n"
-        pip3 uninstall -y checkov || true
+        pip uninstall -y checkov || true
 
-        # We always want the latest vesrsion of tools installed via pip3
+        # We always want the latest vesrsion of tools installed via pip
         printf "INFO: Installing Checkov compliance tool.\n"
         # https://github.com/bridgecrewio/checkov
-        pip3 install -U checkov=="$CHECKOV_VER" --user
+        pip install -U checkov=="$CHECKOV_VER" --user
 
         # Do diff distro's put the Python package bins in different locations?
         chmod +x "$HOME/.local/bin/checkov"
