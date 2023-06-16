@@ -132,34 +132,34 @@ function install_python3() {
     fi
 }
 
-function install_pip3() {
+function install_pip() {
 
-    printf "INFO: Processing pip3 system tools.\n"
+    printf "INFO: Processing pip system tools.\n"
 
-    if [[ ( ! $(which pip3) ) || "$UPDATE" == "true" ]]
+    if [[ ( ! $(which pip) ) || "$UPDATE" == "true" ]]
     then
-        printf "INFO: pip3 package manager not detected, installing.\n"
+        printf "INFO: pip package manager not detected, installing.\n"
         # Because pipelines do not have a full shell, be sure to include the PATH to the Python binaries
         # shellcheck disable=SC2155
         export PATH=$PATH:/home/$(whoami)/.local/bin
 
-        # For Python3/pip3 site-packages at the user scope
+        # For Python3/pip site-packages at the user scope
         # shellcheck disable=SC2143
         if [[ ! $(grep "export PATH=\$PATH:\$HOME/.local/bin" "$SHELL_PROFILE") ]]
         then
-            printf "INFO: Add pip3 site-package to PATH"
+            printf "INFO: Add pip site-package to PATH"
             echo "export PATH=\$PATH:\$HOME/.local/bin" >> "$SHELL_PROFILE"
             #shellcheck disable=SC1090
             source "$SHELL_PROFILE"
         fi
 
-        printf "INFO: Download pip3 installer.\n"
+        printf "INFO: Download pip installer.\n"
         curl -sL --show-error "https://bootstrap.pypa.io/get-pip.py" -o get-pip.py
 
-        printf "INFO: Install pip3 via python3.\n"
+        printf "INFO: Install pip via python3.\n"
         python3 get-pip.py
 
-        printf "INFO: Update pip3 via itself.\n"
+        printf "INFO: Update pip via itself.\n"
         python3 -m pip install --upgrade pip
         sudo rm -rf get-pip.py
     fi
@@ -182,11 +182,11 @@ function install_system_tools() {
     fi
 
     install_goenv
-    install_pip3
+    install_pip
     install_python3
 
     goenv version
     goenv exec go version
-    pip3 --version
+    pip --version
     python3 --version
 }
