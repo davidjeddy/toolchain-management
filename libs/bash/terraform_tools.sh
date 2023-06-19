@@ -201,7 +201,6 @@ function install_terraform_tools() {
     # output versions - grouped based on the syntax/alphabetical of the tool name
     printf "INFO: Output Terraform tool versions.\n"
 
-    echo "blast-radius $(pip show blast-radius)"
     echo "checkov $(checkov --version)"
     echo "tfsec $(tfsec --version)"
 

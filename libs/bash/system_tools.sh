@@ -42,10 +42,13 @@ function yum_systems() {
     then
         # Fedora (Developer DWS Workstations Linux VM)
         sudo yum install -y \
+            bzip2 \
+            bzip2-devel \
             ca-certificates \
             curl \
             gnupg \
             jq \
+            libffi-devel \
             python3-distutils-extra \
             unzip \
             yum-utils \
@@ -53,10 +56,13 @@ function yum_systems() {
     else
         # Red Hat (Jenkins worker)
         sudo yum install -y \
+            bzip2 \
+            bzip2-devel \
             ca-certificates \
             curl \
             gnupg \
             jq \
+            libffi-devel \
             python3-distutils \
             unzip \
             yum-utils \
@@ -175,6 +181,8 @@ function install_system_tools() {
     elif [[ $(which yum) ]]
     then
         yum_systems
+        # Needed for some PIP packages the build correctly
+        pip install Cmake
     else
         printf "CRITICAL: Unable to determine system package manager, exiting.\n"
         printf "INFO: Please consider submitting an update adding your distributions package manager.\n"

@@ -12,6 +12,16 @@
 # ./libs/bash/install.sh --skip_aws_tools true --update true
 # ./libs/bash/install.sh --skip_system_tools true --skip_terraform_tools true --skip_misc_tools true
 
+# checks
+
+## do NOT run script as root
+
+if [ "$EUID" -eq 0 ]
+then
+  echo "Do not run the install script as root."
+  exit 1
+fi
+
 # cli arg parsing
 
 ## Internal VARs
