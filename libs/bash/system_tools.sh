@@ -13,6 +13,7 @@ function apt_systems() {
         jq \
         libbz2-dev \
         parallel \
+        podman \
         unzip
 
     # source https://number1.co.za/how-to-build-python-3-from-source-on-ubuntu-22-04/
@@ -30,6 +31,7 @@ function apt_systems() {
         libsqlite3-dev \
         libssl-dev \
         parallel \
+        podman \
         python3-distutils \
         tk-dev
 }
