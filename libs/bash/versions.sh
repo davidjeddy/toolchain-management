@@ -26,6 +26,7 @@ declare PKR_VER
 
 # System Tools
 declare PYTHON_VER
+declare XEOL_VER
 
 # set var values
 
@@ -77,6 +78,8 @@ export GOENV_VER="2.0.6"
 export GO_VER="1.18.2"
 ## https://go.dev/dl/
 export PYTHON_VER="3.8.12"
+## https://github.com/xeol-io/xeol/tags
+export XEOL_VER="0.3.3"
 
 # output versions to end-user visibility
 printf "INFO: Output tool target versions.\n"
@@ -85,6 +88,7 @@ printf "INFO: Output tool target versions.\n"
 echo "GOENV_VER: $GOENV_VER"
 echo "GO_VER: $GO_VER"
 echo "PYTHON_VER: $PYTHON_VER"
+echo "XEOL_VER: $XEOL_VER"
 
 # AWS tools
 echo "AWSCLI_VER: $AWSCLI_VER"
