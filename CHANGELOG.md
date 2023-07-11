@@ -21,6 +21,18 @@ ADD AWS CLI SSM plugin
 - build from source due to binary packages not following the wider community naming convention
 - https://github.com/aws/session-manager-plugin/archive/refs/tags/1.2.463.0.tar.gz
 
+## [0.17.0] - 2023-07-11
+
+- ADD podman system tool
+
+## [0.16.0] - 2023-07-11
+
+- ADD xeol system tool
+
+## [0.15.0] - 2023-07-11
+
+- ADD parallel system tool
+
 ## [0.11.0] - 2023-06-08
 
 - FIXED incorrect var reference to eval to install AWSCL
