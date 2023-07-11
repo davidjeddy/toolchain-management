@@ -13,6 +13,7 @@ function apt_systems() {
         jq \
         libbz2-dev \
         parallel \
+        podman \
         unzip
 
     # source https://number1.co.za/how-to-build-python-3-from-source-on-ubuntu-22-04/
@@ -30,8 +31,18 @@ function apt_systems() {
         libsqlite3-dev \
         libssl-dev \
         parallel \
+        podman \
         python3-distutils \
         tk-dev
+}
+
+# NOTE: Use curl installs as a last resort as we can not always validate the security of the install.sh from the vendor.
+function curl_installers() {
+    if [[ ( ! $(which xeol) && $XEOL_VER) || "$UPDATE" == "true" ]]
+    then
+        printf "INFO: Installing xeol.\n"
+        curl -sSfL https://raw.githubusercontent.com/xeol-io/xeol/main/install.sh | sudo sh -s -- -b "$BIN_DIR" "v$XEOL_VER"
+    fi
 }
 
 function yum_systems() {
@@ -189,6 +200,8 @@ function install_system_tools() {
         exit 1
     fi
 
+    curl_installers
+
     install_goenv
     install_pip
     install_python3
@@ -197,4 +210,6 @@ function install_system_tools() {
     goenv exec go version
     pip --version
     python3 --version
+
+    xeol version
 }
