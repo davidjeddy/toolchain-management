@@ -19,6 +19,7 @@ pipeline {
     }
     options {
         timestamps ()
+        timeout(time: 15, unit: 'MINUTES')
     }
     // source https://stackoverflow.com/questions/36651432/how-to-implement-post-build-stage-using-jenkins-pipeline-plug-in
     // source https://plugins.jenkins.io/gitlab-plugin/
