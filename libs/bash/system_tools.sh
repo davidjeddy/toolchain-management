@@ -61,6 +61,7 @@ function yum_systems() {
             jq \
             libffi-devel \
             parallel \
+            podman \
             python3-distutils-extra \
             unzip \
             yum-utils \
@@ -76,6 +77,7 @@ function yum_systems() {
             jq \
             libffi-devel \
             parallel \
+            podman \
             python3-distutils \
             unzip \
             yum-utils \
