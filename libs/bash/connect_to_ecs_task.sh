@@ -122,4 +122,3 @@ aws ecs execute-command \
   --command "/bin/sh" \
   --interactive \
   --task "${TASK_ID}"
-

@@ -19,3 +19,18 @@ An error occurred (AccessDenied) when calling the GetSessionToken operation: Mul
 **Fix** Check that you are providing the ARN of the TOKEN DEVICE, NOT the ARN of the IAM user.
 
 **Fix** Remove and re-create IAM user MFA device. Be sure to not mix the new and old device on Virtual OTP or physical device.
+
+-----
+
+**Error**
+
+Also:   org.jenkinsci.plugins.workflow.actions.ErrorAction$ErrorId: bd09a9fb-434a-4fb0-bd98-2bce7301e0a8
+hudson.remoting.ProxyException: groovy.lang.MissingPropertyException: No such property: gitlabConnectionName for class: WorkflowScript
+
+**When**
+
+Executing pipeline
+
+**Fix**
+
+Ensure Jenkinsfile contains `gitlabConnectionName` variable and valid value.

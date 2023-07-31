@@ -20,22 +20,31 @@ ADD AWS CLI SSM plugin
 - https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html#install-plugin-linux
 - build from source due to binary packages not following the wider community naming convention
 - https://github.com/aws/session-manager-plugin/archive/refs/tags/1.2.463.0.tar.gz
+- Add additional container tools such as containerd, dive, kubtctl, etc
+- Add PGP checking for binaries that make it available
 
-## [0.17.0] - 2023-07-11
+## [0.18.0] - 2023-07-31
 
-- ADD podman system tool
+- ADDED `podman`` to system tool for YUM (Fedora, RHEL)
+- ADDED timeout() to pipeline to trigger failure after 15mins
+- ADDED global var gitlab ConnectionName to Jenkinsfile
+- ADDED Slack notification when build is `fixed`
 
-## [0.16.0] - 2023-07-11
+## [0.17.0] - 2023-07
 
-- ADD xeol system tool
+- ADDED podman system tool for APT systems
 
-## [0.15.0] - 2023-07-11
+## [0.16.0] - 2023-07
 
-- ADD parallel system tool
+- ADDED xeol system tool
+
+## [0.15.0] - 2023-07
+
+- ADDED parallel system tool
 
 ## [0.11.0] - 2023-06-08
 
-- FIXED incorrect var reference to eval to install AWSCL
+- FIXED incorrect var reference to eval to install AWS CLI
 - ADDED eval for Fedora vs Red Hat in system tool install
 
 ## [0.10.0] - 2023-03-15
