@@ -1,5 +1,14 @@
 #!/bin/bash -e
 
+# usage: /path/to/script/forward_local_port.sh
+#        /path/to/script/forward_local_port.sh 
+#        /path/to/script/forward_local_port.sh keycloak
+#        /path/to/script/forward_local_port.sh -s keycloak
+# example: /path/to/script/forward_local_port.sh -c "snd-connect-shared-ecs-nygw" keycloak
+# example: /path/to/script/forward_local_port.sh -s "eu-west-1" gateway
+# example: /path/to/script/forward_local_port.sh -c "snd-connect-shared-ecs-nygw" -r "eu-central-1" keycloak
+# example: /path/to/script/forward_local_port.sh --cluster_name "snd-connect-shared-ecs-nygw" --region_name "eu-central-1" keycloak
+
 ## Default values
 declare DEFAULT_CLUSTER_NAME
 declare DEFAULT_REGION_NAME
@@ -7,7 +16,7 @@ declare DEFAULT_DB_HOST
 declare DEFAULT_DB_PORT
 declare DEFAULT_LOCAL_PORT
 DEFAULT_CLUSTER_NAME="snd-connect-shared-ecs-nygw"
-DEFAULT_REGION_NAME=$(aws configure get region)
+DEFAULT_REGION_NAME="eu-west-1"
 DEFAULT_DB_HOST="snd-connect-oracle-nygw.c1l2uooswrzx.eu-west-1.rds.amazonaws.com"
 DEFAULT_DB_PORT="1521"
 DEFAULT_LOCAL_PORT="1521"
@@ -35,7 +44,7 @@ function print_usage() {
   printf "Options:\n"
   printf "  <service_name>                        The ECS service name to be used as a jump server\n"
   printf "  -c, --cluster_name <cluster_name>     ECS cluster name     (default: %s)\n" "${DEFAULT_CLUSTER_NAME}"
-  printf "  -r, --region_name <region_name>       AWS region name      (default: aws cli configured region. Currently: %s)\n" "${DEFAULT_REGION_NAME}"
+  printf "  -r, --region_name <region_name>       AWS region name      (default: eu-west-1. Currently: %s)\n" "${DEFAULT_REGION_NAME}"
   printf "  -H, --db_host <db_host>               Database host name   (default: %s)\n" "${DEFAULT_DB_HOST}"
   printf "  -P, --db_port <db_port>               Database port number (default: %s)\n" "${DEFAULT_DB_PORT}"
   printf "  -l, --local_port <local_port>         Local port number    (default: %s)\n" "${DEFAULT_LOCAL_PORT}"

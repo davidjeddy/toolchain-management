@@ -159,7 +159,7 @@ function install_pip() {
 
     if [[ ( ! $(which pip) ) || "$UPDATE" == "true" ]]
     then
-        printf "INFO: pip package manager not detected, installing.\n"
+        printf "INFO: pip package manager not detected or update requested.\n"
         # Because pipelines do not have a full shell, be sure to include the PATH to the Python binaries
         # shellcheck disable=SC2155
         export PATH=$PATH:/home/$(whoami)/.local/bin
@@ -174,6 +174,9 @@ function install_pip() {
             source "$SHELL_PROFILE"
         fi
 
+        printf "INFO: Removing existing site-packages at %s\n" "/home/$(whoami)/.local/lib/python$PYTHON_MINOR_VER/site-packages"
+        rm -rf "/home/$(whoami)/.local/lib/python$PYTHON_MINOR_VER/site-packages"
+
         printf "INFO: Download pip installer.\n"
         curl -sL --show-error "https://bootstrap.pypa.io/get-pip.py" -o get-pip.py
 
@@ -181,7 +184,8 @@ function install_pip() {
         python3 get-pip.py
 
         printf "INFO: Update pip via itself.\n"
-        python3 -m pip install --upgrade pip
+
+        python3 -m pip install --upgrade --force-reinstall pip
         sudo rm -rf get-pip.py
     fi
 }
@@ -207,8 +211,10 @@ function install_system_tools() {
     curl_installers
 
     install_goenv
-    install_pip
+
+    # python before pip
     install_python3
+    install_pip
 
     goenv version
     goenv exec go version

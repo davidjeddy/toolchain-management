@@ -5,9 +5,12 @@ import com.ingenico.epayments.ci.common.PipelineCommon
 import com.ingenico.epayments.ci.common.Slack
 
 // String var config
-String gitBranch            = 'main'
+String gitlabApiToken       = 'jenkins-user-gitlab-test-api-token'
 String gitlabConnectionName = 'gitlab-test-igdcs'
-String gitRepoUrl           = 'git@'+ env.GITLAB_HOST + ':cicd/terraform/tools/toolchain-management.git'
+String gitlabProjectId      = 3440
+String gitlabProjectPath    = 'cicd/terraform/tools/toolchain-management/-/tree'
+
+String gitSSHCreds          = 'jenkins-gitlab-test-igdcs'
 String slackChannel         = 'nl-pros-centaurus-squad-releases'
 String workerNode           = 'bambora-aws-slave-terraform'
 
@@ -68,12 +71,39 @@ pipeline {
         }
     }
     stages {
-        stage('Git: checkout') {
+        stage('Print ENV VARs') {
             steps {
-                script {
-                    pipelineCommon = new PipelineCommon(steps, env)
-                    pipelineCommon.gitCheckout(gitRepoUrl, ".", gitBranch, env.GITLAB_CREDENTIALSID)
+                sh '''
+                    echo "INFO: Printing ENV VARs"
+                    printenv | sort
+                '''
+            }
+        }
+        stage('Notification') {
+            steps {
+                withCredentials([string(
+                    credentialsId:  gitlabApiToken,
+                    variable:       'gitlabPat'
+                )]) {
+                    sh '''
+                        echo "INFO: Build link posted to GitLab commit"
+                        NOTE_BODY="Pipeline build: ${BUILD_URL}console"
+                        printf $NOTE_BODY
+                        curl \
+                            --form "note=${NOTE_BODY}" \
+                            --header "PRIVATE-TOKEN: ''' +  env.gitlabPat + '''" \
+                            --request POST \
+                            "https://${GITLAB_HOST}/api/v4/projects/'''+gitlabProjectId+'''/repository/commits/${GIT_COMMIT}/comments"
+                    '''
                 }
+            }
+        }
+        stage('Git Checkout') {
+            steps {
+                echo "INFO: Checkout main branch"
+                git credentialsId: gitSSHCreds,
+                    url: env.GIT_URL,
+                    branch: env.BRANCH_NAME
             }
         }
         // This stage must be first to ensure system packages and language runtimes are availabe

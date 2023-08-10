@@ -8,3 +8,6 @@ libs/kics
 # Do not track archives
 .gz
 .zip
+
+# Misc files
+SCRATCH.md
