@@ -14,7 +14,7 @@ declare DEFAULT_CLUSTER_NAME
 declare DEFAULT_REGION_NAME
 declare DEFAULT_SELECT_TASK
 DEFAULT_CLUSTER_NAME="snd-connect-shared-ecs-nygw"
-DEFAULT_REGION_NAME=$(aws configure get region)
+DEFAULT_REGION_NAME="eu-west-1"
 DEFAULT_SELECT_TASK="false"
 
 ## Internal VARs
@@ -44,7 +44,7 @@ function print_usage() {
   printf "  <service_name>                        the ECS service name\n"
   printf "  -l, --list_services                   list the services available and exit\n"
   printf "  -c, --cluster_name <cluster_name>     ECS cluster name (default: %s)\n" "${DEFAULT_CLUSTER_NAME}"
-  printf "  -r, --region_name <region_name>       AWS region name  (default: aws cli configured region. Currently: %s)\n" "${DEFAULT_REGION_NAME}"
+  printf "  -r, --region_name <region_name>       AWS region name  (default: eu-west-1. Currently: %s)\n" "${DEFAULT_REGION_NAME}"
   printf "  -s, --select_task                     when there are multiple tasks, list them for user to select (default: %s)\n" "${DEFAULT_SELECT_TASK}"
   printf "  -h, --help                            print help and exit\n"
   printf "\n"

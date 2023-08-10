@@ -14,7 +14,7 @@ declare DEFAULT_CLUSTER_NAME
 declare DEFAULT_REGION_NAME
 declare DEFAULT_SELECT_TASK
 DEFAULT_CLUSTER_NAME="snd-connect-shared-ecs-nygw"
-DEFAULT_REGION_NAME=$(aws configure get region)
+DEFAULT_REGION_NAME="eu-west-1"
 DEFAULT_SELECT_TASK="false"
 
 ## Internal VARs
