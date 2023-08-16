@@ -87,7 +87,7 @@ pipeline {
                 )]) {
                     sh '''
                         echo "INFO: Build link posted to GitLab commit"
-                        NOTE_BODY="Pipeline build: ${BUILD_URL}console"
+                        NOTE_BODY="# Pipeline build\n${BUILD_URL}console"
                         printf $NOTE_BODY
                         curl \
                             --form "note=${NOTE_BODY}" \

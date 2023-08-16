@@ -143,20 +143,16 @@ function binary_based_tools() {
         rm -rf terrascan*
     fi
 
-    if [[ ( ! $(which tfsec) && "$TFSEC_VER" ) || "$UPDATE" = "true" ]]
+    if [[ ( ! $(which trivy) && "$TRIVY_VER" ) || "$UPDATE" = "true" ]]
     then
-        printf "INFO: Installing tfsec.\n"
-        curl -sL --show-error "https://github.com/liamg/tfsec/releases/download/v$TFSEC_VER/tfsec-$PLATFORM-$ARCH" -o "tfsec"
-        # no unpacking needed, the download is a binary
-        sudo rm -rf "$BIN_DIR/tfsec" || true
-        sudo install --target-directory="$BIN_DIR" tfsec
-        rm -rf tfsec*
+        printf "INFO: Installing trivy (tfsec successor).\n"
+        sudo rpm --install --replacepkgs "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VER}/trivy_${TRIVY_VER}_Linux-64bit.rpm"
     fi
 
     if [[ ( ! $(which infracost) && "$INFRACOST_VER" ) || "$UPDATE" = "true" ]]
     then
         printf "INFO: Installing infracost.\n"
-        curl -sL --show-error "https://github.com/infracost/infracost/releases/download/v$INFRACOST_VER/infracost-$PLATFORM-$ARCH.tar.gz" -o "infracost.tar.gz"
+        curl -sL --show-error "https://github.com/infracost/infracost/releases/download/v${INFRACOST_VER}/infracost-${PLATFORM}-${ARCH}.tar.gz" -o "infracost.tar.gz"
         tar -xf infracost.tar.gz
         mv "infracost-$PLATFORM-$ARCH" infracost || exit 1
         sudo rm -rf "$BIN_DIR/infracost" || true
@@ -168,7 +164,7 @@ function binary_based_tools() {
     then
         # Must use {} around PLATFORM else Bash thinks varitable variable is presetn
         printf "INFO: Installing tflint.\n"
-        curl -sL --show-error "https://github.com/terraform-linters/tflint/releases/download/v$TFLINT_VER/tflint_${PLATFORM}_$ARCH.zip" -o "tflint.zip"
+        curl -sL --show-error "https://github.com/terraform-linters/tflint/releases/download/v${TFLINT_VER}/tflint_${PLATFORM}_${ARCH}.zip" -o "tflint.zip"
         unzip -qq "tflint.zip"
         sudo rm -rf "$BIN_DIR/tflint" || true
         sudo install --target-directory="$BIN_DIR" tflint
@@ -178,7 +174,7 @@ function binary_based_tools() {
     if [[ ( ! $(which terraform-docs) && "$TFDOCS_VER" ) || "$UPDATE" = "true" ]]
     then
         printf "INFO: Installing terraform-docs.\n"
-        curl -sL --show-error "https://github.com/terraform-docs/terraform-docs/releases/download/v$TFDOCS_VER/terraform-docs-v$TFDOCS_VER-$PLATFORM-$ARCH.tar.gz" -o "terraform-docs.tar.gz"
+        curl -sL --show-error "https://github.com/terraform-docs/terraform-docs/releases/download/v${TFDOCS_VER}/terraform-docs-v${TFDOCS_VER}-${PLATFORM}-${ARCH}.tar.gz" -o "terraform-docs.tar.gz"
         tar -xf terraform-docs.tar.gz terraform-docs
         sudo rm -rf "$BIN_DIR/terraform-docs" || true
         sudo install --target-directory="$BIN_DIR" terraform-docs
@@ -202,7 +198,7 @@ function install_terraform_tools() {
     printf "INFO: Output Terraform tool versions.\n"
 
     echo "checkov $(checkov --version)"
-    echo "tfsec $(tfsec --version)"
+    trivy --version
 
     echo "terrascan $(terrascan version)"
 
