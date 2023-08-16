@@ -64,8 +64,8 @@ function terraformCompliance() {
     # printf "INFO: terrascan...\n"
     # terrascan scan --iac-type terraform --non-recursive
 
-    printf "INFO: tfsec...\n"
-    tfsec . --concise-output --exclude-downloaded-modules --no-color
+    printf "INFO: trivy...\n"
+    trivy . --concise-output --exclude-downloaded-modules --no-color
 
     printf "INFO: kics (Takes 15 to 30 seconds, please wait)...\n"
     kics scan \

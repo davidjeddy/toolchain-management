@@ -23,6 +23,12 @@ ADD AWS CLI SSM plugin
 - Add additional container tools such as containerd, dive, kubtctl, etc
 - Add PGP checking for binaries that make it available
 
+## [0.19.0] - 2023-08-11
+
+- ADDED `trivy`
+- REMOVED `trivy`
+- UPDATED all other tools to latest release version
+
 ## [0.18.0] - 2023-07-31
 
 - ADDED `podman`` to system tool for YUM (Fedora, RHEL)
