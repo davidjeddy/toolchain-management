@@ -23,43 +23,85 @@ ADD AWS CLI SSM plugin
 - Add additional container tools such as containerd, dive, kubtctl, etc
 - Add PGP checking for binaries that make it available
 
+## [0.20.0] - 2023-08-25
+
+### Added
+
+- ./libs/bash/bambora_onelogin_aws.sh
+
+### FIXED
+
+- ./docs/CHANGELOG.md formatting
+
 ## [0.19.0] - 2023-08-11
 
-- ADDED `trivy`
-- REMOVED `trivy`
-- UPDATED all other tools to latest release version
+### Added
+
+- trivy
+
+### Fixed
+
+- all other tools to latest release version
+
+### Removed
+
+- tfsec
 
 ## [0.18.0] - 2023-07-31
 
-- ADDED `podman`` to system tool for YUM (Fedora, RHEL)
-- ADDED timeout() to pipeline to trigger failure after 15mins
-- ADDED global var gitlab ConnectionName to Jenkinsfile
-- ADDED Slack notification when build is `fixed`
+### Added
+
+- `podman`` to system tool for YUM (Fedora, RHEL)
+- timeout() to pipeline to trigger failure after 15mins
+- global var gitlab ConnectionName to Jenkinsfile
+- Slack notification when build is `fixed`
 
 ## [0.17.0] - 2023-07
 
-- ADDED podman system tool for APT systems
+### Added
+
+- podman system tool for APT systems
 
 ## [0.16.0] - 2023-07
 
-- ADDED xeol system tool
+### Added
+
+-  xeol system tool
 
 ## [0.15.0] - 2023-07
 
-- ADDED parallel system tool
+### Added
+
+-  parallel system tool
 
 ## [0.11.0] - 2023-06-08
 
-- FIXED incorrect var reference to eval to install AWS CLI
-- ADDED eval for Fedora vs Red Hat in system tool install
+### Added
+
+- eval for Fedora vs Red Hat in system tool install
+
+### Fixed
+
+- incorrect var reference to eval to install AWS CLI
+
+### Removed
 
 ## [0.10.0] - 2023-03-15
 
-NOTE: This version required the removal of configuration in ~/.bash_profile if using previous versions.
+### Added
 
-- FIXED `goenv` install process
-- - UPDATED SHELL_PROFILE to use ~/.worldline_pps_profile
+- Everything before 0.10.0 lost to the sands of time
 
-## [0.9.0] - 2023-02-01 - Unreleased
+### Fixed
 
-- Everything before 0.10.0
+- `goenv` install process
+- SHELL_PROFILE to use ~/.worldline_pps_profile
+  - NOTE: This version required the removal of configuration in ~/.bash_profile if using previous versions.
+
+### Removed
+
+## [0.7.0]
+
+## [0.6.0]
+
+## [0.5.0]
