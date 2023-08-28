@@ -77,7 +77,7 @@ function tfenv_and_terraform() {
     then
         printf "INFO: Updating tfenv.\n"
         export PATH=$PATH:$HOME/.tfenv/bin
-        cd "$HOME/.tfenv" || exit 
+        cd "$HOME/.tfenv" || exit
         git reset master --hard
         git fetch --all --tags
         git checkout "v$TFENV_VER"
@@ -146,7 +146,14 @@ function binary_based_tools() {
     if [[ ( ! $(which trivy) && "$TRIVY_VER" ) || "$UPDATE" = "true" ]]
     then
         printf "INFO: Installing trivy (tfsec successor).\n"
-        sudo rpm --install --replacepkgs "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VER}/trivy_${TRIVY_VER}_Linux-64bit.rpm"
+        if [[ $(which apt) ]]
+        then
+          curl -sL --show-error "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VER}/trivy_${TRIVY_VER}_${PLATFORM^}-64bit.deb" -o "trivy.deb"
+          sudo apt install trivy.deb
+        else
+          sudo rpm --install --replacepkgs "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VER}/trivy_${TRIVY_VER}_${PLATFORM^}-64bit.rpm"
+        fi
+        rm -rf trivy*
     fi
 
     if [[ ( ! $(which infracost) && "$INFRACOST_VER" ) || "$UPDATE" = "true" ]]
