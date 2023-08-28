@@ -23,6 +23,12 @@ ADD AWS CLI SSM plugin
 - Add additional container tools such as containerd, dive, kubtctl, etc
 - Add PGP checking for binaries that make it available
 
+## [0.22.0] - 2023-08-28
+
+### Added
+
+- ./libs/bash/bambora_onelogin_Aws.sh to decrease authentication effort
+
 ## [0.21.0] - 2023-08-28
 
 ### Added

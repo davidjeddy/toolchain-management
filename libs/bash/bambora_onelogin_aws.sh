@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Recommended
+# - add an alias for reference to this : alias boa="~/Projects/Worldline/gitlab.test.igdcs.com/cicd/terraform/tools/toolchain-management/libs/bash/bambora_onelogin_aws.sh"
 # Usage
 # bambora_onelogin_aws.sh ${ACCOUNT} ${MFA_TOKEN}
 # Example
