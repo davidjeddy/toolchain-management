@@ -23,6 +23,16 @@ ADD AWS CLI SSM plugin
 - Add additional container tools such as containerd, dive, kubtctl, etc
 - Add PGP checking for binaries that make it available
 
+## [0.21.0] - 2023-08-28
+
+### Added
+
+- ./libs/bash/install_toolchain_management.sh as a shared resource for IaC module installation
+
+### Fix
+
+- ./libs/bash/install.sh reverted to install process for project
+
 ## [0.20.0] - 2023-08-25
 
 ### Added
