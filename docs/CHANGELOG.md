@@ -23,6 +23,13 @@ ADD AWS CLI SSM plugin
 - Add additional container tools such as containerd, dive, kubtctl, etc
 - Add PGP checking for binaries that make it available
 
+## [0.23.0] - 2023-08-28
+
+### Added
+
+-Added script to install trivy
+-Added script to install podman and builah for debian
+
 ## [0.22.0] - 2023-08-28
 
 ### Added
