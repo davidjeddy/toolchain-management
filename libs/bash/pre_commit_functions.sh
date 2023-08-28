@@ -21,13 +21,16 @@ function doNotAllowSharedModulesInsideDeploymentProjects() {
     fi
 
     # shellcheck disable=SC2002
-    MODULES_IN_USE=$(cat ".terraform/modules/modules.json" | jq '.Modules[] | .Source')
+    MODULE_SOURCES=$(cat ".terraform/modules/modules.json" | jq '.Modules[] | .Source')
 
-    for MODULE in $MODULES_IN_USE
+    for MODULE_SOURCE in $MODULE_SOURCES
     do
+        echo "INFO: Checking module source $MODULE_SOURCE"
+
         # https://linuxize.com/post/how-to-check-if-string-contains-substring-in-bash/
-        if [[ "$PROJECT_ROOT" == *"$MODULE"* ]]; then
-            echo "ERROR: It is not allowed to use shared modules placed inside a deployment project. Please use shared modules from a registry."
+        if [[ "$MODULE_SOURCE" =~ "file://"* ]]
+         then
+            echo "ERROR: It is not allowed to use shared modules placed inside a deployment project. Please use published modules from a registry."
             exit 1
         fi
     done
