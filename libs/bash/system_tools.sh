@@ -6,9 +6,6 @@ function apt_systems() {
     # https://gist.github.com/sebastianwebber/2c1e9c7df97e05479f22a0d13c00aeca
     # installl buildah in ubuntu
     # prereq packages
-    sudo apt-get update
-
-    sudo apt-get install -y wget ca-certificates gnupg2
 
     # add repo and signing key
     VERSION_ID=$(lsb_release -r | cut -f2)
@@ -33,6 +30,7 @@ function apt_systems() {
         ca-certificates \
         curl \
         gnupg \
+        gnupg2 \
         jq \
         libbz2-dev \
         parallel \
@@ -81,6 +79,7 @@ function yum_systems() {
             ca-certificates \
             curl \
             gnupg \
+            gnupg2 \
             jq \
             libffi-devel \
             parallel \
@@ -97,6 +96,7 @@ function yum_systems() {
             ca-certificates \
             curl \
             gnupg \
+            gnupg2 \
             jq \
             libffi-devel \
             parallel \

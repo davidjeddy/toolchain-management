@@ -23,6 +23,14 @@ ADD AWS CLI SSM plugin
 - Add additional container tools such as containerd, dive, kubtctl, etc
 - Add PGP checking for binaries that make it available
 
+## [0.24.0] - 2023-08-29
+
+### FIXED
+
+-Fixed installation of trivy package by putting current path prefix
+-Removed unwanted packages(ca-certification, gnupg2, wget) installation from apt-sytems
+-Added gnupg2 package installation for Fedora and Red Hat
+
 ## [0.23.0] - 2023-08-28
 
 ### Added
