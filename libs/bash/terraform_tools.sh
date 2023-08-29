@@ -149,7 +149,7 @@ function binary_based_tools() {
         if [[ $(which apt) ]]
         then
           curl -sL --show-error "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VER}/trivy_${TRIVY_VER}_${PLATFORM^}-64bit.deb" -o "trivy.deb"
-          sudo apt install trivy.deb
+          sudo apt install ./trivy.deb
         else
           sudo rpm --install --replacepkgs "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VER}/trivy_${TRIVY_VER}_${PLATFORM^}-64bit.rpm"
         fi
