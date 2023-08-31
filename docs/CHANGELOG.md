@@ -15,20 +15,28 @@ Action Keywords:
 
 ## [TODO]
 
-ADD AWS CLI SSM plugin
-
-- https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html#install-plugin-linux
 - build from source due to binary packages not following the wider community naming convention
 - https://github.com/aws/session-manager-plugin/archive/refs/tags/1.2.463.0.tar.gz
 - Add additional container tools such as containerd, dive, kubtctl, etc
 - Add PGP checking for binaries that make it available
 
+## [0.25.0] - 2023-08-31
+
+### Added
+
+- [AWS CLI SSM plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
+- Note regarding Python 3.x version due to host limitations
+
+### Fixed
+
+- Directory path to git pre-commit scripts for use by downstream projects
+
 ## [0.24.0] - 2023-08-29
 
-### FIXED
+### Fixed
 
 -Fixed installation of trivy package by putting current path prefix
--Removed unwanted packages(ca-certification, gnupg2, wget) installation from apt-sytems
+-Removed unwanted packages(ca-certification, gnupg2, wget) installation from apt-systems
 -Added gnupg2 package installation for Fedora and Red Hat
 
 ## [0.23.0] - 2023-08-28
@@ -68,7 +76,7 @@ ADD AWS CLI SSM plugin
 
 ### Added
 
-- trivy
+- trivy for yum based systems
 
 ### Fixed
 

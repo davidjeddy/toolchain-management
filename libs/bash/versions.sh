@@ -25,7 +25,7 @@ declare TRSCAN_VER
 declare PKR_VER
 
 # System Tools
-declare PYTHON_VER
+declare PYTHON_VER  
 declare XEOL_VER
 
 # set var values
@@ -74,8 +74,10 @@ export GOENV_VER="2.1.4"
 ### KICS only supports up to GO 1.18.2 as of 2023-03-10
 export GO_VER="1.18.2"
 ## https://www.python.org/downloads/
-export PYTHON_VER="3.10.11"
-export PYTHON_MINOR_VER="3.10"
+# DO NOT CHANGE THIS until after the jenkins worker is updated paste RHEL 7.9
+export PYTHON_VER="3.8.18"
+export PYTHON_MINOR_VER="3.8"
+export PYTHON_MAJOR_VER="3"
 ## https://github.com/xeol-io/xeol/tags
 export XEOL_VER="0.6.0"
 

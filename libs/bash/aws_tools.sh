@@ -12,6 +12,15 @@ function install_aws_tools() {
         unzip -qq "awscliv2.zip"
         sudo ./aws/install -b "$BIN_DIR" || sudo ./aws/install -b "$BIN_DIR" --update
         rm -rf aws*
+
+        # https://stackoverflow.com/questions/12806176/checking-for-installed-packages-and-if-not-found-install
+        # shellcheck disable=SC2126
+        if [[ $(which yum) && $(yum list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) -eq 1 ]]
+        then
+            echo "AWS CLI session-manager-plugin installed";
+        else
+            sudo yum install -y https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm
+        fi
     fi
 
     # assitant tools

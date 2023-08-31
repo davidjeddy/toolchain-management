@@ -51,7 +51,7 @@ fi
 ## functions
 
 # shellcheck disable=1091
-source "${PROJECT_ROOT}/libs/bash/pre_commit_functions.sh"
+source "${PROJECT_ROOT}/.tmp/toolchain-management/libs/bash/pre_commit_functions.sh"
 
 ## logic
 
