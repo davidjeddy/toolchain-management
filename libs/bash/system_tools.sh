@@ -29,6 +29,8 @@ function apt_systems() {
         buildah \
         ca-certificates \
         curl \
+        gcc \
+        gcc-c++ \
         gnupg \
         gnupg2 \
         jq \
@@ -78,6 +80,8 @@ function yum_systems() {
             bzip2-devel \
             ca-certificates \
             curl \
+            gcc \
+            gcc-c++ \
             gnupg \
             gnupg2 \
             jq \
@@ -95,6 +99,8 @@ function yum_systems() {
             bzip2-devel \
             ca-certificates \
             curl \
+            gcc \
+            gcc-c++ \
             gnupg \
             gnupg2 \
             jq \
@@ -158,16 +164,15 @@ function install_python3() {
         curl -sL --show-error "https://www.python.org/ftp/python/$PYTHON_VER/Python-$PYTHON_VER.tgz" -o "Python-$PYTHON_VER.tgz"
         tar xzf "Python-$PYTHON_VER.tgz"
         cd "Python-$PYTHON_VER" || exit 1
-        ./configure \
-            --bindir="$BIN_DIR" \
-            --enable-optimizations
+        ./configure --bindir="$BIN_DIR"
+        sudo make clean || true
         sudo make install
 
         {
-            printf "INFO: Creating symlink from %s/python3.8 binary to %s/python3.\n" "$BIN_DIR" "$BIN_DIR"
-            sudo ln -sfn "$BIN_DIR/python3.8" "$BIN_DIR/python3"
+            printf "INFO: Creating symlink from %s/python3.8 binary to %s/python%s.\n" "$BIN_DIR" "$BIN_DIR" "$PYTHON_MAJOR_VER"
+            sudo ln -sfn "$BIN_DIR/python${PYTHON_MINOR_VER}" "$BIN_DIR/python${PYTHON_MAJOR_VER}"
         } || {
-            printf "CRITICAL: Could NOT create symlink from %s/python3.8 to %s/python3. Exiting with error" "$BIN_DIR" "$BIN_DIR"
+            printf "CRITICAL: Could NOT create symlink from %s/python%s to %s/python%s. Exiting with error" "$BIN_DIR" "$PYTHON_MAJOR_VER" "$BIN_DIR" "$PYTHON_MINOR_VER"
             exit 1
         }
 
@@ -183,9 +188,6 @@ function install_pip() {
     if [[ ( ! $(which pip) ) || "$UPDATE" == "true" ]]
     then
         printf "INFO: pip package manager not detected or update requested.\n"
-        # Because pipelines do not have a full shell, be sure to include the PATH to the Python binaries
-        # shellcheck disable=SC2155
-        export PATH=$PATH:/home/$(whoami)/.local/bin
 
         # For Python3/pip site-packages at the user scope
         # shellcheck disable=SC2143

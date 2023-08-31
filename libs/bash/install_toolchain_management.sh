@@ -49,7 +49,7 @@ then
     cd "$PROJECT_ROOT/.tmp/toolchain-management" || exit 1
 
     # shellcheck disable=1091
-    source "libs/bash/versions.sh"
+    source "$PROJECT_ROOT/.tmp/toolchain-management/libs/bash/versions.sh"
     printenv | sort
 
     printf "INFO: Installing KICS query library.\n"

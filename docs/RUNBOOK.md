@@ -34,3 +34,18 @@ Executing pipeline
 **Fix**
 
 Ensure Jenkinsfile contains `gitlabConnectionName` variable and valid value.
+
+-----
+
+**Error**
+
+ImportError: cannot import name 'run' from 'checkov.main' (/home/jenkins/.local/lib/python3.8/site-packages/checkov/main.py)
+
+
+**When**
+
+checkov --version
+
+**Fix**
+
+Remove the checkov binary. It is the wrong one. Re-install checkov via ./libs/bash/install.sh. Be sure the "$HOME/.worldline_pps_profile" is being sourced.
