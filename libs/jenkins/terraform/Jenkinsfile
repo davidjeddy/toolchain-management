@@ -1,0 +1,503 @@
+#!groovy
+// Library Imports
+@Library('jenkins-pipeline')
+import com.ingenico.epayments.ci.common.PipelineCommon
+import com.ingenico.epayments.ci.common.Slack
+
+/*
+Jenkins delcarative pipeline for Terraform deployments
+Leverage existing Jenkins Pipeline Library
+Detect changes per Terraform deployment module by comparing working branch to main branch
+
+Process
+- auditing, compliance, linting, security scans, init, plan on working branch, tf init, tf plan, report status back to GitLab Commit status
+- if branch == main: tf apply
+- if branch == main && build == fail: msg to Slack `slackChannel`
+
+To destroy a module follow the process in the README: https://gitlab.test.igdcs.com/cicd/terraform/deployments#destroy
+
+AWS changes via Terraform CLI use the AWS IAM User Jenkins Service Account credentials. Jenkins Credential MUST follow the pattern  `[[account-string]]`
+exp: aws-ingenico-globalcollect-dev account will use Jenkins credentials named `aws-ingenico-globalcollect-dev`
+exp: worldline-gc-keycloak-dev account will use Jenkins credentials named `worldline-gc-keycloak-dev`
+*/
+
+// configuration vars
+
+Number pipelinetimeout      = 30
+String gitlabApiToken       = 'jenkins-user-gitlab-test-api-token'
+String gitlabConnectionName = 'gitlab-test-igdcs'
+String gitSSHCreds          = 'jenkins-gitlab-test-igdcs'
+String slackChannel         = 'nl-pros-centaurus-squad-releases'
+String tfModuleHost         = 'gitlab_test_igdcs_com' // '_' delimited hostname per Terraform TF_TOKEN_ documentation
+String workerNode           = 'bambora-aws-slave-terraform'
+
+// No need to edit below this line
+
+// global scope container vars
+
+def pipelineCommon = new PipelineCommon(steps, env)
+
+def changedModulesList = [:]
+def modulesLifecycleMap = [:]
+
+// helper functions
+
+/**
+ * Artifact and Report publishing
+ * - https://docs.gitlab.com/ee/ci/yaml/artifacts_reports.html
+ *   - artifacts:reports:cyclonedx
+ *   - artifacts:reports:junit
+ *   - https://docs.gitlab.com/ee/user/infrastructure/iac/mr_integration.html#output-terraform-plan-information-into-a-merge-request
+ *     - https://docs.gitlab.com/ee/user/infrastructure/iac/mr_integration.html#output-terraform-plan-information-into-a-merge-request
+ * GL notes have a limit of 1000 characters; so we make separate notes for each module
+ */
+def artifactAndReportPublishingStages(module, gitlabApiToken, gitlabProjectId, gitlabProjectPath) {
+    return {
+        stage("Artifact & Reports: ${module}") {
+            dir("${WORKSPACE}/${module}") {
+                // Compliance scan reports
+                // https://stackoverflow.com/questions/53935293/jenkins-none-of-the-test-reports-contained-any-result
+                // https://github.com/jenkinsci/junit-plugin/issues/499
+                tf_lock_file = new File(".terraform.lock.hcl")
+                tf_cache_dir = new File(".terraform")
+
+                if(tf_lock_file.exists() && ! tf_cache_dir.exists()) {
+                    junit testResults: ".tmp/junit-*.xml"
+                }
+
+                withCredentials([string(
+                    credentialsId:  gitlabApiToken,
+                    variable:       'gitlabPat'
+                )]) {
+                    // urlencoding using CURL https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736
+                    sh '''
+                        rm ".tmp/gitlab_note.md" || true
+                        touch ".tmp/gitlab_note.md" || exit 1
+                        
+                        # Compliance Scan Results for '''+module+'''
+                        echo "# Compliance Scanning Results:\n- ${BUILD_URL}testReport/" >> .tmp/gitlab_note.md
+
+                        if [[ -f ".terraform.lock.hcl" && -f .tmp/terraform_plan_summary.json ]]
+                        then
+                            echo "# Terraform Plan Summary:\n- https://${GITLAB_HOST}/'''+gitlabProjectPath+'''/${BRANCH_NAME}/'''+module+'''" >> .tmp/gitlab_note.md
+                            # weird we need double escape to start the block but only single escape to end it.
+                            echo "\n\\`\\`\\`json\n$(cat .tmp/terraform_plan_summary.json)\n\\`\\`\\`" >> .tmp/gitlab_note.md
+                        fi
+
+                        # Send payload via GitLab API https://docs.gitlab.com/ee/api/commits.html#post-comment-to-commit
+                        NOTE_BODY="$(cat .tmp/gitlab_note.md)"
+                        printf $NOTE_BODY
+                        curl \
+                            --form "note=${NOTE_BODY}" \
+                            --header "PRIVATE-TOKEN: ''' +  env.gitlabPat + '''" \
+                            --request POST \
+                            "https://${GITLAB_HOST}/api/v4/projects/'''+gitlabProjectId+'''/repository/commits/${GIT_COMMIT}/comments"
+                    '''
+
+                    // TODO
+                    // Does CHANGELOG* or ./docs/CHANGELOG* have a new version entry?
+                    // pull content of change, publish new GitLab tag
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Auditing and Complaiance scans
+ *
+ * @param module string Relative path to module
+ * @param gitlabApiToken String Required credentials for interacting with GitLab via API
+ * @param tfModuleHost String Required credentials for interacting with GitLAb Infra Module registry via Persoal Access Token
+ */
+def complianceScanStages(module, gitlabApiToken, tfModuleHost) {
+    return {
+        dir("${WORKSPACE}/${module}") {
+            tf_lock_file = new File(".terraform.lock.hcl")
+            tf_cache_dir = new File(".terraform")
+
+            if(tf_lock_file.exists() && ! tf_cache_dir.exists()) {
+                env."TF_TOKEN_${tfModuleHost}" = env.gitlabPat
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    accessKeyVariable:  'AWS_ACCESS_KEY_ID',
+                    credentialsId:      (module.split("/")[2]),
+                    secretKeyVariable:  'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    withCredentials([string(
+                        credentialsId:  gitlabApiToken,
+                        variable:       'gitlabPat'
+                    )]) {
+                        sh '''
+                            declare PROJECT_ROOT
+                            PROJECT_ROOT=$(git rev-parse --show-toplevel)
+                            export PROJECT_ROOT
+                            printf "INFO: PROJECT_ROOT value is: %s" "$PROJECT_ROOT"
+
+                            # Load functions
+                            source ${PROJECT_ROOT}/libs/bash/pre_commit_functions.sh
+
+                            # If a lock file exists the module needs to be initilized.
+                            if [[ -f ".terraform.lock.hcl" ]]
+                            then
+                                terraform init -no-color
+                                terraform providers lock -platform=linux_amd64
+                            fi
+
+                            # Create tmp dir to hold artifacts and reports
+                            createTmpDir
+
+                            # Do not allow in-project shared modules
+                            doNotAllowSharedModulesInsideDeploymentProjects
+
+                            # best practices and security scanning
+                            terraformCompliance
+
+                            # linting and syntax formatting
+                            terraformLinting
+
+                            # generate docs and meta-data only if checks do not fail
+                            documentation
+
+                            # supply chain attastation
+                            generateSBOM
+                        '''
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Create the Terraform Lifecyclke stages for every module path provided
+ *
+ * @param module string Relative path to module
+ * @param gitlabApiToken String Required credentials for interacting with GitLab via API
+ * @param tfModuleHost String Required credentials for interacting with GitLAb Infra Module registry via Persoal Access Token
+ *
+ * GitLab Notes Markdown: https://gitlab.test.igdcs.com/help/user/markdown
+ */
+def terraformLifecycleStages(module, gitlabApiToken, tfModuleHost) {
+    return {
+        stage("Init: ${module}") {
+            dir("${WORKSPACE}/${module}") {
+                tf_lock_file = new File(".terraform.lock.hcl")
+                tf_cache_dir = new File(".terraform")
+
+                if(tf_lock_file.exists() && ! tf_cache_dir.exists()) {
+                    env."TF_TOKEN_${tfModuleHost}" = env.gitlabPat
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        accessKeyVariable:  'AWS_ACCESS_KEY_ID',
+                        credentialsId:      (module.split("/")[2]),
+                        secretKeyVariable:  'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                        withCredentials([string(
+                            credentialsId:  gitlabApiToken,
+                            variable:       'gitlabPat'
+                        )]) {
+                            // https://issues.jenkins.io/browse/JENKINS-49183
+                            retry(3) {
+                                sh '''
+                                    terraform init -no-color
+                                    terraform providers lock -platform=linux_amd64 # ensure providers for Jenkins worker node
+                                '''
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage("Plan: ${module}") {
+            dir("${WORKSPACE}/${module}") {
+                tf_lock_file = new File(".terraform.lock.hcl")
+                tf_cache_dir = new File(".terraform")
+
+                if(tf_lock_file.exists() && ! tf_cache_dir.exists()) {
+                    env."TF_TOKEN_${tfModuleHost}" = env.gitlabPat
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        accessKeyVariable:  'AWS_ACCESS_KEY_ID',
+                        credentialsId:      (module.split("/")[2]),
+                        secretKeyVariable:  'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                        withCredentials([string(
+                            credentialsId:  gitlabApiToken,
+                            variable:       'gitlabPat'
+                        )]) {
+                            sh '''
+                                if [[ -f ".terraform.lock.hcl" ]]
+                                then
+                                    rm ".tmp/plan.out" || true
+                                    terraform plan -no-color -out .tmp/plan.out
+                                    terraform show --json .tmp/plan.out | \
+                                        jq -r '([.resource_changes[]?.change.actions?]|flatten)|{\"create\":(map(select(.==\"create\"))|length),\"update\":(map(select(.==\"update\"))|length),\"delete\":(map(select(.==\"delete\"))|length)}' \
+                                        > .tmp/terraform_plan_summary.json
+                                fi
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+
+        if (env.BRANCH_NAME == 'main') {
+            stage("Apply: ${module}") {
+                dir("${WORKSPACE}/${module}") {
+                    tf_lock_file = new File(".terraform.lock.hcl")
+                    tf_cache_dir = new File(".terraform")
+
+                    if(tf_lock_file.exists() && ! tf_cache_dir.exists()) {
+                        env."TF_TOKEN_${tfModuleHost}" = env.gitlabPat
+                        withCredentials([[
+                            $class: 'AmazonWebServicesCredentialsBinding',
+                            accessKeyVariable:  'AWS_ACCESS_KEY_ID',
+                            credentialsId:      (module.split("/")[2]),
+                            secretKeyVariable:  'AWS_SECRET_ACCESS_KEY'
+                        ]]) {
+                            withCredentials([string(
+                                credentialsId:  gitlabApiToken,
+                                variable:       'gitlabPat'
+                            )]) {
+                                sh '''
+                                    if [[ -f ".terraform.lock.hcl" ]]
+                                    then
+                                        terraform apply -no-color -auto-approve ".tmp/plan.out"
+                                    fi
+                                '''
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+pipeline {
+    agent {
+        node workerNode
+    }
+    environment {
+        GITLAB_CREDENTIALSID = credentials('GL_PAT_TF_MODULE_MIRRORING')
+    }
+    options {
+        gitLabConnection(gitlabConnectionName)
+        timestamps ()
+        // https://stackoverflow.com/questions/38096004/how-to-add-a-timeout-step-to-jenkins-pipeline
+        timeout(time: 30, unit: 'MINUTES')
+    }
+    // source https://stackoverflow.com/questions/36651432/how-to-implement-post-build-stage-using-jenkins-pipeline-plug-in
+    // source https://plugins.jenkins.io/gitlab-plugin/
+    post {
+        // TODO: send to commit author via email. use commit email to get slack username to send msg. this req. a feature add to the Groovy Slack class as it does not currently support this feature
+        // always, changed, fixed, regression, aborted, failure, success, unstable, unsuccessful, and cleanup
+        failure {
+            script {
+                if (env.BRANCH_NAME == 'main') {
+                    // if main, send to nl-pros-equad-releases
+                    def slack = new Slack(this.steps, this.env)
+                    slack.slackNotification(
+                        slackChannel,
+                        env.JOB_NAME,
+                        ":alert: ${env.BRANCH_NAME} branch build failed.",
+                        ':jenkins:'
+                    )
+                }
+            }
+            updateGitlabCommitStatus name: 'build', state: 'failed'
+        }
+        fixed {
+            script {
+                if (env.BRANCH_NAME == 'main') {
+                    // if main, send to nl-pros-equad-releases
+                    def slack = new Slack(this.steps, this.env)
+                    slack.slackNotification(
+                        slackChannel,
+                        env.JOB_NAME,
+                        ":alert: ${env.BRANCH_NAME} branch build fixed.",
+                        ':jenkins:'
+                    )
+                }
+            }
+            updateGitlabCommitStatus name: 'build', state: 'success'
+        }
+        success{
+            updateGitlabCommitStatus name: 'build', state: 'success'
+        }
+        unstable {
+            updateGitlabCommitStatus name: 'build', state: 'success'
+        }
+    }
+    stages {
+        stage('Print ENV VARs') {
+            steps {
+                sh '''
+                    echo "INFO: Printing ENV VARs"
+                    declare PROJECT_ROOT
+                    PROJECT_ROOT=$(git rev-parse --show-toplevel)
+                    export PROJECT_ROOT
+                    unset JENKINS_AWS_CREDENTIALSID
+                    printenv | sort
+                '''
+            }
+        }
+        stage('Notification') {
+            steps {
+                withCredentials([string(
+                    credentialsId:  gitlabApiToken,
+                    variable:       'gitlabPat'
+                )]) {
+                    sh '''
+                        echo "INFO: Build link posted to GitLab commit"
+                        NOTE_BODY="#Pipeline build\n${BUILD_URL}console"
+                        printf $NOTE_BODY
+                        curl \
+                            --form "note=${NOTE_BODY}" \
+                            --header "PRIVATE-TOKEN: ''' +  env.gitlabPat + '''" \
+                            --request POST \
+                            "https://${GITLAB_HOST}/api/v4/projects/'''+gitlabProjectId+'''/repository/commits/${GIT_COMMIT}/comments"
+                    '''
+                }
+            }
+        }
+        stage('Clean Workspace') {
+            steps {
+                echo "INFO: Clean workspace"
+                cleanWs()
+            }
+        }
+        stage('Git Checkout') {
+            steps {
+                echo "Checkout main branch"
+                git credentialsId: gitSSHCreds,
+                    url: env.GIT_URL,
+                    branch: 'main'
+                sh 'git reset --hard origin/main'
+                sh 'git pull origin main --force'
+                echo 'Checkout source branch (or main again)'
+                git credentialsId: gitSSHCreds,
+                    url: env.GIT_URL,
+                    branch: env.BRANCH_NAME
+            }
+        }
+        stage('Install System Dependencies') {
+            steps {
+                sh '''
+                    ./libs/bash/install.sh
+                '''
+            }
+        }
+        stage('Terraform deployment modules with changes') {
+            steps {
+                script {
+                    String tfFileChanges = ""
+                    // feature branch functionality only if env.BRANCH_NAME is set to `main`
+                    if (env.BRANCH_NAME == 'main') {
+                        echo "INFO: main branch execution. git diff from previouse commit."
+                        tfFileChanges = sh(
+                            returnStdout: true,
+                            // we want to always return true from grep, even if no matches are found.
+                            // for git 1.x (bambora-dev worker)
+                            script: "git diff HEAD~1 --name-only | grep tf\$ | \
+                                grep -v .tmp/ | \
+                                grep -v examples/ | \
+                                grep -v libs | \
+                                grep -v README.md | \
+                                grep -v sbom.xml | \
+                                grep -v terraform.tf \
+                                || true"
+                        )
+                    } else {
+                        echo "INFO: working branch execution. git diff against main branch."
+                        tfFileChanges = sh(
+                            returnStdout: true,
+                            // we want to always return true from grep, even if no matches are found.
+                            // for git 1.x (bambora-dev worker)
+                            script: "git diff main --name-only | grep tf\$ | \
+                                grep -v .tmp/ | \
+                                grep -v examples/ | \
+                                grep -v libs | \
+                                grep -v README.md | \
+                                grep -v sbom.xml | \
+                                grep -v terraform.tf \
+                                || true"
+                        )
+                    }
+                    echo "INFO: tfFileChanges list is: \n${tfFileChanges}"
+
+                    if (tfFileChanges.isEmpty()) {
+                        echo "NOTICE: No Terraform changes detected; nothing to do, exiting with success."
+                        currentBuild.result = 'SUCCESS'
+                        // https://devops.stackexchange.com/questions/885/cleanest-way-to-prematurely-exit-a-jenkins-pipeline-job-as-a-success
+                        return 
+                    }
+
+                    // create list of unique module dir paths
+                    def changedModules = sh(
+                        returnStdout: true,
+                        script: 'echo -n "'+tfFileChanges+'" | xargs -L1 dirname | sort | uniq'
+                    )
+                    echo "INFO: changedModules is: \n${changedModules}"
+
+                    changedModulesList = changedModules.split("\n")
+                    echo "INFO: changedModulesList is:\n${changedModulesList}"
+                }
+            }
+        }
+        stage('Trigger Module Stages: Compliance') {
+            steps {
+                script {
+                    def modulesList
+                    modulesList = changedModulesList.collectEntries { module ->
+                        ["${module}": complianceScanStages(module, gitlabApiToken, tfModuleHost)]
+                    }
+                    echo "INFO: modulesList for Compliance is:\n${modulesList}"
+                    parallel modulesList
+                }
+            }
+        }
+        stage('Trigger Module Stages: Terraform Lifecycle') {
+            steps {
+                script {
+                    def modulesList
+                    modulesList = changedModulesList.collectEntries { module ->
+                        ["${module}": terraformLifecycleStages(module, gitlabApiToken, tfModuleHost)]
+                    }
+                    echo "INFO: modulesList for Lifecycle is:\n${modulesList}"
+                    parallel modulesList
+                }
+            }
+        }
+        stage('Trigger Module Stages: Artifact and Report Publishing') {
+            steps {
+                script {
+                    def modulesList
+                    modulesList = changedModulesList.collectEntries { module ->
+                        ["${module}": artifactAndReportPublishingStages(module, gitlabApiToken, gitlabProjectId, gitlabProjectPath)]
+                    }
+                    echo "INFO: modulesList for Publishing is:\n${modulesList}"
+                    parallel modulesList
+                }
+            }
+        }
+        stage('Trigger Downstream: Publish Shared Modules') {
+            steps {
+                script {
+                    // only if branch is main and module is . (not the deployment project)
+                    if (env.BRANCH_NAME == 'main' && changedModulesList == ".") {
+                        echo "Triggering downstream publishing pipline shared-module-mirroring"
+                        build job: "shared-module-mirroring", wait: true
+                    } else {
+                        echo "INFO: No downstream configured for the combination of branch and changedModulesList."
+                    }
+                }
+            }
+        }
+    }
+    triggers {
+        cron('H 4 * * 1-5')
+    }
+}

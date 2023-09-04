@@ -112,9 +112,7 @@ pipeline {
                 // Jenkins worker nodes have [cracklib](https://github.com/cracklib/cracklib) system package installed.
                 // It provides a `packer` in the PATH, ie name collision with Hashcorp Packer.
                 // So, skip installing misc tools for now until a resolution is found
-                sh '''
-                    ./libs/bash/install.sh --skip_aws_tools true --skip_misc_tools true --skip_terraform_tools true --update true
-                '''
+                sh './libs/bash/install.sh --skip_aws_tools true --skip_misc_tools true --skip_terraform_tools true --update true'
             }
         }
         // Then we install the AWS CLI and related tools
