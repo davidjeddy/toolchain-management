@@ -20,6 +20,12 @@ Action Keywords:
 - Add additional container tools such as containerd, dive, kubtctl, etc
 - Add PGP checking for binaries that make it available
 
+## [0.26.0] - 2023-09-04
+
+### Added
+
+- ./libs/jenkins/terraform/Jenkinsfile to begin to reduce copy/paste across all the Connect 2 Cloud IaC modules
+
 ## [0.25.0] - 2023-08-31
 
 ### Added
