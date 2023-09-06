@@ -1,13 +1,13 @@
 #!/bin/bash -e
 
-# usage: /path/to/script/connect_to_ecs_task.sh
-#        /path/to/script/connect_to_ecs_task.sh -l
-#        /path/to/script/connect_to_ecs_task.sh gateway
-#        /path/to/script/connect_to_ecs_task.sh -s hazelcast
-# example: /path/to/script/connect_to_ecs_task.sh -c "snd-connect-shared-ecs-nygw" gateway
-# example: /path/to/script/connect_to_ecs_task.sh -s "eu-west-1" gateway
-# example: /path/to/script/connect_to_ecs_task.sh -c "snd-connect-shared-ecs-nygw" -r "eu-west-1" gateway
-# example: /path/to/script/connect_to_ecs_task.sh --cluster_name "snd-connect-shared-ecs-nygw" --region_name "eu-west-1" gateway
+# usage: /path/to/script/ecs_task_shell_connection.sh
+#        /path/to/script/ecs_task_shell_connection.sh -l
+#        /path/to/script/ecs_task_shell_connection.sh gateway
+#        /path/to/script/ecs_task_shell_connection.sh -s hazelcast
+# example: /path/to/script/ecs_task_shell_connection.sh -c "snd-connect-shared-ecs-nygw" gateway
+# example: /path/to/script/ecs_task_shell_connection.sh -s "eu-west-1" gateway
+# example: /path/to/script/ecs_task_shell_connection.sh -c "snd-connect-shared-ecs-nygw" -r "eu-west-1" gateway
+# example: /path/to/script/ecs_task_shell_connection.sh --cluster_name "snd-connect-shared-ecs-nygw" --region_name "eu-west-1" gateway
 
 ## Default values
 declare DEFAULT_CLUSTER_NAME
@@ -50,7 +50,8 @@ function print_usage() {
   printf "\n"
 }
 
-source get_cmd_options.sh
+#shellcheck disable=SC1091
+source "../common/get_cmd_options.sh" || exit 1
 
 # shellcheck disable=SC2034 # We use the value to call get_cmd_options
 SHORT_OPTS=("h" "l" "c:" "r:" "s")

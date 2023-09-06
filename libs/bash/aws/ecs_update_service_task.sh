@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 
-# usage ./libs/cycle-aws-ecs-services.sh NAME_OF_THE_CLUSTER REGION "NEWLINE DELIMITED LIST OF SERVICE NAMES"
-# example ./libs/cycle-aws-ecs-services.sh "snd-connect-shared-ecs-nygw" "eu-west-1" "terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/admin-tool
+# usage ./libs/ecs_update_service_task NAME_OF_THE_CLUSTER REGION "NEWLINE DELIMITED LIST OF SERVICE NAMES"
+# example ./libs/ecs_update_service_task "snd-connect-shared-ecs-nygw" "eu-west-1" "terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/admin-tool
 # terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/api-explorer
 # terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/auth-service 
 # terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/config-center
