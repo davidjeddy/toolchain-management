@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# usage: /path/to/script/tail_log.sh
-#        /path/to/script/tail_log.sh -l
-#        /path/to/script/tail_log.sh gateway
-#        /path/to/script/tail_log.sh -s hazelcast
-# example: /path/to/script/tail_log.sh -c "snd-connect-shared-ecs-nygw" gateway
-# example: /path/to/script/tail_log.sh -s "eu-west-1" gateway
-# example: /path/to/script/tail_log.sh -c "snd-connect-shared-ecs-nygw" -r "eu-west-1" gateway
-# example: /path/to/script/tail_log.sh --cluster_name "snd-connect-shared-ecs-nygw" --region_name "eu-west-1" gateway
+# usage: /path/to/script/logs_tail.sh
+#        /path/to/script/logs_tail.sh -l
+#        /path/to/script/logs_tail.sh gateway
+#        /path/to/script/logs_tail.sh -s hazelcast
+# example: /path/to/script/logs_tail.sh -c "snd-connect-shared-ecs-nygw" gateway
+# example: /path/to/script/logs_tail.sh -s "eu-west-1" gateway
+# example: /path/to/script/logs_tail.sh -c "snd-connect-shared-ecs-nygw" -r "eu-west-1" gateway
+# example: /path/to/script/logs_tail.sh --cluster_name "snd-connect-shared-ecs-nygw" --region_name "eu-west-1" gateway
 
 ## Default values
 declare DEFAULT_CLUSTER_NAME
@@ -53,7 +53,8 @@ function print_usage() {
   printf "\n"
 }
 
-source get_cmd_options.sh
+#shellcheck disable=SC1091
+source "../common/get_cmd_options.sh" || exit 1
 
 # shellcheck disable=SC2034 # We use the value to call get_cmd_options
 SHORT_OPTS=("h" "l" "c:" "r:" "s")

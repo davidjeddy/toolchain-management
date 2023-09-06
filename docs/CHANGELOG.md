@@ -20,6 +20,12 @@ Action Keywords:
 - Add additional container tools such as containerd, dive, kubtctl, etc
 - Add PGP checking for binaries that make it available
 
+## [0.30.0] - 2023-09-04
+
+### Fixed
+
+- ./libs/bash/* to better support a wide range of vendor helper scripts
+
 ## [0.26.0] - 2023-09-04
 
 ### Added

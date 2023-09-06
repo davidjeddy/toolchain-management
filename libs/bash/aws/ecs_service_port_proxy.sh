@@ -1,13 +1,13 @@
 #!/bin/bash -e
 
-# usage: /path/to/script/forward_local_port.sh
-#        /path/to/script/forward_local_port.sh 
-#        /path/to/script/forward_local_port.sh keycloak
-#        /path/to/script/forward_local_port.sh -s keycloak
-# example: /path/to/script/forward_local_port.sh -c "snd-connect-shared-ecs-nygw" keycloak
-# example: /path/to/script/forward_local_port.sh -s "eu-west-1" gateway
-# example: /path/to/script/forward_local_port.sh -c "snd-connect-shared-ecs-nygw" -r "eu-central-1" keycloak
-# example: /path/to/script/forward_local_port.sh --cluster_name "snd-connect-shared-ecs-nygw" --region_name "eu-central-1" keycloak
+# usage: /path/to/script/ecs_service_port_proxy.sh
+#        /path/to/script/ecs_service_port_proxy.sh 
+#        /path/to/script/ecs_service_port_proxy.sh keycloak
+#        /path/to/script/ecs_service_port_proxy.sh -s keycloak
+# example: /path/to/script/ecs_service_port_proxy.sh -c "snd-connect-shared-ecs-nygw" keycloak
+# example: /path/to/script/ecs_service_port_proxy.sh -s "eu-west-1" gateway
+# example: /path/to/script/ecs_service_port_proxy.sh -c "snd-connect-shared-ecs-nygw" -r "eu-central-1" keycloak
+# example: /path/to/script/ecs_service_port_proxy.sh --cluster_name "snd-connect-shared-ecs-nygw" --region_name "eu-central-1" keycloak
 
 ## Default values
 declare DEFAULT_CLUSTER_NAME
@@ -52,7 +52,8 @@ function print_usage() {
   printf "\n"
 }
 
-source get_cmd_options.sh
+#shellcheck disable=SC1091
+source "../common/get_cmd_options.sh" || exit 1
 
 # shellcheck disable=SC2034 # We use the value to call get_cmd_options
 SHORT_OPTS=("h" "c:" "r:" "H:" "P:" "l:")
