@@ -15,10 +15,19 @@ Action Keywords:
 
 ## [TODO]
 
+- Migrate to a community supported tool, this be-spoke solution is not a long term solution
 - build from source due to binary packages not following the wider community naming convention
 - https://github.com/aws/session-manager-plugin/archive/refs/tags/1.2.463.0.tar.gz
 - Add additional container tools such as containerd, dive, kubtctl, etc
 - Add PGP checking for binaries that make it available
+- Add the ability to install the toolchain once, globally per user, instead of per-project
+
+## [0.31.0] - 2023-09-04
+
+### Fixed
+
+- Added 'tree' install via to system_tools package managers
+- Added script to execute IAc lifecycle across a deployments entire ecs-services sub-modules
 
 ## [0.30.0] - 2023-09-04
 

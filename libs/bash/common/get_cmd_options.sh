@@ -51,3 +51,10 @@ function get_cmd_options() {
     fi
   done
 }
+
+function logging_level() {
+  if [[ $WL_TC_LOG_LEVEL == "TRACE" ]]
+  then 
+      set -x
+  fi
+}
