@@ -37,6 +37,7 @@ function apt_systems() {
         libbz2-dev \
         parallel \
         podman \
+        tree \
         unzip
 
     # source https://number1.co.za/how-to-build-python-3-from-source-on-ubuntu-22-04/
@@ -56,6 +57,7 @@ function apt_systems() {
         parallel \
         podman \
         python3-distutils \
+        tree \
         tk-dev
 }
 
@@ -89,6 +91,7 @@ function yum_systems() {
             parallel \
             podman \
             python3-distutils-extra \
+            tree \
             unzip \
             yum-utils \
             zlib-devel
@@ -108,6 +111,7 @@ function yum_systems() {
             parallel \
             podman \
             python3-distutils \
+            tree \
             unzip \
             yum-utils \
             zlib-devel

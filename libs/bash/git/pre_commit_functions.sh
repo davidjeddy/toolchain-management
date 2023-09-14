@@ -62,7 +62,7 @@ function documentation() {
 }
 
 function generateSBOM() {
-    printf "INFO: generating sbom using checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov.)...\n"
+    printf "INFO: generating sbom using checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov)...\n"
     {
         if [[ -f "checkov.yml" ]]
         then
@@ -86,7 +86,7 @@ function generateSBOM() {
 }
 
 function terraformCompliance() {
-    printf "INFO: checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov.)...\n"
+    printf "INFO: checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov)...\n"
     {
         if [[ -f "checkov.yml" ]]
         then
