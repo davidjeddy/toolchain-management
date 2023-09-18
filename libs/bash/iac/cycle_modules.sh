@@ -5,8 +5,11 @@
 
 # sources
 
+declare SCRIPT_DIR
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 # shellcheck disable=SC1091
-source "$(dirname "${0}")/../common/get_cmd_options.sh" || exit 1
+source "$SCRIPT_DIR/../common/get_cmd_options.sh" || exit 1
 
 # configuration
 

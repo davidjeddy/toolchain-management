@@ -22,6 +22,12 @@ Action Keywords:
 - Add PGP checking for binaries that make it available
 - Add the ability to install the toolchain once, globally per user, instead of per-project
 
+## [0.31.1] - 2023-09-18
+
+### Fixed
+
+- Pathing to common/get_cmd_options.sh when using ./libs/bash/aws helpers
+
 ## [0.31.0] - 2023-09-04
 
 ### Fixed
