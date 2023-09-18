@@ -36,6 +36,9 @@ declare LOG_STREAM
 declare LOG_GROUP_JSON
 declare NUMBER_OF_RESULTS
 
+declare SCRIPT_DIR
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 # functions
 
 function print_usage() {
@@ -54,7 +57,7 @@ function print_usage() {
 }
 
 #shellcheck disable=SC1091
-source "../common/get_cmd_options.sh" || exit 1
+source "$SCRIPT_DIR/../common/get_cmd_options.sh" || exit 1
 
 # shellcheck disable=SC2034 # We use the value to call get_cmd_options
 SHORT_OPTS=("h" "l" "c:" "r:" "s")
