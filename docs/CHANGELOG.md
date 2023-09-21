@@ -22,6 +22,11 @@ Action Keywords:
 - Add PGP checking for binaries that make it available
 - Add the ability to install the toolchain once, globally per user, instead of per-project
 
+## [0.31.3] - 2023-09-28
+
+### Fixed
+
+- Added output during KICS build to indicate possible issues with proxy/firewall blocking git(ssh)
 
 ## [0.31.2] - 2023-09-21
 
