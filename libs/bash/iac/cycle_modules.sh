@@ -34,7 +34,7 @@ fi
 echo "INFO: Starting..."
 
 # https://opensource.com/article/18/5/gnu-parallel
-tree -di --prune --sort name | parallel -j5 -I% "\
+tree -di --prune --sort=name | head -n -2 | tail -n +2 | parallel -j5 -I% "\
 if [[ ! -d $(pwd)/% || ! -f $(pwd)/%/terraform.tf ]]; \
 then \
   echo \"WARN: % not found or not a terraform module, skipping.\"
@@ -43,7 +43,7 @@ fi; \
 cd $(pwd)/%; \
 terraform init -no-color | tee init.log; \
 terraform plan -no-color | tee plan.log; \
-terraform apply --auto-approve -no-color | tee plan.log; \
+terraform apply --auto-approve -no-color | tee apply.log; \
 "
 
 echo "INFO: ...done."

@@ -22,6 +22,15 @@ Action Keywords:
 - Add PGP checking for binaries that make it available
 - Add the ability to install the toolchain once, globally per user, instead of per-project
 
+
+## [0.31.2] - 2023-09-21
+
+### Fixed
+
+- Added equal(=) sign in `tree --sort` to support debian OS tree package
+- Added `tail` and `head` command to remove first and last lines of tree command, avoiding execution of non terraform directories
+- Fixed `apply` log file name ISO `plan`
+
 ## [0.31.1] - 2023-09-18
 
 ### Fixed
@@ -117,7 +126,7 @@ Action Keywords:
 
 ### Added
 
-- `podman`` to system tool for YUM (Fedora, RHEL)
+- `podman` to system tool for YUM (Fedora, RHEL)
 - timeout() to pipeline to trigger failure after 15mins
 - global var gitlab ConnectionName to Jenkinsfile
 - Slack notification when build is `fixed`
