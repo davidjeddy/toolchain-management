@@ -24,12 +24,14 @@ function golang_based_terraform_tools() {
         tar -xf kics.tar.gz
         cd "kics-${KICS_VER}" || exit 1
 
+        printf "INFO: Building kics. (If the process hangs, try disablig proxy/firewalls. Go needs to ability to download packages via Git(ssh).\n"
         # Make sure GO >=1.11 modules are enabled
         declare GO111MODULE
         export GO111MODULE="on"
         goenv exec go mod download -x
         goenv exec go build -o bin/kics cmd/console/main.go
 
+        printf "INFO: Installing kics query assets.\n"
         # install KICS assets
         rm -rf "$PROJECT_ROOT/libs/kics" || true
         mkdir -p "$PROJECT_ROOT/libs/kics"

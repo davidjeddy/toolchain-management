@@ -317,7 +317,7 @@ pipeline {
                     slack.slackNotification(
                         slackChannel,
                         env.JOB_NAME,
-                        ":alert: ${env.BRANCH_NAME} branch build fixed.",
+                        ":tada: ${env.BRANCH_NAME} branch build fixed.",
                         ':jenkins:'
                     )
                 }
