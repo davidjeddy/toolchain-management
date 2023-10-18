@@ -16,11 +16,21 @@ Action Keywords:
 ## [TODO]
 
 - Migrate to a community supported tool, this be-spoke solution is not a long term solution
-- build from source due to binary packages not following the wider community naming convention
-- https://github.com/aws/session-manager-plugin/archive/refs/tags/1.2.463.0.tar.gz
+- build from source binary packages that do not following the wide community naming convention
 - Add additional container tools such as containerd, dive, kubtctl, etc
-- Add PGP checking for binaries that make it available
+- Add PGP checking for all binaries that make it available
 - Add the ability to install the toolchain once, globally per user, instead of per-project
+
+## [0.31.5] - 2023-10-18
+
+### Added
+
+- `cleanWs()` to `clean workspace` stage
+- interactive and non-interactive shells loading additional configuration from $SHELL_PROFILE
+
+### Fixed
+
+- pip must be installed BEFORE `pip install cmake` can be executed
 
 ## [0.31.4] - 2023-10-17
 

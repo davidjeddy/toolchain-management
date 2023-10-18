@@ -98,6 +98,12 @@ pipeline {
                 }
             }
         }
+        stage('Clean Workspace') {
+            steps {
+                echo "INFO: Clean workspace"
+                cleanWs()
+            }
+        }
         stage('Git Checkout') {
             steps {
                 echo "INFO: Checkout main branch"
