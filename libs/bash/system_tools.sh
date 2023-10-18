@@ -216,6 +216,9 @@ function install_pip() {
 
         python3 -m pip install --upgrade --force-reinstall pip
         sudo rm -rf get-pip.py
+
+        # Needed for some PIP packages the build correctly
+        pip install Cmake
     fi
 }
 
@@ -229,8 +232,6 @@ function install_system_tools() {
     elif [[ $(which yum) ]]
     then
         yum_systems
-        # Needed for some PIP packages the build correctly
-        pip install Cmake
     else
         printf "CRITICAL: Unable to determine system package manager, exiting.\n"
         printf "INFO: Please consider submitting an update adding your distributions package manager.\n"

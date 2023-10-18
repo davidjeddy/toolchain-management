@@ -147,8 +147,21 @@ then
     echo "export PATH=\$PATH:$PROJECT_ROOT/libs/bash" >> "$SHELL_PROFILE"
 fi
 
-# Add tribe profile to .bashrc if it exists
+# Add tribe profile to .bash_profile if it exists
 # Other tribes can add additional shell profiles as $HOME/[[business_unit]]_[[tribe]]_profile
+# https://linuxize.com/post/bashrc-vs-bash-profile/
+
+# interactive login shells
+# shellcheck disable=SC2143
+if [[ -f "$HOME/.bash_profile" && ! $(grep "source $SHELL_PROFILE" "$HOME/.bash_profile") ]]
+then
+    printf "INFO: Adding source %s to %s.\n" "$SHELL_PROFILE" "$HOME/.bash_profile"
+    echo "source $SHELL_PROFILE" >> "$HOME/.bash_profile"
+    #shellcheck disable=SC1091
+    source "$HOME/.bash_profile" || exit 1
+fi
+
+# non-interactive login shells
 # shellcheck disable=SC2143
 if [[ -f "$HOME/.bashrc" && ! $(grep "source $SHELL_PROFILE" "$HOME/.bashrc") ]]
 then
@@ -157,6 +170,8 @@ then
     #shellcheck disable=SC1091
     source "$HOME/.bashrc" || exit 1
 fi
+
+printf "INFO: PATH value is: %s\n" "$PATH"
 
 # System tools MUST be first
 if [[ $SKIP_SYSTEM_TOOLS == "" ]]
