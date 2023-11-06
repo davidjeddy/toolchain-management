@@ -21,6 +21,12 @@ Action Keywords:
 - Add PGP checking for all binaries that make it available
 - Add the ability to install the toolchain once, globally per user, instead of per-project
 
+## [0.31.6] - 2023-11-06
+
+### Fix
+
+- Go and Python install processes updated to better handle newly created hosts
+
 ## [0.31.5] - 2023-10-18
 
 ### Added
