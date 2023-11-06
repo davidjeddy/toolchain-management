@@ -228,4 +228,4 @@ fi
 
 printf "INFO: Please start your shell session to ensure the PATH value is reloaded.\n"
 
-printf "Toolchain install.sh completed successfully.\n"
+printf "INFO: Toolchain install.sh completed successfully.\n"

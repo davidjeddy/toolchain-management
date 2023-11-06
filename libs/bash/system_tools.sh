@@ -119,7 +119,7 @@ function yum_systems() {
 }
 
 function install_goenv() {
-    if [[ ( ! $(which goenv) && $GOENV_VER) || "$UPDATE" == "true" ]]
+    if [[ ( ! $(which go) && $GOENV_VER) || "$UPDATE" == "true" ]]    
     then
         printf "INFO: Installing goenv to %s \n" "$HOME/.goenv"
         cd "$HOME" || exit 1
@@ -142,7 +142,7 @@ function install_goenv() {
 
         goenv install --force "$GO_VER"
 
-    elif [[ -d "$HOME/.goenv" && $GOENV_VER && "$UPDATE" == "true" ]]
+    elif [[ $GOENV_VER ]]
     then
         printf "INFO: Updating goenv.\n"
         cd "$HOME/.goenv" || exit
@@ -151,8 +151,6 @@ function install_goenv() {
         git checkout "$GOENV_VER"
 
         goenv install --force "$GO_VER"
-
-        cd "$PROJECT_ROOT" || exit 1
     fi
 
     goenv global "$GO_VER"
@@ -168,9 +166,12 @@ function install_python3() {
         curl -sL --show-error "https://www.python.org/ftp/python/$PYTHON_VER/Python-$PYTHON_VER.tgz" -o "Python-$PYTHON_VER.tgz"
         tar xzf "Python-$PYTHON_VER.tgz"
         cd "Python-$PYTHON_VER" || exit 1
-        ./configure --bindir="$BIN_DIR"
+        sed -i 's/PKG_CONFIG openssl /PKG_CONFIG openssl11 /g' configure
+        ./configure --bindir="$BIN_DIR" --enable-optimizations
         sudo make clean || true
-        sudo make install
+        sudo make altinstall
+        # The following should run without errors if SSL was properly compiled
+        python -m ssl
 
         {
             printf "INFO: Creating symlink from %s/python3.8 binary to %s/python%s.\n" "$BIN_DIR" "$BIN_DIR" "$PYTHON_MAJOR_VER"
