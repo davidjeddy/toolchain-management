@@ -13,13 +13,11 @@ Action Keywords:
 `REMOVE` : Functionality is no longer available.
 `UPDATED`: Functionality capability expanded with additional abilities.
 
-## [TODO]
+## [0.32.0] - 2023-11-06
 
-- Migrate to a community supported tool, this be-spoke solution is not a long term solution
-- build from source binary packages that do not following the wide community naming convention
-- Add additional container tools such as containerd, dive, kubtctl, etc
-- Add PGP checking for all binaries that make it available
-- Add the ability to install the toolchain once, globally per user, instead of per-project
+### Added
+
+- Shared pipeline for use by Worldline IaC shared modules
 
 ## [0.31.6] - 2023-11-06
 

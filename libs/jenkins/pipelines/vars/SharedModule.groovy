@@ -79,7 +79,7 @@ def call(
                             env.JOB_NAME,
                             ":alert: Build fixed.",
                             ':jenkins:'
-                        )Compliance Scanning Results
+                        )
                     }
                 }
                 updateGitlabCommitStatus name: 'build', state: 'success'
@@ -94,17 +94,19 @@ def call(
         stages {
             stage('Notification') {
                 steps {
-                    withCredentials([string(
-                        credentialsId:  gitlabApiToken,
-                        variable:       'gitlabPAT'
-                    )]) {
-                        sh '''#!/bin/bash
-                            curl \
-                                --form "note=# Build Pipeline\n\nNumber: ${BUILD_NUMBER}\n\nUrl: ${BUILD_URL}console" \
-                                --header "PRIVATE-TOKEN: ''' +  env.gitlabPAT + '''" \
-                                --request POST \
-                                "https://${GITLAB_HOST}/api/v4/projects/''' + gitlabProjectId + '''/repository/commits/${GIT_COMMIT}/comments"
-                        '''
+                    script {
+                        withCredentials([string(
+                            credentialsId:  gitlabApiToken,
+                            variable:       'gitlabPAT'
+                        )]) {
+                            sh '''#!/bin/bash
+                                curl \
+                                    --form "note=# Build Pipeline\n\nNumber: ${BUILD_NUMBER}\n\nUrl: ${BUILD_URL}console" \
+                                    --header "PRIVATE-TOKEN: ''' +  env.gitlabPAT + '''" \
+                                    --request POST \
+                                    "https://${GITLAB_HOST}/api/v4/projects/''' + gitlabProjectId + '''/repository/commits/${GIT_COMMIT}/comments"
+                            '''
+                        }
                     }
                 }
             }
@@ -116,13 +118,15 @@ def call(
             }
             stage('Print ENV VARs') {
                 steps {
-                    sh '''
-                        echo "INFO: Printing ENV VARs"
-                        unset JENKINS_AWS_CREDENTIALSID
-                        printenv | sort
-                        echo "INFO: Printing ENV VARs"
-                        printenv | sort
-                    '''
+                    script {
+                        sh '''
+                            echo "INFO: Printing ENV VARs"
+                            unset JENKINS_AWS_CREDENTIALSID
+                            printenv | sort
+                            echo "INFO: Printing ENV VARs"
+                            printenv | sort
+                        '''
+                    }
                 }
             }
             stage('Git Checkout') {
@@ -139,49 +143,48 @@ def call(
             }
             stage('Install System Dependencies') {
                 steps {
-                    sh '''
-                        ./libs/bash/install.sh
-                    '''
+                    script {
+                        sh '''
+                            ./libs/bash/install.sh
+                        '''
+                    }
                 }
             }
             stage('Compliance & SAST') {
                 steps {
-                    // authentication
                     script {
-                        sh '''#!/bin/bash
-                            # shellcheck disable=1091
-                            source "$(pwd)/.tmp/toolchain-management/libs/bash/git/pre_commit_functions.sh"
+                        withCredentials([string(
+                            credentialsId:  gitlabApiToken,
+                            variable:       'gitlabPAT'
+                        )]) {
+                            sh '''#!/bin/bash
+                                # shellcheck disable=1091
+                                source "$(pwd)/.tmp/toolchain-management/libs/bash/git/pre_commit_functions.sh"
 
-                            # Do not allow in-project shared modules
-                            doNotAllowSharedModulesInsideDeploymentProjects
+                                # Do not allow in-project shared modules
+                                doNotAllowSharedModulesInsideDeploymentProjects
 
-                            # generate docs and meta-data only if checks do not fail
-                            documentation
+                                # generate docs and meta-data only if checks do not fail
+                                documentation
 
-                            # supply chain attastation generation and diff comparison
-                            generateSBOM
+                                # supply chain attastation generation and diff comparison
+                                generateSBOM
 
-                            # best practices and security scanning
-                            terraformCompliance
+                                # best practices and security scanning
+                                terraformCompliance
 
-                            # linting and syntax formatting
-                            terraformLinting
-                        '''
-                    }
-                    
-                    withCredentials([string(
-                        credentialsId:  gitlabApiToken,
-                        variable:       'gitlabPAT'
-                    )]) {
-                        // urlencoding using CURL https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736
-                        sh '''#!/bin/bash
-                            # Send payload via GitLab API https://docs.gitlab.com/ee/api/commits.html#post-comment-to-commit
-                            curl \
-                                --form "note=# Compliance Scanning Results:\n- ${BUILD_URL}testReport/" \
-                                --header "PRIVATE-TOKEN: ''' +  env.gitlabPAT + '''" \
-                                --request POST \
-                                "https://${GITLAB_HOST}/api/v4/projects/''' + gitlabProjectId + '''/repository/commits/${GIT_COMMIT}/comments"
-                        '''
+                                # linting and syntax formatting
+                                terraformLinting
+
+                                # urlencoding using CURL https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736
+                                # Send payload via GitLab API https://docs.gitlab.com/ee/api/commits.html#post-comment-to-commit
+                                curl \
+                                    --form "note=# Compliance Scanning Results:\n- ${BUILD_URL}testReport/" \
+                                    --header "PRIVATE-TOKEN: ''' +  env.gitlabPAT + '''" \
+                                    --request POST \
+                                    "https://${GITLAB_HOST}/api/v4/projects/''' + gitlabProjectId + '''/repository/commits/${GIT_COMMIT}/comments"
+                            '''
+                        }
                     }
 
                     archive includes: '$(pwd)/.tmp/junit*.xml'
@@ -193,68 +196,70 @@ def call(
             // push tag to commit in GL
             stage('Tagging') {
                 steps {
-                    if (env.BRANCH_NAME == 'main') {
-                        // credentials to git push via ssh
-                        withCredentials([sshUserPrivateKey(
-                            credentialsId: gitSSHCreds,
-                            keyFileVariable: 'key'
-                        )]) {
-                            // https://stackoverflow.com/questions/44330148/run-bash-command-on-jenkins-pipeline
-                            sh '''#!/bin/bash
-                                declare CHANGELOG_PATH
-                                declare MSG
-                                declare SEM_VER
-                                declare LINES_FOR_CONTEXT
+                    script {
+                        if (env.BRANCH_NAME == 'main') {
+                            // credentials to git push via ssh
+                            withCredentials([sshUserPrivateKey(
+                                credentialsId: gitSSHCreds,
+                                keyFileVariable: 'key'
+                            )]) {
+                                // https://stackoverflow.com/questions/44330148/run-bash-command-on-jenkins-pipeline
+                                sh '''#!/bin/bash
+                                    declare CHANGELOG_PATH
+                                    declare MSG
+                                    declare SEM_VER
+                                    declare LINES_FOR_CONTEXT
 
-                                CHANGELOG_PATH=$(git diff main --name-only | grep CHANGELOG)
-                                if [[ $CHANGELOG_PATH == "" ]]
-                                then
-                                    printf "INFO: No change log found, skipping tag creation."
-                                    return 0
-                                fi
+                                    CHANGELOG_PATH=$(git diff main --name-only | grep CHANGELOG)
+                                    if [[ $CHANGELOG_PATH == "" ]]
+                                    then
+                                        printf "INFO: No change log found, skipping tag creation."
+                                        return 0
+                                    fi
 
-                                # get the messge from the CHANGELOG
-                                # Remove the git line leading `+` character
-                                # Remove the git status title line
-                                # Double backslash escape for Jenkins
-                                # https://stackoverflow.com/questions/59716090/how-to-remove-first-line-from-a-string
-                                MSG=$(git diff main --unified=0 $CHANGELOG_PATH | \
-                                    grep -E "^\\+" | \
-                                    sed 's/+//' | \
-                                    sed 1d
-                                )
-                                # output git diff, include --unified=2 to ensure unchanged text (up to 2 lines) in the middle of a diff is included. Specifically this ensures ### Added || ### Fixed || ### Deleted are included in the output
-                                # remove Git header
-                                # remove header $LINES_FOR_CONTEXT count of lines
-                                # remove tail $LINES_FOR_CONTEXT count of lines
-                                # remove lines starting with `-` (git remove) character
-                                # remove `+` from line if the first character (git add)
-                                LINES_FOR_CONTEXT=2
-                                MSG=$(git diff main --unified="$LINES_FOR_CONTEXT" $CHANGELOG_PATH | \
-                                    tail -n +$((5+$LINES_FOR_CONTEXT)) | \
-                                    tail -n +"$LINES_FOR_CONTEXT" | \
-                                    head -n -"$LINES_FOR_CONTEXT" | \
-                                    sed '/^-/d' | \
-                                    sed 's/+//')
+                                    # get the messge from the CHANGELOG
+                                    # Remove the git line leading `+` character
+                                    # Remove the git status title line
+                                    # Double backslash escape for Jenkins
+                                    # https://stackoverflow.com/questions/59716090/how-to-remove-first-line-from-a-string
+                                    MSG=$(git diff main --unified=0 $CHANGELOG_PATH | \
+                                        grep -E "^\\+" | \
+                                        sed 's/+//' | \
+                                        sed 1d
+                                    )
+                                    # output git diff, include --unified=2 to ensure unchanged text (up to 2 lines) in the middle of a diff is included. Specifically this ensures ### Added || ### Fixed || ### Deleted are included in the output
+                                    # remove Git header
+                                    # remove header $LINES_FOR_CONTEXT count of lines
+                                    # remove tail $LINES_FOR_CONTEXT count of lines
+                                    # remove lines starting with `-` (git remove) character
+                                    # remove `+` from line if the first character (git add)
+                                    LINES_FOR_CONTEXT=2
+                                    MSG=$(git diff main --unified="$LINES_FOR_CONTEXT" $CHANGELOG_PATH | \
+                                        tail -n +$((5+$LINES_FOR_CONTEXT)) | \
+                                        tail -n +"$LINES_FOR_CONTEXT" | \
+                                        head -n -"$LINES_FOR_CONTEXT" | \
+                                        sed '/^-/d' | \
+                                        sed 's/+//')
 
-                                # grep extract SemVer from string
-                                # https://stackoverflow.com/questions/16817646/extract-version-number-from-a-string
-                                SEM_VER=$( echo "$MSG" | grep -Po '(?<=##\\ \\[)[^\\]]+' )
+                                    # grep extract SemVer from string
+                                    # https://stackoverflow.com/questions/16817646/extract-version-number-from-a-string
+                                    SEM_VER=$( echo "$MSG" | grep -Po '(?<=##\\ \\[)[^\\]]+' )
 
-                                echo "CHANGELOG_PATH: $CHANGELOG_PATH"
-                                echo "MSG: $MSG"
-                                echo "SEM_VER: $SEM_VER"
+                                    echo "CHANGELOG_PATH: $CHANGELOG_PATH"
+                                    echo "MSG: $MSG"
+                                    echo "SEM_VER: $SEM_VER"
 
-                                # https://stackoverflow.com/questions/4457009/special-character-in-git-possible
-                                git tag \
-                                    --annotate "$SEM_VER" \
-                                    --cleanup="verbatim" \
-                                    --message="$(printf "%s" "$MSG")"
-                                git config --global push.default matching
+                                    # https://stackoverflow.com/questions/4457009/special-character-in-git-possible
+                                    git tag \
+                                        --annotate "$SEM_VER" \
+                                        --cleanup="verbatim" \
+                                        --message="$(printf "%s" "$MSG")"
+                                    git config --global push.default matching
 
-                                export GIT_SSH_COMMAND="ssh -i $key"
-                                git push origin $SEM_VER --force
-                            '''
+                                    export GIT_SSH_COMMAND="ssh -i $key"
+                                    git push origin $SEM_VER --force
+                                '''
+                            }
                         }
                     }
                 }
@@ -264,53 +269,55 @@ def call(
             // push shared module archive to GL
             stage('Publish') {
                 steps {
-                    if (env.BRANCH_NAME == 'main') {
-                        withCredentials([string(
-                            credentialsId:  gitlabApiToken,
-                            variable:       'gitlabPAT'
-                        )]) {
-                            sh'''
-                                declare TAG
-                                declare LOV
+                    script {
+                        if (env.BRANCH_NAME == 'main') {
+                            withCredentials([string(
+                                credentialsId:  gitlabApiToken,
+                                variable:       'gitlabPAT'
+                            )]) {
+                                sh'''
+                                    declare TAG
+                                    declare LOV
 
-                                TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
-                                echo "TAG: $TAG"
+                                    TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+                                    echo "TAG: $TAG"
 
-                                # List Of Versions
-                                # https://forum.gitlab.com/t/listing-all-terraform-modules-published-under-group-via-api/75045
-                                LOV=$(
-                                    curl \
-                                        --header "Authorization: Bearer ''' +  env.gitlabPAT + '''" \
-                                        --insecure \
-                                        --location \
-                                        --silent \
-                                        "https://'''+gitlabHost+'''/api/v4/projects/''' + gitlabProjectId + '''/packages?package_type=terraform_module" \
-                                        | jq -r .[].version
-                                )
+                                    # List Of Versions
+                                    # https://forum.gitlab.com/t/listing-all-terraform-modules-published-under-group-via-api/75045
+                                    LOV=$(
+                                        curl \
+                                            --header "Authorization: Bearer ''' +  env.gitlabPAT + '''" \
+                                            --insecure \
+                                            --location \
+                                            --silent \
+                                            "https://'''+gitlabHost+'''/api/v4/projects/''' + gitlabProjectId + '''/packages?package_type=terraform_module" \
+                                            | jq -r .[].version
+                                    )
 
-                                # If TAG value does not exists in the List of Versions, create and publish to GitLab
-                                # https://linuxize.com/post/how-to-check-if-string-contains-substring-in-bash/
-                                if [[ "$LOV" != *"$TAG"* ]]
-                                then
-                                    rm "$(pwd)/.tmp/'''+gitlabProjectName+'''-$TAG.tgz" || true
-                                    tar \
-                                        --create \
-                                        --directory . \
-                                        --exclude=.git \
-                                        --exclude=.tmp \
-                                        --exclude=.tgz \
-                                        --file "$(pwd)/.tmp/'''+gitlabProjectName+'''-$TAG.tgz" \
-                                        --gzip \
-                                        .
+                                    # If TAG value does not exists in the List of Versions, create and publish to GitLab
+                                    # https://linuxize.com/post/how-to-check-if-string-contains-substring-in-bash/
+                                    if [[ "$LOV" != *"$TAG"* ]]
+                                    then
+                                        rm "$(pwd)/.tmp/'''+gitlabProjectName+'''-$TAG.tgz" || true
+                                        tar \
+                                            --create \
+                                            --directory . \
+                                            --exclude=.git \
+                                            --exclude=.tmp \
+                                            --exclude=.tgz \
+                                            --file "$(pwd)/.tmp/'''+gitlabProjectName+'''-$TAG.tgz" \
+                                            --gzip \
+                                            .
 
-                                    curl \
-                                        --header "PRIVATE-TOKEN: ''' +  env.gitlabPAT + '''" \
-                                        --insecure \
-                                        --location \
-                                        --upload-file "$(pwd)/.tmp/'''+gitlabProjectName+'''-$TAG.tgz" \
-                                        --url "https://'''+gitlabHost+'''/api/v4/projects/''' + gitlabProjectId + '''/packages/terraform/modules/'''+gitlabProjectName+'''/aws/$TAG/file"
-                                fi
-                            '''
+                                        curl \
+                                            --header "PRIVATE-TOKEN: ''' +  env.gitlabPAT + '''" \
+                                            --insecure \
+                                            --location \
+                                            --upload-file "$(pwd)/.tmp/'''+gitlabProjectName+'''-$TAG.tgz" \
+                                            --url "https://'''+gitlabHost+'''/api/v4/projects/''' + gitlabProjectId + '''/packages/terraform/modules/'''+gitlabProjectName+'''/aws/$TAG/file"
+                                    fi
+                                '''
+                            }
                         }
                     }
                 }
