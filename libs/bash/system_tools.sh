@@ -119,10 +119,9 @@ function yum_systems() {
 }
 
 function install_goenv() {
-    if [[ ( ! $(which go) && $GOENV_VER) || "$UPDATE" == "true" ]]    
+    if [[ ( ! $(which go) && $GO_VER && $GOENV_VER) || "$UPDATE" == "true" ]]
     then
-        printf "INFO: Installing goenv to %s \n" "$HOME/.goenv"
-        cd "$HOME" || exit 1
+        printf "INFO: Installing goenv to %s to enable Go\n" "$HOME/.goenv"
         rm -rf "$HOME/.goenv" || true
         git clone --quiet "https://github.com/syndbg/goenv.git" "$HOME/.goenv"
 
@@ -139,13 +138,12 @@ function install_goenv() {
 
         #shellcheck disable=SC1090
         source "$SHELL_PROFILE"
-
         goenv install --force "$GO_VER"
 
-    elif [[ $GOENV_VER ]]
+    elif [[ ( $(which go) && $GO_VER && $GOENV_VER ) ]]
     then
-        printf "INFO: Updating goenv.\n"
-        cd "$HOME/.goenv" || exit
+        printf "INFO: Updating Go via goenv.\n"
+        cd "$HOME/.goenv" || exit 1
         git reset master --hard
         git fetch --all --tags
         git checkout "$GOENV_VER"
@@ -163,14 +161,20 @@ function install_python3() {
     if [[ ( ! $(which python3) && "$PYTHON_VER" ) || "$UPDATE" == "true" ]]
     then
         printf "INFO: Python3 runtime not detected or needs updated.\n"
+
+        # TODO Replace this all with pyenv
         curl -sL --show-error "https://www.python.org/ftp/python/$PYTHON_VER/Python-$PYTHON_VER.tgz" -o "Python-$PYTHON_VER.tgz"
         tar xzf "Python-$PYTHON_VER.tgz"
         cd "Python-$PYTHON_VER" || exit 1
         sed -i 's/PKG_CONFIG openssl /PKG_CONFIG openssl11 /g' configure
-        ./configure --bindir="$BIN_DIR" --enable-optimizations
+        ./configure \
+            --bindir="$BIN_DIR" \
+            --enable-optimizations \
+            --prefix="$BIN_DIR"
         sudo make clean || true
         sudo make altinstall
-        # The following should run without errors if SSL was properly compiled
+
+        # If the build was successful the following should exit without errors
         python -m ssl
 
         {
@@ -205,7 +209,7 @@ function install_pip() {
         fi
 
         printf "INFO: Removing existing site-packages at %s\n" "/home/$(whoami)/.local/lib/python$PYTHON_MINOR_VER/site-packages"
-        rm -rf "/home/$(whoami)/.local/lib/python$PYTHON_MINOR_VER/site-packages"
+        rm -rf "/home/$(whoami)/.local/lib/python$PYTHON_MINOR_VER/site-packages" || true
 
         printf "INFO: Download pip installer.\n"
         curl -sL --show-error "https://bootstrap.pypa.io/get-pip.py" -o get-pip.py
@@ -252,5 +256,7 @@ function install_system_tools() {
     pip --version
     python3 --version
 
-    xeol version
+    # The folowing line causes "2023/09/12 14:27:39 unsupported git url: git@gitlab.test.igdcs.com:cicd/terraform/deployments.git" error, not sure why
+    # Validated in localhost fedora 38 and Jenkins RHEL 7
+    # xeol version
 }

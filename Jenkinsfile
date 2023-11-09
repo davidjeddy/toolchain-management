@@ -106,7 +106,7 @@ pipeline {
         }
         stage('Git Checkout') {
             steps {
-                echo "INFO: Checkout main branch"
+                echo "INFO: Checkout branch"
                 git credentialsId: gitSSHCreds,
                     url: env.GIT_URL,
                     branch: env.BRANCH_NAME

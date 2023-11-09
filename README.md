@@ -36,7 +36,8 @@ Engineer saved code -> toolchain triggered (pre-commit hook) -> scanning tools e
 
 - [Linux](https://en.wikipedia.org/wiki/Linux) (kernal >= 4.x)
   - `sudo` ability
-  - [Debian](https://en.wikipedia.org/wiki/Debian) or [RHEL](https://en.wikipedia.org/wiki/Red_Hat_Enterprise_Linux) based are the only distributions currently supported
+  - [Fedora](https://fedoraproject.org/)(recommended) or [RHEL](https://en.wikipedia.org/wiki/Red_Hat_Enterprise_Linux)(second option) based are the only distributions currently supported
+    - [Worldline PPS Tribe Fedore VirtualBox VM Configuration](https://confluence.techno.ingenico.com/display/PPS/Installing+Fedora+Workstatio+38+Virtual+Machine+on+DWS+Workstation)
 - [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) >= 5.x
 - [Git](https://git-scm.com/) >= 2.x
 
@@ -68,7 +69,7 @@ Engineer saved code -> toolchain triggered (pre-commit hook) -> scanning tools e
 ### WARNING
 
 - System packages managed by `apt` or `yum` will be installed / updated to the latest version on every execution.
-- Toolchain packages will be replaced with the version defined in `./libs/bash/versions.sh` when `--update true` argument is provided.
+- Toolchain packages will be replaced with the version defined in `${PROJECT_ROOT}/libs/bash/versions.sh` when `--update true` argument is provided.
 
 ### Install
 
