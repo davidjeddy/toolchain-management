@@ -6,7 +6,7 @@ function install_misc_tools() {
 
     if [[ $(which yum) ]]
     then
-        echo "WARN: Not insalling Hashicorp Packer on RHEL basd systems due to package name collision"
+        echo "WARN: Not installing Hashicorp Packer on RHEL basd systems due to package name collision"
         return 0
     fi
 

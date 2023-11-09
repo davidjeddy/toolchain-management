@@ -30,12 +30,12 @@ declare ARCH
 declare BIN_DIR
 declare ORIG_PWD
 declare PLATFORM
-declare PROJECT_ROOT
 declare SHELL_PROFILE
 declare SKIP_AWS_TOOLS
 declare SKIP_MISC_TOOLS
 declare SKIP_SYSTEM_TOOLS
 declare SKIP_TERRAFORM_TOOLS
+declare WL_GC_TM_WORKSPACE # Worldline - Global Collect - Toollchain Management - Workspace
 
 ## parse positional cli args
 while [ $# -gt 0 ]; do
@@ -84,8 +84,13 @@ then
     PLATFORM="linux"
 fi
 
-# ALWAYS set PROJECT_ROOT to local project path
-PROJECT_ROOT=$(git rev-parse --show-toplevel)
+WL_GC_TM_WORKSPACE=$(git rev-parse --show-toplevel)
+if [[ "$(ps -o comm= $PPID)" == *"install.sh" ]]
+then
+    # If this script is called by another install.sh script; we expect this project to be inside the $(pwd)/.tmp dir
+    # https://stackoverflow.com/questions/20572934/get-the-name-of-the-caller-script-in-bash-script
+    WL_GC_TM_WORKSPACE="$(pwd)/.tmp/toolchain-management"
+fi
 
 if [[ "$SHELL_PROFILE" == "" ]]
 then
@@ -103,7 +108,7 @@ export ARCH
 export BIN_DIR
 export ORIG_PWD
 export PLATFORM
-export PROJECT_ROOT
+export WL_GC_TM_WORKSPACE
 export SHELL_PROFILE
 export SKIP_AWS_TOOLS
 export SKIP_MISC_TOOLS
@@ -119,7 +124,7 @@ echo "ARCH: $ARCH"
 echo "BIN_DIR: $BIN_DIR"
 echo "ORIG_PWD: $ORIG_PWD"
 echo "PLATFORM: $PLATFORM"
-echo "PROJECT_ROOT: $PROJECT_ROOT"
+echo "WL_GC_TM_WORKSPACE: $WL_GC_TM_WORKSPACE"
 echo "SHELL_PROFILE: $SHELL_PROFILE"
 echo "SKIP_AWS_TOOLS: $SKIP_AWS_TOOLS"
 echo "SKIP_MISC_TOOLS: $SKIP_MISC_TOOLS"
@@ -127,14 +132,14 @@ echo "SKIP_SYSTEM_TOOLS: $SKIP_SYSTEM_TOOLS"
 echo "SKIP_TERRAFORM_TOOLS: $SKIP_TERRAFORM_TOOLS"
 echo "UPDATE: $UPDATE"
 
-## Execute
+## Execution
 
 printf "INFO: Changing to project root.\n"
-cd "$PROJECT_ROOT" || exit 1
+cd "$WL_GC_TM_WORKSPACE" || exit 1
 
 printf "INFO: Sourcing tool versions.sh in install.sh.\n"
 # shellcheck disable=SC1091
-source "./libs/bash/versions.sh"
+source "$WL_GC_TM_WORKSPACE/libs/bash/versions.sh"
 
 # Does $SHELL_PROFILE exist?
 if [[ ! -f $SHELL_PROFILE ]]
@@ -144,7 +149,7 @@ then
 
     printf "INFO: Add BIN_DIR to PATH via in %s.\n" "$SHELL_PROFILE"
     echo "export PATH=\$PATH:$BIN_DIR" >> "$SHELL_PROFILE"
-    echo "export PATH=\$PATH:$PROJECT_ROOT/libs/bash" >> "$SHELL_PROFILE"
+    echo "export PATH=\$PATH:$WL_GC_TM_WORKSPACE/libs/bash" >> "$SHELL_PROFILE"
 fi
 
 # Add tribe profile to .bash_profile if it exists
@@ -176,34 +181,34 @@ printf "INFO: PATH value is: %s\n" "$PATH"
 # System tools MUST be first
 if [[ $SKIP_SYSTEM_TOOLS == "" ]]
 then
-    cd "$PROJECT_ROOT/.tmp" || exit 1
+    cd "$WL_GC_TM_WORKSPACE" || exit 1
     # shellcheck disable=SC1091
-    source "../libs/bash/system_tools.sh"
+    source "${WL_GC_TM_WORKSPACE}/libs/bash/system_tools.sh"
     install_system_tools
 fi
 
 # Additional management sorted alphabetically
 if [[ $SKIP_AWS_TOOLS == "" ]]
 then
-    cd "$PROJECT_ROOT/.tmp" || exit 1
+    cd "$WL_GC_TM_WORKSPACE" || exit 1
     # shellcheck disable=SC1091
-    source "../libs/bash/aws_tools.sh"
+    source "${WL_GC_TM_WORKSPACE}/libs/bash/aws_tools.sh"
     install_aws_tools
 fi
 
 if [[ $SKIP_MISC_TOOLS == "" ]]
 then
-    cd "$PROJECT_ROOT/.tmp" || exit 1
+    cd "$WL_GC_TM_WORKSPACE" || exit 1
     # shellcheck disable=SC1091
-    source "../libs/bash/misc_tools.sh"
+    source "${WL_GC_TM_WORKSPACE}/libs/bash/misc_tools.sh"
     install_misc_tools
 fi
 
 if [[ $SKIP_TERRAFORM_TOOLS == "" ]]
 then
-    cd "$PROJECT_ROOT/.tmp" || exit 1
+    cd "$WL_GC_TM_WORKSPACE" || exit 1
     # shellcheck disable=SC1091
-    source "../libs/bash/terraform_tools.sh"
+    source "${WL_GC_TM_WORKSPACE}/libs/bash/terraform_tools.sh"
     install_terraform_tools
 fi
 

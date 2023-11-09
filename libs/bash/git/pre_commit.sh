@@ -12,19 +12,18 @@ fi
 declare ORIG_PWD
 ORIG_PWD="$(pwd)"
 export ORIG_PWD
-printf "INFO: ORIG_PWD value is \n%s\n" "$ORIG_PWD"
 
-declare PROJECT_ROOT
-PROJECT_ROOT=$(git rev-parse --show-toplevel)
-export PROJECT_ROOT
-printf "INFO: PROJECT_ROOT value is \n%s\n" "$PROJECT_ROOT"
+declare WORKSPACE
+WORKSPACE=$(git rev-parse --show-toplevel)
+export WORKSPACE
 
 # get a list of changed files when using only the git staged list against previouse commit
 declare TF_FILES_CHANGED
 TF_FILES_CHANGED=$(git diff HEAD~1 --name-only | grep tf\$ | \
     grep -v .tmp/ | \
+    grep -v docs/ | \
     grep -v examples/ | \
-    grep -v libs | \
+    grep -v libs/ | \
     grep -v README.md | \
     grep -v sbom.xml | \
     grep -v terraform.tf \
@@ -50,27 +49,26 @@ fi
 
 ## functions
 
-# shellcheck disable=1091
-source "${PROJECT_ROOT}/.tmp/toolchain-management/libs/bash/pre_commit_functions.sh"
-
 ## logic
+
 
 for DIR in $MODULES_DIR
 do
     printf "INFO: Reset to project home directory.\n"
-    cd "${PROJECT_ROOT}" || exit 10
+    cd "${WL_GC_TM_WORKSPACE}" || exit 1
 
     printf "INFO: Changing into %s dir if it still exists.\n" "${DIR}"
     cd "$DIR" || continue
 
-    # If a lock file exists and a cache dir does not, The module needs to be initilized.
-    if [[ -f ".terraform.lock.hcl" && ! -d ".terraform" ]]
+    # If a lock file exists, the module needs to be initilized.
+    if [[ -f ".terraform.lock.hcl" ]]
     then
-        printf "INFO: Detected this module has not be initilized, doing it for you now.\n"
         terraform init -no-color
-        # ensure providers for Jenkins worker node
         terraform providers lock -platform=linux_amd64
     fi
+
+    # shellcheck disable=1091
+    source "${WL_GC_TM_WORKSPACE}/.tmp/toolchain-management/libs/bash/pre_commit_functions.sh"
 
     # Create tmp dir to hold artifacts and reports
     createTmpDir
@@ -87,7 +85,7 @@ do
     # generate docs and meta-data only if checks do not fail
     documentation
 
-    # supply chain attastation
+    # supply chain attastation generation and diff comparison
     generateSBOM
 done
 

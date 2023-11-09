@@ -1,6 +1,24 @@
 # RUNBOOK
 
-## ./libs/bash/sgets_aws_sts_token.sh
+## Operations
+
+### Validate Changes
+
+```sh
+./libs/bash/install.sh --update true
+```
+
+Additionally, run the same command from a IAC shared module project directory.
+
+```sh
+git clone some-module
+cd some-module
+./libs/bash/install.sh --update true
+```
+
+Lastly, execute the above same via Jenkins to ensure end-to-end functionality.
+
+## Errors, When, and Fixes
 
 **Error**
 
