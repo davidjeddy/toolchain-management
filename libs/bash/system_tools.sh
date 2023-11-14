@@ -31,6 +31,8 @@ function apt_systems() {
         curl \
         gcc \
         gcc-c++ \
+        git \
+        git-lfs \
         gnupg \
         gnupg2 \
         jq \
@@ -84,6 +86,8 @@ function yum_systems() {
             curl \
             gcc \
             gcc-c++ \
+            git \
+            git-lfs \
             gnupg \
             gnupg2 \
             jq \
@@ -104,6 +108,8 @@ function yum_systems() {
             curl \
             gcc \
             gcc-c++ \
+            git \
+            git-lfs \
             gnupg \
             gnupg2 \
             jq \
@@ -116,6 +122,11 @@ function yum_systems() {
             yum-utils \
             zlib-devel
     fi
+
+    # Install Git 2.x from 
+    git lfs track "*.iso"
+    git lfs track "*.zip"
+    git lfs track "*.gz"
 }
 
 function install_goenv() {
