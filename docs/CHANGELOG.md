@@ -13,6 +13,19 @@ Action Keywords:
 `REMOVE` : Functionality is no longer available.
 `UPDATED`: Functionality capability expanded with additional abilities.
 
+## [0.32.3] - 2023-11-14
+
+### Fixed
+
+- changed `fixed` pipeline emoji from :alert: to :tada:
+- spelling error in pre_commit_functions.sh
+
+## [0.32.2] - 2023-11-13
+
+### Fixed
+
+- pathing in pre_commit
+
 ## [0.32.1] - 2023-11-10
 
 ### Added
