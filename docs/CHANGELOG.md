@@ -13,6 +13,12 @@ Action Keywords:
 `REMOVE` : Functionality is no longer available.
 `UPDATED`: Functionality capability expanded with additional abilities.
 
+## [0.32.4] - 2023-11-14
+
+### Fixed
+
+- errant space in ./libs/jenkins/pipelines/vars/SharedModule.groovy regex when dealing with CHANGELOG parsing.
+
 ## [0.32.3] - 2023-11-14
 
 ### Fixed
