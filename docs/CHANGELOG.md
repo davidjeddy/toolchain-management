@@ -13,6 +13,12 @@ Action Keywords:
 `REMOVE` : Functionality is no longer available.
 `UPDATED`: Functionality capability expanded with additional abilities.
 
+## [0.32.1] - 2023-11-10
+
+### Added
+
+- issue wherein the Tag was not being created, we needed `HEAD~1` not `main` as the target to `diff` against
+
 ## [0.32.0] - 2023-11-06
 
 ### Added

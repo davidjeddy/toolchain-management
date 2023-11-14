@@ -59,7 +59,6 @@ Ensure Jenkinsfile contains `gitlabConnectionName` variable and valid value.
 
 ImportError: cannot import name 'run' from 'checkov.main' (/home/jenkins/.local/lib/python3.8/site-packages/checkov/main.py)
 
-
 **When**
 
 checkov --version

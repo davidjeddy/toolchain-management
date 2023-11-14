@@ -136,6 +136,6 @@ pipeline {
         }
     }
     triggers {
-        cron(env.BRANCH_NAME == 'main' ? 'H 4 * * 1-5' : '')
+        cron(env.BRANCH_NAME == 'main' ?  'H */3 * * 1-5' : '')
     }
 }
