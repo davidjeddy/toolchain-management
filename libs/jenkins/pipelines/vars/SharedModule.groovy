@@ -77,7 +77,7 @@ def call(
                         slack.slackNotification(
                             slackChannel,
                             env.JOB_NAME,
-                            ":alert: Build fixed.",
+                            ":tada: Build fixed.",
                             ':jenkins:'
                         )
                     }

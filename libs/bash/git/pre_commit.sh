@@ -55,7 +55,7 @@ fi
 for DIR in $MODULES_DIR
 do
     printf "INFO: Reset to project home directory.\n"
-    cd "${WL_GC_TM_WORKSPACE}" || exit 1
+    cd "${WORKSPACE}" || exit 1
 
     printf "INFO: Changing into %s dir if it still exists.\n" "${DIR}"
     cd "$DIR" || continue
@@ -68,7 +68,7 @@ do
     fi
 
     # shellcheck disable=1091
-    source "${WL_GC_TM_WORKSPACE}/.tmp/toolchain-management/libs/bash/pre_commit_functions.sh"
+    source "${WORKSPACE}/.tmp/toolchain-management/libs/bash/git/pre_commit_functions.sh"
 
     # Create tmp dir to hold artifacts and reports
     createTmpDir
