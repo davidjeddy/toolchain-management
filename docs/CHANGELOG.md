@@ -13,11 +13,17 @@ Action Keywords:
 `REMOVE` : Functionality is no longer available.
 `UPDATED`: Functionality capability expanded with additional abilities.
 
-## [0.32.7] - 2023-11-15
+## [0.32.8] - 2023-11-15
 
 ### Fixed
 
 - increate pipeline timeout from 15 mins to 30 mins to account for when Python needs to be compiled
+
+## [0.32.7] - 2023-11-15
+
+### Fixed
+
+- tflint usage with shared modules
 
 ## [0.32.6] - 2023-11-15
 
