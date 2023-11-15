@@ -27,7 +27,7 @@ pipeline {
         gitLabConnection(gitlabConnectionName)
         timestamps ()
         // https://stackoverflow.com/questions/38096004/how-to-add-a-timeout-step-to-jenkins-pipeline
-        timeout(time: 15, unit: 'MINUTES')
+        timeout(time: 30, unit: 'MINUTES')
     }
     // source https://stackoverflow.com/questions/36651432/how-to-implement-post-build-stage-using-jenkins-pipeline-plug-in
     // source https://plugins.jenkins.io/gitlab-plugin/
