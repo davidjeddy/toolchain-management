@@ -16,6 +16,7 @@ export ORIG_PWD
 declare WORKSPACE
 WORKSPACE=$(git rev-parse --show-toplevel)
 export WORKSPACE
+printf "WORKSPACE: %s\n" "${WORKSPACE}"
 
 # get a list of changed files when using only the git staged list against previouse commit
 declare TF_FILES_CHANGED
@@ -29,7 +30,6 @@ TF_FILES_CHANGED=$(git diff HEAD~1 --name-only | grep tf\$ | \
     grep -v terraform.tf \
     || true \
 )
-
 export TF_FILES_CHANGED
 printf "INFO: TF_FILES_CHANGED value is \n%s\n" "$TF_FILES_CHANGED"
 
