@@ -149,6 +149,7 @@ function terraformCompliance() {
         exit 1
     }
 
+    # Note: `WORKSPACE` is defined in pre_commit.sh and must point to the root of the project.
     printf "INFO: KICS executing...\n"
     {
         rm -rf "$(pwd)/.tmp/junit-kics.xml" || exit 1
@@ -166,7 +167,7 @@ function terraformCompliance() {
                 --output-name "junit-kics" \
                 --output-path "./.tmp" \
                 --path "./" \
-                --queries-path "$(pwd)/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
+                --queries-path "${WORKSPACE}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
                 --report-formats "junit" \
                 --type "Terraform"
         else
@@ -179,7 +180,7 @@ function terraformCompliance() {
                 --output-name "junit-kics" \
                 --output-path "./.tmp" \
                 --path "./" \
-                --queries-path "$(pwd)/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
+                --queries-path "${WORKSPACE}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
                 --report-formats "junit" \
                 --type "Terraform"
         fi
@@ -223,40 +224,39 @@ function terraformCompliance() {
     }
 
     # trivy only scans deployment modules
-    if [[ -f "$(pwd)/.terraform.lock.hcl" ]]
-    then
-        printf "INFO: trivy executing...\n"
-        {
-            rm -rf "$(pwd)/.tmp/junit-trivy.xml" || exit 1
-            touch "$(pwd)/.tmp/junit-trivy.xml" || exit 1
-            if [[ -f "trivy.yml" ]]
-            then
-                # use configuration file if present.
-                printf "INFO: trivy configuration file found, using it.\n"
-                trivy scan \
-                    --config trivy.yml \
-                    --iac-type terraform \
-                    --log-level error \
-                    --non-recursive \
-                    --output junit-xml \
-                    --use-colors f \
-                    > .tmp/junit-trivy.xml
-            else
-                printf "INFO: trivy configuration NOT file found.\n"
-                trivy scan \
-                    --iac-type terraform \
-                    --log-level error \
-                    --non-recursive \
-                    --output junit-xml \
-                    --use-colors f \
-                    > .tmp/junit-trivy.xml
-            fi
-        } || {
-            cat "$(pwd)/.tmp/junit-trivy.xml" || exit 1
-            echo "ERR: trivy failed. Check Junit reports in .tmp"
-            exit 1
-        }
-    fi
+    # FATAL	sbom scan error: scan error: scan failed: failed analysis: SBOM decode error: cyclonedx-xml scanning is not yet supported
+    # if [[ -f "$(pwd)/.terraform.lock.hcl" ]]
+    # then
+    #     printf "INFO: trivy executing...\n"
+    #     {
+    #         rm -rf "$(pwd)/.tmp/junit-trivy.xml" || exit 1
+    #         touch "$(pwd)/.tmp/junit-trivy.xml" || exit 1
+    #         if [[ -f "trivy.yml" ]]
+    #         then
+    #             # use configuration file if present.
+    #             printf "INFO: trivy configuration file found, using it.\n"
+    #             trivy scan \
+    #                 --config trivy.yml \
+    #                 --log-level error \
+    #                 --non-recursive \
+    #                 --output junit-xml \
+    #                 --use-colors f \
+    #                 > .tmp/junit-trivy.xml
+    #         else
+    #             printf "INFO: trivy configuration NOT file found.\n"
+    #             trivy scan \
+    #                 --log-level error \
+    #                 --non-recursive \
+    #                 --output junit-xml \
+    #                 --use-colors f \
+    #                 > .tmp/junit-trivy.xml
+    #         fi
+    #     } || {
+    #         cat "$(pwd)/.tmp/junit-trivy.xml" || exit 1
+    #         echo "ERR: trivy failed. Check Junit reports in .tmp"
+    #         exit 1
+    #     }
+    # fi
 
     # EOL scanning tool
     # printf "INFO: xeol executing...\n"
