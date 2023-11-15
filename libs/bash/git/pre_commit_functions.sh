@@ -295,7 +295,33 @@ function terraformLinting() {
     printf "INFO: Executing Terraform Linting.\n"
 
     printf "INFO: Terraform/Terragrunt fmt and linting...\n"
-    terraform fmt -no-color -recursive . 
+    terraform fmt -no-color -recursive .
     terragrunt hclfmt .
-    tflint --chdir="$(pwd)" --fix --module --no-color
+
+    printf "INFO: tflint executing...\n"
+    {
+        if [[ -f "tflint.hcl" ]]
+        then
+            tflint \
+                --chdir="$(pwd)" \
+                --config="tflint.hcl" \
+                --no-module \
+                --no-color \
+                --format=junit \
+                --ignore-module=SOURCE \
+                > .tmp/junit-tflint.xml
+        else
+            tflint \
+                --chdir="$(pwd)" \
+                --no-module \
+                --no-color \
+                --format=junit \
+                --ignore-module=SOURCE \
+                > .tmp/junit-tflint.xml
+        fi
+    } || {
+        cat "$(pwd)/.tmp/junit-tflint.xml" || exit 1
+        echo "ERR: tflint failed. Check Junit reports in .tmp"
+        exit 1
+    }
 }
