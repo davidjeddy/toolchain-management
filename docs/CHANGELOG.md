@@ -13,6 +13,15 @@ Action Keywords:
 `REMOVE` : Functionality is no longer available.
 `UPDATED`: Functionality capability expanded with additional abilities.
 
+## [0.32.9] - 2023-11-16
+
+### Fixed
+
+- `t*env install *` only if version not already available
+- output README if diff exists in pipeline
+- SEM_VER extraction regex
+- update checkov version to 3.x release
+
 ## [0.32.8] - 2023-11-15
 
 ### Fixed

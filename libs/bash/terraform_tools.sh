@@ -78,7 +78,7 @@ function tfenv_and_terraform() {
         cd .tfenv || exit
 
         sudo ln -sfn ~/.tfenv/bin/* "$BIN_DIR" || true
-    elif [[ -d "$HOME/.tgenv" && $TFENV_VER && "$UPDATE" == "true" ]]
+    elif [[ -d "$HOME/.tfenv" && $TFENV_VER && "$UPDATE" == "true" ]]
     then
         printf "INFO: Updating tfenv.\n"
         export PATH=$PATH:$HOME/.tfenv/bin
@@ -98,8 +98,13 @@ function tfenv_and_terraform() {
         source "$SHELL_PROFILE"
     fi
 
-    printf "INFO: Installing Terraform via tfenv.\n"
-    tfenv install "$TF_VER"
+    # install terraform version only if not already present on the host
+    if [[ "$(tfenv list)" != *"$TF_VER"* ]]
+    then
+        printf "INFO: Installing Terraform via tfenv.\n"
+        tfenv install "$TF_VER"
+    fi
+
     tfenv use "$TF_VER"
 }
 
@@ -121,7 +126,7 @@ function tgenv_and_terragrunt() {
         git checkout "v$TGENV_VER"
         cd "$WL_GC_TM_WORKSPACE" || exit 1
     fi
-
+    
     # shellcheck disable=SC2143
     if [[ ! $(grep "export PATH=\$PATH:\$HOME/.tgenv/bin" "$SHELL_PROFILE") ]]
     then
@@ -131,8 +136,13 @@ function tgenv_and_terragrunt() {
         source "$SHELL_PROFILE"
     fi
 
-    printf "INFO: Installing Terragrunt via tgenv.\n"
-    tgenv install "$TG_VER"
+    # install terragrunt version only if not already present on the host
+    if [[ "$(tgenv list)" != *"$TG_VER"* ]]
+    then
+        printf "INFO: Installing Terragrunt via tgenv.\n"
+        tgenv install "$TG_VER"
+    fi
+
     tgenv use "$TG_VER"
 }
 

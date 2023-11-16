@@ -130,7 +130,7 @@ function yum_systems() {
 }
 
 function install_goenv() {
-    if [[ ( ! $(which go) && $GO_VER && $GOENV_VER) || "$UPDATE" == "true" ]]
+    if [[ ( ! $(which goenv) && $GO_VER && $GOENV_VER ) || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing goenv to %s to enable Go\n" "$HOME/.goenv"
         rm -rf "$HOME/.goenv" || true
@@ -154,12 +154,16 @@ function install_goenv() {
     elif [[ ( $(which go) && $GO_VER && $GOENV_VER ) ]]
     then
         printf "INFO: Updating Go via goenv.\n"
+        declare OLD_PWD
+        OLD_PWD="$(pwd)"
+
         cd "$HOME/.goenv" || exit 1
         git reset master --hard
         git fetch --all --tags
         git checkout "$GOENV_VER"
-
         goenv install --force "$GO_VER"
+
+        cd "$OLD_PWD" || exit 1
     fi
 
     goenv global "$GO_VER"
