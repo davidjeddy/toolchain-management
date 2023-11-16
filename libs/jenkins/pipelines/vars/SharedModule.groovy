@@ -121,11 +121,11 @@ def call(
                     script {
                         sh '''
                             echo "INFO: Printing ENV VARs"
+                            # We do not want the default AWS credentials from Jenkins
                             unset JENKINS_AWS_CREDENTIALSID
                             # Prevent colors in BASH for tfenv and tgenv
                             # https://github.com/tfutils/tfenv#bashlog_colours
-                            printenv | sort
-                            echo "INFO: Printing ENV VARs"
+                            export BASHLOG_COLOURS=0
                             printenv | sort
                         '''
                     }
@@ -134,6 +134,7 @@ def call(
             stage('Git Checkout') {
                 steps {
                     echo "Checkout main branch"
+                    // Needed for compliance, sast, tagging
                     git credentialsId: gitSSHCreds,
                         url: env.GIT_URL,
                         branch: "main"
@@ -214,6 +215,7 @@ def call(
 
                                     git fetch --all
                                     CHANGELOG_PATH=$(git diff HEAD~1 --name-only | grep CHANGELOG)
+                                    printf "INFO: CHANGELOG_PATH is %s.\n" "$CHANGELOG_PATH"
                                     if [[ "$CHANGELOG_PATH" == "" ]]
                                     then
                                         printf "INFO: No change log found, skipping tag creation.\n"
@@ -237,21 +239,19 @@ def call(
                                     # remove lines starting with `-` (git remove) character
                                     # remove `+` from line if the first character (git add)
                                     LINES_FOR_CONTEXT=2
+                                    printf "LINES_FOR_CONTEXT: %s\n" "$LINES_FOR_CONTEXT"
                                     MSG=$(git diff HEAD~1 --unified="$LINES_FOR_CONTEXT" "$CHANGELOG_PATH" | \
-                                        tail -n +$(("5"+"$LINES_FOR_CONTEXT")) | \
+                                        tail -n +$((5+$LINES_FOR_CONTEXT)) | \
                                         tail -n +"$LINES_FOR_CONTEXT" | \
                                         head -n -"$LINES_FOR_CONTEXT" | \
                                         sed '/^-/d' | \
                                         sed 's/+//'
                                     )
+                                    printf "MSG: %s\n" "$MSG"
 
                                     # grep extract SemVer from string
                                     # https://stackoverflow.com/questions/16817646/extract-version-number-from-a-string
                                     SEM_VER=$( echo "$MSG" | head -n 1 | grep -Po "([0-9]+([.][0-9]+)+)" )
-
-                                    printf "CHANGELOG_PATH: %s\n" "$CHANGELOG_PATH"
-                                    printf "LINES_FOR_CONTEXT: %s\n" "$LINES_FOR_CONTEXT"
-                                    printf "MSG: %s\n" "$MSG"
                                     printf "SEM_VER: %s\n" "$SEM_VER"
 
                                     if [[ ! "$SEM_VER" ]]
@@ -267,7 +267,7 @@ def call(
                                         --message="$(printf "%s" "$MSG")"
                                     git config --global push.default matching
 
-                                    git push origin "$SEM_VER" --force
+                                    git push origin "$SEM_VER"
                                 '''
                             }
                         }
