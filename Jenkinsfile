@@ -158,8 +158,8 @@ pipeline {
                                 CHANGELOG_PATH=$(git diff HEAD~1 --name-only | grep CHANGELOG)
                                 if [[ "$CHANGELOG_PATH" == "" ]]
                                 then
-                                    printf "INFO: No change log found, skipping tag creation."
-                                    return 0
+                                    printf "INFO: No change log found, skipping tag creation.\n"
+                                    exit 0
                                 fi
 
                                 # get the messge from the CHANGELOG

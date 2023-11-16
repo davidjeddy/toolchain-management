@@ -19,8 +19,9 @@ export WORKSPACE
 printf "WORKSPACE: %s\n" "${WORKSPACE}"
 
 # get a list of changed files when using only the git staged list against previouse commit
+git fetch --all
 declare TF_FILES_CHANGED
-TF_FILES_CHANGED=$(git diff HEAD~1 --name-only | grep tf\$ | \
+TF_FILES_CHANGED=$(git diff origin/main --name-only | grep tf\$ | \
     grep -v .tmp/ | \
     grep -v docs/ | \
     grep -v examples/ | \

@@ -217,7 +217,7 @@ def call(
                                     if [[ "$CHANGELOG_PATH" == "" ]]
                                     then
                                         printf "INFO: No change log found, skipping tag creation."
-                                        return 0
+                                        exit 0
                                     fi
 
                                     # get the messge from the CHANGELOG

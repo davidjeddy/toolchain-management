@@ -13,6 +13,12 @@ Action Keywords:
 `REMOVE` : Functionality is no longer available.
 `UPDATED`: Functionality capability expanded with additional abilities.
 
+## [0.32.10] - 2023-11-16
+
+### Fixed
+
+- pre_commit.sh git diff checker now fetches and uses origin/main as the target
+
 ## [0.32.9] - 2023-11-16
 
 ### Fixed
