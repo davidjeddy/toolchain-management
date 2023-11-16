@@ -122,6 +122,8 @@ def call(
                         sh '''
                             echo "INFO: Printing ENV VARs"
                             unset JENKINS_AWS_CREDENTIALSID
+                            # Prevent colors in BASH for tfenv and tgenv
+                            # https://github.com/tfutils/tfenv#bashlog_colours
                             printenv | sort
                             echo "INFO: Printing ENV VARs"
                             printenv | sort
@@ -239,16 +241,23 @@ def call(
                                         tail -n +"$LINES_FOR_CONTEXT" | \
                                         head -n -"$LINES_FOR_CONTEXT" | \
                                         sed '/^-/d' | \
-                                        sed 's/+//')
+                                        sed 's/+//'
+                                    )
 
                                     # grep extract SemVer from string
                                     # https://stackoverflow.com/questions/16817646/extract-version-number-from-a-string
-                                    SEM_VER=$( echo "$MSG" | grep -Po '(?<=##\\[)[^\\]]+' | head -n 1 )
+                                    SEM_VER=$( echo "$MSG" | head -n 1 | grep -Po "([0-9]+([.][0-9]+)+)" )
 
                                     printf "CHANGELOG_PATH: %s\n" "$CHANGELOG_PATH"
                                     printf "LINES_FOR_CONTEXT: %s\n" "$LINES_FOR_CONTEXT"
                                     printf "MSG: %s\n" "$MSG"
                                     printf "SEM_VER: %s\n" "$SEM_VER"
+
+                                    if [[ ! "$SEM_VER" ]]
+                                    then
+                                        printf "ERR: Valid SEM_VER not found. Is %s properly formatted?.\n" "$CHANGELOG_PATH"
+                                        exit 1
+                                    fi
 
                                     # https://stackoverflow.com/questions/4457009/special-character-in-git-possible
                                     git tag \

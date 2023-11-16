@@ -63,9 +63,11 @@ function documentation() {
     # Fail pipeline if README is not up to date
     if [[ $(whoami) == 'jenkins' && $(git status -s) != "" ]]
     then
-        printf "ERR: README.md needs to be updated as part of the pre-commit before pushing."
+        printf "ERR: README.md needs to be updated as part of the pre-commit before pushing.\n"
+        git diff README.md
         exit 1
     fi
+
     printf "INFO: README.md validated, changes added to Git stage.\n"
     git add README.md
 }

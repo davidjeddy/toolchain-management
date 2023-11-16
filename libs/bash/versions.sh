@@ -40,13 +40,13 @@ export ONELOGIN_AWS_CLI_VER="0.1.19"
 
 # Terraform related tools
 ## https://github.com/bridgecrewio/checkov/releases
-export CHECKOV_VER="2.3.361"
+export CHECKOV_VER="3.0.37"
 ## https://github.com/infracost/infracost/releases
 export INFRACOST_VER="0.10.28"
 ## https://github.com/Checkmarx/kics/releases
 export KICS_VER="1.7.5"
 ## https://github.com/hashicorp/terraform/releases - managed by tfenv, this is just a default
-export TF_VER="1.5.5"
+export TF_VER="1.6.2"
 ## https://github.com/terraform-docs/terraform-docs/releases
 export TFDOCS_VER="0.16.0"
 ## https://github.com/tfutils/tfenv/releases
