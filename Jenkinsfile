@@ -156,7 +156,7 @@ pipeline {
                                 declare SEM_VER
 
                                 git fetch --all
-                                CHANGELOG_PATH=$(git diff origin/main --name-only | grep CHANGELOG)
+                                CHANGELOG_PATH=$(git diff HEAD~1 --name-only | grep CHANGELOG)
                                 if [[ "$CHANGELOG_PATH" == "" ]]
                                 then
                                     printf "INFO: No change log found, skipping tag creation.\n"
@@ -168,7 +168,7 @@ pipeline {
                                 # Remove the git status title line
                                 # Double backslash escape for Jenkins
                                 # https://stackoverflow.com/questions/59716090/how-to-remove-first-line-from-a-string
-                                MSG=$(git diff origin/main --unified=0 "$CHANGELOG_PATH" | \
+                                MSG=$(git diff HEAD~1 --unified=0 "$CHANGELOG_PATH" | \
                                     grep -E "^\\+" | \
                                     sed 's/+//' | \
                                     sed 1d
@@ -180,7 +180,7 @@ pipeline {
                                 # remove lines starting with `-` (git remove) character
                                 # remove `+` from line if the first character (git add)
                                 LINES_FOR_CONTEXT=2
-                                MSG=$(git diff origin/main --unified="$LINES_FOR_CONTEXT" "$CHANGELOG_PATH" | \
+                                MSG=$(git diff HEAD~1 --unified="$LINES_FOR_CONTEXT" "$CHANGELOG_PATH" | \
                                     tail -n +$(("5"+"$LINES_FOR_CONTEXT")) | \
                                     tail -n +"$LINES_FOR_CONTEXT" | \
                                     head -n -"$LINES_FOR_CONTEXT" | \
@@ -210,7 +210,8 @@ pipeline {
                                     --message="$(printf "%s" "$MSG")"
                                 git config --global push.default matching
 
-                                git push origin "$SEM_VER" --force'''
+                                git push origin "$SEM_VER" --force
+                            '''
                         }
                     }
                 }
