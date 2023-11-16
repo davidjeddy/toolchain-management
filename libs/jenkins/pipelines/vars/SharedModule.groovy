@@ -207,13 +207,14 @@ def call(
                             )]) {
                                 // https://stackoverflow.com/questions/44330148/run-bash-command-on-jenkins-pipeline
                                 sh '''#!/bin/bash
+                                    #!/bin/bash
                                     declare CHANGELOG_PATH
+                                    declare LINES_FOR_CONTEXT
                                     declare MSG
                                     declare SEM_VER
-                                    declare LINES_FOR_CONTEXT
 
                                     CHANGELOG_PATH=$(git diff HEAD~1 --name-only | grep CHANGELOG)
-                                    if [[ $CHANGELOG_PATH == "" ]]
+                                    if [[ "$CHANGELOG_PATH" == "" ]]
                                     then
                                         printf "INFO: No change log found, skipping tag creation."
                                         return 0
@@ -224,7 +225,7 @@ def call(
                                     # Remove the git status title line
                                     # Double backslash escape for Jenkins
                                     # https://stackoverflow.com/questions/59716090/how-to-remove-first-line-from-a-string
-                                    MSG=$(git diff HEAD~1 --unified=0 $CHANGELOG_PATH | \
+                                    MSG=$(git diff HEAD~1 --unified=0 "$CHANGELOG_PATH" | \
                                         grep -E "^\\+" | \
                                         sed 's/+//' | \
                                         sed 1d
@@ -236,8 +237,8 @@ def call(
                                     # remove lines starting with `-` (git remove) character
                                     # remove `+` from line if the first character (git add)
                                     LINES_FOR_CONTEXT=2
-                                    MSG=$(git diff HEAD~1 --unified="$LINES_FOR_CONTEXT" $CHANGELOG_PATH | \
-                                        tail -n +$((5+$LINES_FOR_CONTEXT)) | \
+                                    MSG=$(git diff HEAD~1 --unified="$LINES_FOR_CONTEXT" "$CHANGELOG_PATH" | \
+                                        tail -n +$(("5"+"$LINES_FOR_CONTEXT")) | \
                                         tail -n +"$LINES_FOR_CONTEXT" | \
                                         head -n -"$LINES_FOR_CONTEXT" | \
                                         sed '/^-/d' | \
@@ -266,8 +267,7 @@ def call(
                                         --message="$(printf "%s" "$MSG")"
                                     git config --global push.default matching
 
-                                    export GIT_SSH_COMMAND="ssh -i $key"
-                                    git push origin $SEM_VER --force
+                                    git push origin "$SEM_VER" --force
                                 '''
                             }
                         }
