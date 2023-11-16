@@ -13,6 +13,12 @@ Action Keywords:
 `REMOVE` : Functionality is no longer available.
 `UPDATED`: Functionality capability expanded with additional abilities.
 
+## [0.32.11] - 2023-11-16
+
+### Fixed
+
+- Replace HEAD~1 with fetch and origin/main
+
 ## [0.32.10] - 2023-11-16
 
 ### Fixed
