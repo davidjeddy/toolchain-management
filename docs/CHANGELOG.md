@@ -13,6 +13,12 @@ Action Keywords:
 `REMOVE` : Functionality is no longer available.
 `UPDATED`: Functionality capability expanded with additional abilities.
 
+## [0.32.12] - 2023-11-16
+
+### Fixed
+
+- Testing tagging stage operation
+
 ## [0.32.11] - 2023-11-16
 
 ### Fixed

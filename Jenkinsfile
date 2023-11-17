@@ -71,31 +71,21 @@ pipeline {
         }
     }
     stages {
-        stage('Print ENV VARs') {
-            steps {
-                sh '''
-                    echo "INFO: Printing ENV VARs"
-                    export BASHLOG_COLOURS=0
-                    printenv | sort
-                '''
-            }
-        }
         stage('Notification') {
             steps {
-                withCredentials([string(
-                    credentialsId:  gitlabApiToken,
-                    variable:       'gitlabPat'
-                )]) {
-                    sh '''
-                        echo "INFO: Build link posted to GitLab commit"
-                        NOTE_BODY="# Pipeline build\n${BUILD_URL}console"
-                        printf $NOTE_BODY
-                        curl \
-                            --form "note=${NOTE_BODY}" \
-                            --header "PRIVATE-TOKEN: ''' +  env.gitlabPat + '''" \
-                            --request POST \
-                            "https://${GITLAB_HOST}/api/v4/projects/'''+gitlabProjectId+'''/repository/commits/${GIT_COMMIT}/comments"
-                    '''
+                script {
+                    withCredentials([string(
+                        credentialsId:  gitlabApiToken,
+                        variable:       'gitlabPAT'
+                    )]) {
+                        sh '''#!/bin/bash
+                            curl \
+                                --form "note=# Build Pipeline\n\nNumber: ${BUILD_NUMBER}\n\nUrl: ${BUILD_URL}console" \
+                                --header "PRIVATE-TOKEN: ''' +  env.gitlabPAT + '''" \
+                                --request POST \
+                                "https://${GITLAB_HOST}/api/v4/projects/''' + gitlabProjectId + '''/repository/commits/${GIT_COMMIT}/comments"
+                        '''
+                    }
                 }
             }
         }
@@ -105,9 +95,29 @@ pipeline {
                 cleanWs()
             }
         }
+        stage('Print ENV VARs') {
+            steps {
+                script {
+                    sh '''
+                        echo "INFO: Printing ENV VARs"
+                        # We do not want the default AWS credentials from Jenkins
+                        unset JENKINS_AWS_CREDENTIALSID
+                        # Prevent colors in BASH for tfenv and tgenv
+                        # https://github.com/tfutils/tfenv#bashlog_colours
+                        export BASHLOG_COLOURS=0
+                        printenv | sort
+                    '''
+                }
+            }
+        }
         stage('Git Checkout') {
             steps {
-                echo "INFO: Checkout branch"
+                echo "Checkout main branch"
+                // Needed for compliance, sast, tagging
+                git credentialsId: gitSSHCreds,
+                    url: env.GIT_URL,
+                    branch: "main"
+                echo "Checkout feature branch"
                 git credentialsId: gitSSHCreds,
                     url: env.GIT_URL,
                     branch: env.BRANCH_NAME
@@ -155,8 +165,8 @@ pipeline {
                                 declare MSG
                                 declare SEM_VER
 
-                                git fetch --all
                                 CHANGELOG_PATH=$(git diff HEAD~1 --name-only | grep CHANGELOG)
+                                printf "INFO: CHANGELOG_PATH is %s.\n" "$CHANGELOG_PATH"
                                 if [[ "$CHANGELOG_PATH" == "" ]]
                                 then
                                     printf "INFO: No change log found, skipping tag creation.\n"
@@ -180,21 +190,19 @@ pipeline {
                                 # remove lines starting with `-` (git remove) character
                                 # remove `+` from line if the first character (git add)
                                 LINES_FOR_CONTEXT=2
+                                printf "LINES_FOR_CONTEXT: %s\n" "$LINES_FOR_CONTEXT"
                                 MSG=$(git diff HEAD~1 --unified="$LINES_FOR_CONTEXT" "$CHANGELOG_PATH" | \
-                                    tail -n +$(("5"+"$LINES_FOR_CONTEXT")) | \
+                                    tail -n +$((5+$LINES_FOR_CONTEXT)) | \
                                     tail -n +"$LINES_FOR_CONTEXT" | \
                                     head -n -"$LINES_FOR_CONTEXT" | \
                                     sed '/^-/d' | \
                                     sed 's/+//'
                                 )
+                                printf "MSG: %s\n" "$MSG"
 
                                 # grep extract SemVer from string
                                 # https://stackoverflow.com/questions/16817646/extract-version-number-from-a-string
                                 SEM_VER=$( echo "$MSG" | head -n 1 | grep -Po "([0-9]+([.][0-9]+)+)" )
-
-                                printf "CHANGELOG_PATH: %s\n" "$CHANGELOG_PATH"
-                                printf "LINES_FOR_CONTEXT: %s\n" "$LINES_FOR_CONTEXT"
-                                printf "MSG: %s\n" "$MSG"
                                 printf "SEM_VER: %s\n" "$SEM_VER"
 
                                 if [[ ! "$SEM_VER" ]]
@@ -210,7 +218,7 @@ pipeline {
                                     --message="$(printf "%s" "$MSG")"
                                 git config --global push.default matching
 
-                                git push origin "$SEM_VER" --force
+                                git push origin "$SEM_VER"
                             '''
                         }
                     }
