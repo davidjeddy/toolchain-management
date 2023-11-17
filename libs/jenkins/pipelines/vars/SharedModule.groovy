@@ -251,7 +251,7 @@ def call(
 
                                     # grep extract SemVer from string
                                     # https://stackoverflow.com/questions/16817646/extract-version-number-from-a-string
-                                    SEM_VER=$( echo "$MSG" | head -n 1 | grep -Po "([0-9]+([.][0-9]+)+)" )
+                                    SEM_VER=$( echo "$MSG" | grep "^## \\[" | grep -Po "([0-9]+([.][0-9]+)+)" )
                                     printf "SEM_VER: %s\n" "$SEM_VER"
 
                                     if [[ ! "$SEM_VER" ]]
