@@ -13,6 +13,12 @@ Action Keywords:
 `REMOVE` : Functionality is no longer available.
 `UPDATED`: Functionality capability expanded with additional abilities.
 
+## [0.32.13] - 2023-11-17
+
+### Fixed
+
+- Another pass at SEMVER extraction from CHANGELOG diff
+
 ## [0.32.12] - 2023-11-16
 
 ### Fixed
