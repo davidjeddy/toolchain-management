@@ -8,10 +8,15 @@
 
 Action Keywords:
 
-`ADDED`  : Functionality did not exist previously.
-`FIXED`  : Functionality existed but did not behave as expected.
-`REMOVE` : Functionality is no longer available.
-`UPDATED`: Functionality capability expanded with additional abilities.
+`ADDED`   : Functionality did not exist previously.
+`FIXED`   : Functionality existed but did not behave as expected.
+`REMOVED` : Functionality is no longer available.
+
+## [0.32.14] - 2023-11-20
+
+### Fixed
+
+- missing process to install tfsec
 
 ## [0.32.14] - 2023-11-20
 
