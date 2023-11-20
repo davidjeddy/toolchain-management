@@ -227,6 +227,7 @@ pipeline {
         }
     }
     triggers {
-        cron(env.BRANCH_NAME == 'main' ?  'H */3 * * 1-5' : '')
+        // Run during the midnight hour Mon-Fri
+        cron(env.BRANCH_NAME == 'main' ?  'H */0 * * 1-5' : '')
     }
 }

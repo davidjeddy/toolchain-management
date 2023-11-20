@@ -13,6 +13,12 @@ Action Keywords:
 `REMOVE` : Functionality is no longer available.
 `UPDATED`: Functionality capability expanded with additional abilities.
 
+## [0.32.14] - 2023-11-20
+
+### Fixed
+
+- Mon-Fri daily scheduled execution to prevent conflict with IaC shared module daily executions
+
 ## [0.32.13] - 2023-11-17
 
 ### Fixed
