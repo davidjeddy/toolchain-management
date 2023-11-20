@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 
 # usage: /path/to/script/ecs_task_shell_connection.sh
 #        /path/to/script/ecs_task_shell_connection.sh -l
@@ -7,7 +7,9 @@
 # example: /path/to/script/ecs_task_shell_connection.sh -c "snd-connect-shared-ecs-nygw" gateway
 # example: /path/to/script/ecs_task_shell_connection.sh -s "eu-west-1" gateway
 # example: /path/to/script/ecs_task_shell_connection.sh -c "snd-connect-shared-ecs-nygw" -r "eu-west-1" gateway
+# example: /path/to/script/ecs_task_shell_connection.sh -c "snd-connect-shared-ecs-nygw" -t "fluent-bit" -r "eu-west-1" gateway
 # example: /path/to/script/ecs_task_shell_connection.sh --cluster_name "snd-connect-shared-ecs-nygw" --region_name "eu-west-1" gateway
+# example: /path/to/script/ecs_task_shell_connection.sh --cluster_name "snd-connect-shared-ecs-nygw" --task_container_name "fluent-bit" --region_name "eu-west-1" gateway
 
 ## Default values
 declare DEFAULT_CLUSTER_NAME
@@ -22,6 +24,7 @@ declare SERVICE_NAME
 declare CLUSTER_NAME
 declare REGION_NAME
 declare SELECT_TASK
+declare TASK_CONTAINER_NAME
 
 declare SHORT_OPTS
 declare LONG_OPTS
@@ -44,12 +47,13 @@ function print_usage() {
   printf "  %s [options] <service_name>\n" "$(basename "${0}")"
   printf "\n"
   printf "Options:\n"
-  printf "  <service_name>                        the ECS service name\n"
-  printf "  -l, --list_services                   list the services available and exit\n"
   printf "  -c, --cluster_name <cluster_name>     ECS cluster name (default: %s)\n" "${DEFAULT_CLUSTER_NAME}"
+  printf "  -h, --help                            print help and exit\n"
+  printf "  -l, --list_services                   list the services available and exit\n"
   printf "  -r, --region_name <region_name>       AWS region name  (default: eu-west-1. Currently: %s)\n" "${DEFAULT_REGION_NAME}"
   printf "  -s, --select_task                     when there are multiple tasks, list them for user to select (default: %s)\n" "${DEFAULT_SELECT_TASK}"
-  printf "  -h, --help                            print help and exit\n"
+  printf "  -t, --task_container_name <container_name>     ECS task container name (default: same as service_name)"
+  printf "  <service_name>                        the ECS service name\n"
   printf "\n"
 }
 
@@ -57,9 +61,9 @@ function print_usage() {
 source "$SCRIPT_DIR/../common/get_cmd_options.sh" || exit 1
 
 # shellcheck disable=SC2034 # We use the value to call get_cmd_options
-SHORT_OPTS=("h" "l" "c:" "r:" "s")
+SHORT_OPTS=("h" "l" "c:" "t:" "r:" "s")
 # shellcheck disable=SC2034 # We use the value to call get_cmd_options
-LONG_OPTS=("help" "list_services" "cluster_name:" "region_name:" "select_task")
+LONG_OPTS=("help" "list_services" "cluster_name:" "task_container_name:" "region_name:" "select_task")
 # shellcheck disable=SC2034 # We use the value to call get_cmd_options
 CMD_LINE_ARGS=("$@")
 
@@ -118,11 +122,14 @@ fi
 
 TASK_ID="$(echo "$TASK_ARN" | cut -d "/" -f 3)"
 
+# If TASK_CONTAINER_NAME not set, use SERVICE_NAME as a fallback
+TMP=$([[ "${TASK_CONTAINER_NAME}" != "" ]] && echo "${TASK_CONTAINER_NAME}" || echo "${SERVICE_NAME}")
+
 # connect to the ecs instance
 aws ecs execute-command \
   --region "${REGION_NAME}" \
   --cluster "${CLUSTER_NAME}" \
-  --container "${SERVICE_NAME}" \
+  --container "${TMP}" \
   --command "/bin/sh" \
   --interactive \
   --task "${TASK_ID}"
