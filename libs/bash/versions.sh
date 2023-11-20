@@ -16,9 +16,10 @@ declare TF_VER
 declare TFDOCS_VER
 declare TFENV_VER
 declare TFLINT_VER
-declare TRIVY_VER
+declare TFSEC_VER
 declare TG_VER
 declare TGENV_VER
+declare TRIVY_VER
 declare TRSCAN_VER
 
 # Misc tools
@@ -51,6 +52,8 @@ export TF_VER="1.6.2"
 export TFDOCS_VER="0.16.0"
 ## https://github.com/tfutils/tfenv/releases
 export TFENV_VER="3.0.0"
+## https://github.com/aquasecurity/tfsec/releases
+export TFSEC_VER="1.28.4"
 ## https://github.com/terraform-linters/tflint/releases
 export TFLINT_VER="0.47.0"
 ## https://github.com/aquasecurity/trivy/releases
@@ -101,10 +104,11 @@ echo "ONELOGIN_AWS_CLI_VER: $ONELOGIN_AWS_CLI_VER"
 echo "PKR_VER: $PKR_VER"
 
 # Terraform/Terragrunt version controlers
-echo "TFENV_VER: $TFENV_VER"
 echo "TF_VER: $TF_VER"
-echo "TGENV_VER: $TGENV_VER"
+echo "TFENV_VER: $TFENV_VER"
+echo "TFSEC_VER: $TFSEC_VER"
 echo "TG_VER: $TG_VER"
+echo "TGENV_VER: $TGENV_VER"
 
 # Terraform Compliance
 echo "INFRACOST_VER: $INFRACOST_VER"

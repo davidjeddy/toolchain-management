@@ -158,6 +158,16 @@ function binary_based_tools() {
         rm -rf terrascan*
     fi
 
+    if [[ ( ! $(which tfsec) && "$TFSEC_VER" ) || "$UPDATE" = "true" ]]
+    then
+        printf "INFO: Installing tfsec.\n"
+        curl -sL --show-error "https://github.com/aquasecurity/tfsec/releases/download/v${TFSEC_VER}/tfsec_${TFSEC_VER}_${PLATFORM}_${ARCH}.tar.gz" -o "tfsec.tar.gz"
+        tar -xf tfsec.tar.gz
+        sudo rm -rf "$BIN_DIR/tfsec" || true
+        sudo install --target-directory="$BIN_DIR" tfsec
+        rm -rf tfsec*
+    fi
+
     if [[ ( ! $(which trivy) && "$TRIVY_VER" ) || "$UPDATE" = "true" ]]
     then
         printf "INFO: Installing trivy (tfsec successor).\n"
