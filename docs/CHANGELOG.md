@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.32.15] - 2023-11-20
+
+### Fixed
+
+- the ability to select the container withini an ECS task using ./libs/bash/aws/ecs_task_shell_connection.sh
+
 ## [0.32.14] - 2023-11-20
 
 ### Fixed
