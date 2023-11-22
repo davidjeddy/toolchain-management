@@ -149,10 +149,7 @@ pipeline {
         // extract version number and message from CHANGELOG
         // create tag with message, push to origin
         // push tag to commit in GL
-        stage('Tagging') {-bash-4.2$ ps -auxf | grep terraform
-jenkins  12744  0.0  0.0 115996  1404 pts/0    S+   09:50   0:00  |           \_ grep --color=auto terraform
--bash-4.2$ 
-
+        stage('Tagging') {
             steps {
                 script {
                     if (env.BRANCH_NAME == 'main') {
@@ -228,9 +225,21 @@ jenkins  12744  0.0  0.0 115996  1404 pts/0    S+   09:50   0:00  |           \_
                 }
             }
         }
+        stage('Rotate Credentials') {
+            steps {
+                script {
+                    if (env.BRANCH_NAME == 'main') {
+                        sh'''
+                        ./libs/bash/aws/rotate_api_credentials.sh
+                        '''
+                    }
+                }
+            }
+        }
     }
     // triggers {
     //     // Run during the midnight hour Mon-Fri
-    //     cron(env.BRANCH_NAME == 'main' ?  'H */0 * * 1-5' : '')
+    //     // https://www.jenkins.io/doc/book/pipeline/syntax/ -> Jenkins cron syntax
+    //     cron(env.BRANCH_NAME == 'main' ?  'H 0 * * 1-5' : '')
     // }
 }
