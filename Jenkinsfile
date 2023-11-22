@@ -225,21 +225,10 @@ pipeline {
                 }
             }
         }
-        stage('Rotate Credentials') {
-            steps {
-                script {
-                    if (env.BRANCH_NAME == 'main') {
-                        sh'''
-                        ./libs/bash/aws/rotate_api_credentials.sh
-                        '''
-                    }
-                }
-            }
-        }
     }
-    // triggers {
-    //     // Run during the midnight hour Mon-Fri
-    //     // https://www.jenkins.io/doc/book/pipeline/syntax/ -> Jenkins cron syntax
-    //     cron(env.BRANCH_NAME == 'main' ?  'H 0 * * 1-5' : '')
-    // }
+    triggers {
+        // Run during the midnight hour Mon-Fri
+        // https://www.jenkins.io/doc/book/pipeline/syntax/ -> Jenkins cron syntax
+        cron(env.BRANCH_NAME == 'main' ?  'H 0 * * 1-5' : '')
+    }
 }
