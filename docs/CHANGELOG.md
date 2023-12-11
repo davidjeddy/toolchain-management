@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.32.18] - 2023-12-11
+
+### Fixed
+
+- checkov version addressing upstream dep error
+
 ## [0.32.17] - 2023-12-07
 
 ### Fixed
