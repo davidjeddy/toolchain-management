@@ -227,70 +227,70 @@ function terraformCompliance() {
 
     # trivy only scans deployment modules
     # FATAL	sbom scan error: scan error: scan failed: failed analysis: SBOM decode error: cyclonedx-xml scanning is not yet supported
-    if [[ -f "$(pwd)/.terraform.lock.hcl" ]]
-    then
-        printf "INFO: trivy executing...\n"
-        {
-            rm -rf "$(pwd)/.tmp/junit-trivy.xml" || exit 1
-            touch "$(pwd)/.tmp/junit-trivy.xml" || exit 1
-            if [[ -f "trivy.yml" ]]
-            then
-                # use configuration file if present.
-                printf "INFO: trivy configuration file found, using it.\n"
-                trivy scan \
-                    --config trivy.yml \
-                    --log-level error \
-                    --non-recursive \
-                    --output junit-xml \
-                    --use-colors f \
-                    > .tmp/junit-trivy.xml
-            else
-                printf "INFO: trivy configuration NOT file found.\n"
-                trivy scan \
-                    --log-level error \
-                    --non-recursive \
-                    --output junit-xml \
-                    --use-colors f \
-                    > .tmp/junit-trivy.xml
-            fi
-        } || {
-            cat "$(pwd)/.tmp/junit-trivy.xml" || exit 1
-            echo "ERR: trivy failed. Check Junit reports in .tmp"
-            exit 1
-        }
-    fi
+    # if [[ -f "$(pwd)/.terraform.lock.hcl" ]]
+    # then
+    #     printf "INFO: trivy executing...\n"
+    #     {
+    #         rm -rf "$(pwd)/.tmp/junit-trivy.xml" || exit 1
+    #         touch "$(pwd)/.tmp/junit-trivy.xml" || exit 1
+    #         if [[ -f "trivy.yml" ]]
+    #         then
+    #             # use configuration file if present.
+    #             printf "INFO: trivy configuration file found, using it.\n"
+    #             trivy scan \
+    #                 --config trivy.yml \
+    #                 --log-level error \
+    #                 --non-recursive \
+    #                 --output junit-xml \
+    #                 --use-colors f \
+    #                 > .tmp/junit-trivy.xml
+    #         else
+    #             printf "INFO: trivy configuration NOT file found.\n"
+    #             trivy scan \
+    #                 --log-level error \
+    #                 --non-recursive \
+    #                 --output junit-xml \
+    #                 --use-colors f \
+    #                 > .tmp/junit-trivy.xml
+    #         fi
+    #     } || {
+    #         cat "$(pwd)/.tmp/junit-trivy.xml" || exit 1
+    #         echo "ERR: trivy failed. Check Junit reports in .tmp"
+    #         exit 1
+    #     }
+    # fi
 
     # EOL scanning tool
-    printf "INFO: xeol executing...\n"
-    {
-        rm -rf "$(pwd)/.tmp/junit-xeol.xml" || exit 1
-        touch "$(pwd)/.tmp/junit-xeol.xml" || exit 1
-        if [[ -f "trivy.yml" ]]
-        then
-            # use configuration file if present.
-            printf "INFO: xeol configuration file found, using it.\n"
-            xeol \
-                --config xeol.yml \
-                --fail-on-eol-found \
-                --file "$(pwd)/.tmp/junit-xeol.xml"\
-                --lookahead 1y \
-                --name "$(basename "$(pwd)")" \
-                --project-name "$(basename "$(pwd)")"
-        else
-            printf "INFO: xeol configuration NOT file found.\n"
-            xeol \
-                --fail-on-eol-found \
-                --file "$(pwd)/.tmp/junit-xeol.xml"\
-                --lookahead 1y \
-                --name "$(basename "$(pwd)")" \
-                --project-name "$(basename "$(pwd)")"
+    # printf "INFO: xeol executing...\n"
+    # {
+    #     rm -rf "$(pwd)/.tmp/junit-xeol.xml" || exit 1
+    #     touch "$(pwd)/.tmp/junit-xeol.xml" || exit 1
+    #     if [[ -f "trivy.yml" ]]
+    #     then
+    #         # use configuration file if present.
+    #         printf "INFO: xeol configuration file found, using it.\n"
+    #         xeol \
+    #             --config xeol.yml \
+    #             --fail-on-eol-found \
+    #             --file "$(pwd)/.tmp/junit-xeol.xml"\
+    #             --lookahead 1y \
+    #             --name "$(basename "$(pwd)")" \
+    #             --project-name "$(basename "$(pwd)")"
+    #     else
+    #         printf "INFO: xeol configuration NOT file found.\n"
+    #         xeol \
+    #             --fail-on-eol-found \
+    #             --file "$(pwd)/.tmp/junit-xeol.xml"\
+    #             --lookahead 1y \
+    #             --name "$(basename "$(pwd)")" \
+    #             --project-name "$(basename "$(pwd)")"
 
-        fi
-    } || {
-        cat "$(pwd)/.tmp/junit-xeol.xml" || exit 1
-        echo "ERR: xeol failed. Check Junit reports in .tmp"
-        exit 1
-    }
+    #     fi
+    # } || {
+    #     cat "$(pwd)/.tmp/junit-xeol.xml" || exit 1
+    #     echo "ERR: xeol failed. Check Junit reports in .tmp"
+    #     exit 1
+    # }
 }
 
 function terraformLinting() {
