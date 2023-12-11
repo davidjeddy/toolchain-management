@@ -260,7 +260,7 @@ function terraformCompliance() {
         }
     fi
 
-    EOL scanning tool
+    # EOL scanning tool
     printf "INFO: xeol executing...\n"
     {
         rm -rf "$(pwd)/.tmp/junit-xeol.xml" || exit 1
