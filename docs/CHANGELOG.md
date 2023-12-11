@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.32.21] - 2023-12-11
+
+### Fixed
+
+- checkov now only scans the directly it is initilaized in, no more sub-directory recursive scanning
+
 ## [0.32.20] - 2023-12-11
 
 ### Fixed

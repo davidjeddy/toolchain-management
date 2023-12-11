@@ -121,7 +121,8 @@ function terraformCompliance() {
             printf "INFO: checkov configuration file found, using it.\n"
             checkov \
                 --config-file checkov.yml \
-                --directory . \
+                --file "*.tf" \
+                --file "*.hcl" \
                 --download-external-modules false \
                 --framework terraform \
                 --output junitxml \
@@ -134,7 +135,8 @@ function terraformCompliance() {
         else
             printf "INFO: checkov configuration NOT file found.\n"
             checkov \
-                --directory . \
+                --file "*.tf" \
+                --file "*.hcl" \
                 --download-external-modules false \
                 --framework terraform \
                 --quiet \
