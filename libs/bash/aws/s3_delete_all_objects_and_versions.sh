@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash -e
 
 # source https://gist.github.com/weavenet/f40b09847ac17dd99d16
 # version 0.0.5
