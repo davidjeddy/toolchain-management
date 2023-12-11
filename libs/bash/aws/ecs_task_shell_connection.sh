@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 # usage: /path/to/script/ecs_task_shell_connection.sh
 #        /path/to/script/ecs_task_shell_connection.sh -l

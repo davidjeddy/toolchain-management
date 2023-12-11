@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.32.16] - 2023-12-07
+
+### Fixed
+
+- Refactored helper scripts to avoid console printing of execution steps
+
 ## [0.32.15] - 2023-11-20
 
 ### Fixed

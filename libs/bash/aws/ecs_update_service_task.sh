@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 # usage ./libs/ecs_update_service_task NAME_OF_THE_CLUSTER REGION "NEWLINE DELIMITED LIST OF SERVICE NAMES"
 # example ./libs/ecs_update_service_task "snd-connect-shared-ecs-nygw" "eu-west-1" "terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/admin-tool
