@@ -41,7 +41,7 @@ export ONELOGIN_AWS_CLI_VER="0.1.19"
 
 # Terraform related tools
 ## https://github.com/bridgecrewio/checkov/releases
-export CHECKOV_VER="3.0.37"
+export CHECKOV_VER="3.1.31"
 ## https://github.com/infracost/infracost/releases
 export INFRACOST_VER="0.10.28"
 ## https://github.com/Checkmarx/kics/releases
