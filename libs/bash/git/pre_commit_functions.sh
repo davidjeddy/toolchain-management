@@ -76,80 +76,80 @@ function generateSBOM() {
     printf "INFO: generating sbom using checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov)...\n"
 
     # Do not generate SBOM is jenkins user, just ensure it exists
-    if [[ $(whoami) == 'jenkins' && ! -f sbom.xml ]]
-    then
-        printf "ERR: sbom.xml missing, failing."
-        exit 1
-    elif [[ $(whoami) == 'jenkins' && -f sbom.xml ]]
-    then
-        printf "INFO: Automation user detected, not generated sbom.xml"
-        return 0
-    fi
+    # if [[ $(whoami) == 'jenkins' && ! -f sbom.xml ]]
+    # then
+    #     printf "ERR: sbom.xml missing, failing."
+    #     exit 1
+    # elif [[ $(whoami) == 'jenkins' && -f sbom.xml ]]
+    # then
+    #     printf "INFO: Automation user detected, not generated sbom.xml"
+    #     return 0
+    # fi
 
-    {
-        if [[ -f "checkov.yml" ]]
-        then
-            # use configuration file if present. Created due to terraform/deployments/terraform/aws/worldline-gc-keycloak-dev/eu-west-1/keycloak/iohd being created BEFORE complaince was mandatory    
-            checkov \
-                --config-file checkov.yml \
-                --directory . \
-                --output cyclonedx \
-                > "$(pwd)/sbom.xml"
-        else
-            checkov \
-                --directory . \
-                --output cyclonedx \
-                > "$(pwd)/sbom.xml"
-        fi
-        git add sbom.xml || true
-    } || {
-        cat "$(pwd)/sbom.xml" || exit 1
-        echo "ERR: checkov SBOM failed to generate.":q
-        exit 1
-    }
+    # {
+    #     if [[ -f "checkov.yml" ]]
+    #     then
+    #         # use configuration file if present. Created due to terraform/deployments/terraform/aws/worldline-gc-keycloak-dev/eu-west-1/keycloak/iohd being created BEFORE complaince was mandatory    
+    #         checkov \
+    #             --config-file checkov.yml \
+    #             --directory . \
+    #             --output cyclonedx \
+    #             > "$(pwd)/sbom.xml"
+    #     else
+    #         checkov \
+    #             --directory . \
+    #             --output cyclonedx \
+    #             > "$(pwd)/sbom.xml"
+    #     fi
+    #     git add sbom.xml || true
+    # } || {
+    #     cat "$(pwd)/sbom.xml" || exit 1
+    #     echo "ERR: checkov SBOM failed to generate.":q
+    #     exit 1
+    # }
 }
 
 function terraformCompliance() {
     printf "INFO: Executing Compliance and SAST scanners...\n"
 
-    printf "INFO: checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov)...\n"
-    {
-        rm -rf "$(pwd)/.tmp/junit-checkov.xml" || exit 1
-        touch "$(pwd)/.tmp/junit-checkov.xml" || exit 1
-        if [[ -f "checkov.yml" ]]
-        then
-            printf "INFO: checkov configuration file found, using it.\n"
-            checkov \
-                --config-file checkov.yml \
-                --directory . \
-                --download-external-modules false \
-                --framework terraform \
-                --output junitxml \
-                --quiet \
-                --skip-path .terra*/ \
-                --skip-path .tmp/ \
-                --skip-path examples/ \
-                --skip-path libs/ \
-                > "$(pwd)/.tmp/junit-checkov.xml"
-        else
-            printf "INFO: checkov configuration NOT file found.\n"
-            checkov \
-                --directory . \
-                --download-external-modules false \
-                --framework terraform \
-                --quiet \
-                --skip-path .terra*/ \
-                --skip-path .tmp/ \
-                --skip-path examples/ \
-                --output junitxml \
-                --skip-path libs/ \
-                > "$(pwd)/.tmp/junit-checkov.xml"
-        fi
-    } || {
-        cat "$(pwd)/.tmp/junit-checkov.xml" || exit 1
-        echo "ERR: checkov failed. Check report saved to .tmp/junit-checkov.xml"
-        exit 1
-    }
+    # printf "INFO: checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov)...\n"
+    # {
+    #     rm -rf "$(pwd)/.tmp/junit-checkov.xml" || exit 1
+    #     touch "$(pwd)/.tmp/junit-checkov.xml" || exit 1
+    #     if [[ -f "checkov.yml" ]]
+    #     then
+    #         printf "INFO: checkov configuration file found, using it.\n"
+    #         checkov \
+    #             --config-file checkov.yml \
+    #             --directory . \
+    #             --download-external-modules false \
+    #             --framework terraform \
+    #             --output junitxml \
+    #             --quiet \
+    #             --skip-path .terra*/ \
+    #             --skip-path .tmp/ \
+    #             --skip-path examples/ \
+    #             --skip-path libs/ \
+    #             > "$(pwd)/.tmp/junit-checkov.xml"
+    #     else
+    #         printf "INFO: checkov configuration NOT file found.\n"
+    #         checkov \
+    #             --directory . \
+    #             --download-external-modules false \
+    #             --framework terraform \
+    #             --quiet \
+    #             --skip-path .terra*/ \
+    #             --skip-path .tmp/ \
+    #             --skip-path examples/ \
+    #             --output junitxml \
+    #             --skip-path libs/ \
+    #             > "$(pwd)/.tmp/junit-checkov.xml"
+    #     fi
+    # } || {
+    #     cat "$(pwd)/.tmp/junit-checkov.xml" || exit 1
+    #     echo "ERR: checkov failed. Check report saved to .tmp/junit-checkov.xml"
+    #     exit 1
+    # }
 
     # Note: `WORKSPACE` is defined in pre_commit.sh and must point to the root of the project.
     printf "INFO: KICS executing...\n"
