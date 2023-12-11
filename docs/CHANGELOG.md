@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.32.20] - 2023-12-11
+
+### Fixed
+
+- xeol should not yet bet enabled
+
 ## [0.32.19] - 2023-12-11
 
 ### Fixed
