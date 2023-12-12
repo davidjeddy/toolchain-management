@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.32.22] - 2023-12-12
+
+### Fixed
+
+- do not execute goenv install during normal operation; only during install and force update operations
+
 ## [0.32.21] - 2023-12-11
 
 ### Fixed

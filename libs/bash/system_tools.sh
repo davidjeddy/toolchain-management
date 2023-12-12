@@ -156,14 +156,15 @@ function install_goenv() {
         printf "INFO: Updating Go via goenv.\n"
         declare OLD_PWD
         OLD_PWD="$(pwd)"
-
         cd "$HOME/.goenv" || exit 1
+
         git reset master --hard
         git fetch --all --tags
         git checkout "$GOENV_VER"
-        goenv install --force "$GO_VER"
-
         cd "$OLD_PWD" || exit 1
+
+        #shellcheck disable=SC1090
+        source "$SHELL_PROFILE"
     fi
 
     goenv global "$GO_VER"
