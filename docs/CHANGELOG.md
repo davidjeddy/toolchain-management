@@ -12,6 +12,16 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.33.0] - 2024-01-17
+
+### Fixed
+
+- `libs/bash/aws/ecs_update_service_task.sh` to ignore active* and hazelcast* named services
+
+### Removed
+
+- `libs/bash/aws/cycle_modules.sh` as duplicate of `libs/bash/aws/ecs_update_service_task.sh`
+
 ## [0.32.22] - 2023-12-12
 
 ### Fixed

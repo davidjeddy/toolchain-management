@@ -1,50 +1,65 @@
 #!/bin/bash -e
 
-# usage ./libs/ecs_update_service_task NAME_OF_THE_CLUSTER REGION "NEWLINE DELIMITED LIST OF SERVICE NAMES"
-# example ./libs/ecs_update_service_task "snd-connect-shared-ecs-nygw" "eu-west-1" "terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/admin-tool
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/api-explorer
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/auth-service 
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/config-center
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/email-service
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/file-service
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/gateway
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/hazelcast
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/hello-internal
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/hello-world
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/iin
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/orchestration
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/redirector
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/rpp
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/rpp-vm
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/webhooks-filter
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/webhooks-management
-# terraform/aws/aws-ingenico-globalcollect-dev/eu-west-1/connect/nygw/ecs-services/webhooks-notifier"
+# example /home/david/Projects/Worldline/gitlab.test.igdcs.com/cicd/terraform/tools/toolchain-management/libs/bash/iac/cycle_modules.sh
+# usage   /home/david/Projects/Worldline/gitlab.test.igdcs.com/cicd/terraform/tools/toolchain-management/libs/bash/iac/cycle_modules.sh
 
-echo "WARN: Cycling all services in the $1 cluster."
+# sources
 
-CLUSTER=$1
-REGION=$2
-SERVICES=$3
+declare SCRIPT_DIR
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+declare FILENAME
+FILENAME=services_list.cfg
 
-PRJ_ROOT="$(pwd)"
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/../common/get_cmd_options.sh" || exit 1
 
-for SERVICE in $SERVICES
-do
-    echo "INFO: Change into ECS service module $SERVICE."
-    cd "$SERVICE" || exit 1
+# configuration
 
-    echo "INFO: Running Terraform to ensure module is up to date."
-    terraform init;
-    terraform apply --auto-approve;
-    
-    echo "INFO: Cycle service task."
-    aws ecs update-service \
-        --cluster "$CLUSTER" \
-        --no-cli-pager \
-        --region "$REGION" \
-        --service "$(basename "$SERVICE")"
+## Logging Level
+logging_level
 
-    cd "$PRJ_ROOT" || exit 2
-done
+# pre-flight checks
 
-echo "INFO: Done."
+if [[ ! $(which parallel) &&! $(which tree) ]]
+then
+  echo "ERR: This script requires 'parallel' and  'tree' CLI tool. Please install via your package manager."
+fi
+
+if [[ "$(pwd)" != *"ecs-services" ]]
+then
+  echo "ERROR: This scripts must be executed from a deployment ./ecs-services directory. Exiting with error."
+  exit 1;
+fi
+
+if [[ ! "$AWS_PROFILE" ]]
+then
+  echo "ERROR: Shell session missing AWS_PROFILE."
+  exit 1;
+fi
+
+# logic
+
+echo "INFO: Starting..."
+
+# https://opensource.com/article/18/5/gnu-parallel
+tree -di --prune --sort=name | head -n -2 | tail -n +2 > "$FILENAME"
+sed -i '/activegate*/d' "$FILENAME"
+sed -i '/hazelcast*/d'  "$FILENAME"
+
+printf "INFO: Executing update to the following cluster services:\n%s\n" "$(cat "$FILENAME")"
+
+#shellcheck disable=SC2002
+cat "$FILENAME" | parallel -j5 -I% "\
+if [[ ! -d $(pwd)/% || ! -f $(pwd)/%/terraform.tf ]]; \
+then \
+  echo \"WARN: % not found or not a terraform module, skipping.\"
+  exit 0; \
+fi; \
+cd $(pwd)/%; \
+rm *.log \
+terraform init -no-color | tee init.log; \
+terraform plan -no-color | tee plan.log; \
+terraform apply --auto-approve -no-color | tee apply.log; \
+"
+
+echo "INFO: ...done."
