@@ -132,31 +132,31 @@ function yum_systems() {
 function install_goenv() {
     if [[ ( ! $(which goenv) && $GO_VER && $GOENV_VER ) || "$UPDATE" == "true" ]]
     then
-        printf "INFO: Installing goenv to %s to enable Go\n" "$HOME/.goenv"
-        rm -rf "$HOME/.goenv" || true
-        git clone --quiet "https://github.com/syndbg/goenv.git" "$HOME/.goenv"
+        printf "INFO: Installing goenv to %s to enable Go\n" ~/.goenv
+        rm -rf ~/.goenv || true
+        git clone --quiet "https://github.com/syndbg/goenv.git" ~/.goenv
 
         # shellcheck disable=SC2143
-        if [[ ! $(grep "export PATH=\$PATH:\$HOME/.goenv/bin" "$SHELL_PROFILE") ]]
+        if [[ ! $(grep "export PATH=\$PATH:~/.goenv/bin" "$SHELL_PROFILE") ]]
         then
             printf "INFO: Add goenv bin dir to PATH via %s.\n" "$SHELL_PROFILE"
             {
-                echo "export PATH=\$PATH:\$HOME/.goenv/bin"
-                echo "export GOENV_ROOT=\$HOME/.goenv"
-                echo "eval $("$HOME"/.goenv/bin/goenv init -)"
+                echo "export PATH=\$PATH:~/.goenv/bin"
+                echo "export GOENV_ROOT=~/.goenv"
+                echo "eval $(~/.goenv/bin/goenv init -)"
             } >> "$SHELL_PROFILE"
         fi
 
         #shellcheck disable=SC1090
         source "$SHELL_PROFILE"
-        goenv install --force "$GO_VER"
+        goenv install --force --quiet "$GO_VER"
 
     elif [[ ( $(which go) && $GO_VER && $GOENV_VER ) ]]
     then
         printf "INFO: Updating Go via goenv.\n"
         declare OLD_PWD
         OLD_PWD="$(pwd)"
-        cd "$HOME/.goenv" || exit 1
+        cd ~/.goenv || exit 1
 
         git reset master --hard
         git fetch --all --tags
@@ -216,10 +216,10 @@ function install_pip() {
 
         # For Python3/pip site-packages at the user scope
         # shellcheck disable=SC2143
-        if [[ ! $(grep "export PATH=\$PATH:\$HOME/.local/bin" "$SHELL_PROFILE") ]]
+        if [[ ! $(grep "export PATH=\$PATH:~/.local/bin" "$SHELL_PROFILE") ]]
         then
             printf "INFO: Add pip site-package to PATH"
-            echo "export PATH=\$PATH:\$HOME/.local/bin" >> "$SHELL_PROFILE"
+            echo "export PATH=\$PATH:~/.local/bin" >> "$SHELL_PROFILE"
             #shellcheck disable=SC1090
             source "$SHELL_PROFILE"
         fi
@@ -267,8 +267,7 @@ function install_system_tools() {
     install_python3
     install_pip
 
-    goenv version
-    goenv exec go version
+    goenv --version
     pip --version
     python3 --version
 

@@ -115,6 +115,7 @@ PLATFORM="linux"
 PROJECT_ROOT=$(git rev-parse --show-toplevel)
 SHELL_PROFILE="$HOME/.worldline_pps_profile"
 UPDATE="false"
+WL_GC_TM_WORKSPACE=$(git rev-parse --show-toplevel)
 
 source "$PROJECT_ROOT/libs/bash/versions.sh"
 ```

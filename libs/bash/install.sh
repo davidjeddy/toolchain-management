@@ -6,11 +6,11 @@
 # ./libs/bash/install.sh --arch amd64 --platform darwin
 # ./libs/bash/install.sh --arch amd64 --platform darwin --update true
 # ./libs/bash/install.sh --arch arm32 --platform linux
-# ./libs/bash/install.sh --arch arm32 --platform linux --shell_profile "$HOME/.zshell_profile"
+# ./libs/bash/install.sh --arch arm32 --platform linux --shell_profile ~/.zshell_profile
 # ./libs/bash/install.sh --arch arm32 --platform linux --skip_misc_tools true
 # ./libs/bash/install.sh --bin_dir "/usr/bin" --skip_aws_tools true --update true
 # ./libs/bash/install.sh --skip_aws_tools true --update true
-# ./libs/bash/install.sh --skip_system_tools true --skip_terraform_tools true --skip_misc_tools true
+# ./libs/bash/install.sh --skip_system_tools true --skip_iac_tools true --skip_misc_tools true
 
 # checks
 
@@ -34,7 +34,7 @@ declare SHELL_PROFILE
 declare SKIP_AWS_TOOLS
 declare SKIP_MISC_TOOLS
 declare SKIP_SYSTEM_TOOLS
-declare SKIP_TERRAFORM_TOOLS
+declare SKIP_IAC_TOOLS
 declare WL_GC_TM_WORKSPACE # Worldline - Global Collect - Toollchain Management - Workspace
 
 ## parse positional cli args
@@ -94,7 +94,7 @@ fi
 
 if [[ "$SHELL_PROFILE" == "" ]]
 then
-    SHELL_PROFILE="$HOME/.worldline_pps_profile"
+    SHELL_PROFILE=~/.worldline_pps_profile
 fi
 
 if [[ "$UPDATE" = "" ]]
@@ -113,7 +113,7 @@ export SHELL_PROFILE
 export SKIP_AWS_TOOLS
 export SKIP_MISC_TOOLS
 export SKIP_SYSTEM_TOOLS
-export SKIP_TERRAFORM_TOOLS
+export SKIP_IAC_TOOLS
 export UPDATE
 
 ## output runtime configuration
@@ -129,7 +129,7 @@ echo "SHELL_PROFILE: $SHELL_PROFILE"
 echo "SKIP_AWS_TOOLS: $SKIP_AWS_TOOLS"
 echo "SKIP_MISC_TOOLS: $SKIP_MISC_TOOLS"
 echo "SKIP_SYSTEM_TOOLS: $SKIP_SYSTEM_TOOLS"
-echo "SKIP_TERRAFORM_TOOLS: $SKIP_TERRAFORM_TOOLS"
+echo "SKIP_IAC_TOOLS: $SKIP_IAC_TOOLS"
 echo "UPDATE: $UPDATE"
 
 ## Execution
@@ -153,27 +153,27 @@ then
 fi
 
 # Add tribe profile to .bash_profile if it exists
-# Other tribes can add additional shell profiles as $HOME/[[business_unit]]_[[tribe]]_profile
+# Other tribes can add additional shell profiles as ~/[[business_unit]]_[[tribe]]_profile
 # https://linuxize.com/post/bashrc-vs-bash-profile/
 
 # interactive login shells
 # shellcheck disable=SC2143
-if [[ -f "$HOME/.bash_profile" && ! $(grep "source $SHELL_PROFILE" "$HOME/.bash_profile") ]]
+if [[ -f ~/.bash_profile && ! $(grep "source $SHELL_PROFILE" ~/.bash_profile) ]]
 then
-    printf "INFO: Adding source %s to %s.\n" "$SHELL_PROFILE" "$HOME/.bash_profile"
-    echo "source $SHELL_PROFILE" >> "$HOME/.bash_profile"
+    printf "INFO: Adding source %s to %s.\n" "$SHELL_PROFILE" ~/.bash_profile
+    echo "source $SHELL_PROFILE" >> ~/.bash_profile
     #shellcheck disable=SC1091
-    source "$HOME/.bash_profile" || exit 1
+    source ~/.bash_profile || exit 1
 fi
 
 # non-interactive login shells
 # shellcheck disable=SC2143
-if [[ -f "$HOME/.bashrc" && ! $(grep "source $SHELL_PROFILE" "$HOME/.bashrc") ]]
+if [[ -f ~/.bashrc && ! $(grep "source $SHELL_PROFILE" ~/.bashrc) ]]
 then
-    printf "INFO: Adding source %s to %s.\n" "$SHELL_PROFILE" "$HOME/.bashrc"
-    echo "source $SHELL_PROFILE" >> "$HOME/.bashrc"
+    printf "INFO: Adding source %s to %s.\n" "$SHELL_PROFILE" ~/.bashrc
+    echo "source $SHELL_PROFILE" >> ~/.bashrc
     #shellcheck disable=SC1091
-    source "$HOME/.bashrc" || exit 1
+    source ~/.bashrc || exit 1
 fi
 
 printf "INFO: PATH value is: %s\n" "$PATH"
@@ -204,12 +204,12 @@ then
     install_misc_tools
 fi
 
-if [[ $SKIP_TERRAFORM_TOOLS == "" ]]
+if [[ $SKIP_IAC_TOOLS == "" ]]
 then
     cd "$WL_GC_TM_WORKSPACE" || exit 1
     # shellcheck disable=SC1091
-    source "${WL_GC_TM_WORKSPACE}/libs/bash/terraform_tools.sh"
-    install_terraform_tools
+    source "${WL_GC_TM_WORKSPACE}/libs/bash/iac_tools.sh"
+    install_iac_tools
 fi
 
 # Post-processing checks
@@ -221,14 +221,14 @@ source "$SHELL_PROFILE" || exit 1
 printf "INFO: Changing back to original working dir.\n"
 cd "$ORIG_PWD" || exit 1
 
-if [[ ! -f "$HOME/.aws/credentials" ]]
+if [[ ! -f ~/.aws/credentials ]]
 then
-    printf "INFO: Looks like you do not yet have a \$HOME/.aws/credentials configured, pleaes run the AWS configuration process as detailed here https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html.\n"
+    printf "INFO: Looks like you do not yet have a ~/.aws/credentials configured, pleaes run the AWS configuration process as detailed here https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html.\n"
 fi
 
-if [[ ! -f "$HOME/.terraformrc" ]]
+if [[ ! -f ~/.terraformrc ]]
 then
-    printf "INFO: Looks like you do not yet have a \$HOME/.terraformrc credentials configuration, pleaes follow https://confluence.techno.ingenico.com/display/PPS/Using+Shared+Modules+from+GitLab+Private+Registry#UsingSharedModulesfromGitLabPrivateRegistry-localhost before attempting to use Terraf.\n"
+    printf "INFO: Looks like you do not yet have a ~/.terraformrc credentials configuration, pleaes follow https://confluence.techno.ingenico.com/display/PPS/Using+Shared+Modules+from+GitLab+Private+Registry#UsingSharedModulesfromGitLabPrivateRegistry-localhost before attempting to use Terraf.\n"
 fi
 
 printf "INFO: Please start your shell session to ensure the PATH value is reloaded.\n"
