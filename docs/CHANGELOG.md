@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.34.0] - 2024-01-18
+
+## Addd
+
+- [tofuenv](https://github.com/tofuutils/tofuenv) to manage versions of [OpenTofu](https://opentofu.org/)
+
 ## [0.33.1] - 2024-01-17
 
 ### Fixed
@@ -33,6 +39,11 @@ Action Keywords:
 ### Fixed
 
 - do not execute goenv install during normal operation; only during install and force update operations
+- check got onelogin-aws-login binary from pip onelogin-aws-cli package
+- generic `terraform` references with `iac` in both filenames and function invocations
+- Groovy linting issues in Jenkinsfile
+- `$HOME` replaced with `~` to enable fully expanding path and glob expressions
+- goenv no longer outputs progress bar when installing go version
 
 ## [0.32.21] - 2023-12-11
 

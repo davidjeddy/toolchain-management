@@ -1,17 +1,17 @@
 #!/bin/bash
 
-function configure_terraform_runtime() {
+function configure_iac_runtime() {
     # shellcheck disable=SC2143
     if [[ ! $(grep "export TF_PLUGIN_CACHE_DIR" "$SHELL_PROFILE") ]]
     then
         # source https://www.tailored.cloud/devops/cache-terraform-providers/
         printf "INFO: Configuring Terraform provider shared cache.\n"
-        mkdir -p "$HOME/.terraform.d/plugin-cache/" || true
-        echo "export TF_PLUGIN_CACHE_DIR=\"$HOME/.terraform.d/plugin-cache/\"" >> "$SHELL_PROFILE"
+        mkdir -p ~/.terraform.d/plugin-cache/ || true
+        echo "export TF_PLUGIN_CACHE_DIR=~/.terraform.d/plugin-cache/" >> "$SHELL_PROFILE"
     fi
 }
 
-function golang_based_terraform_tools() {
+function golang_based_iac_tools() {
     # Because pipelines do not have a full shell, be sure to include the PATH in the execution shell
     # shellcheck disable=SC1090
     source "$SHELL_PROFILE"
@@ -48,7 +48,7 @@ function golang_based_terraform_tools() {
     fi
 }
 
-function python_based_terraform_tools() {
+function python_based_iac_tools() {
     # Because pipelines do not have a full shell, be sure to include the PATH to the Python binaries
     # shellcheck disable=SC2155
     export PATH=$PATH:/home/$(whoami)/.local/bin
@@ -64,36 +64,40 @@ function python_based_terraform_tools() {
         pip install -U checkov=="$CHECKOV_VER" --user
 
         # Do diff distro's put the Python package bins in different locations?
-        chmod +x "$HOME/.local/bin/checkov"
+        chmod +x ~/.local/bin/checkov || exit 1
     fi
 }
 
+# TODO the following couple of functions are functionally the same, just different source project / target dir. Can we abstract this all?
+
 function tfenv_and_terraform() {
+
+    cd ~/ || exit
+
     if [[ ( ! $(which tfenv) && $TFENV_VER) || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing tfenv.\n"
-        cd "$HOME" || exit
-        rm -rf "$HOME/.tfenv" || true
-        git clone --quiet "https://github.com/tfutils/tfenv.git" "$HOME/.tfenv"
-        cd .tfenv || exit
+        rm -rf ~/.tfenv || true
+        git clone --quiet "https://github.com/tfutils/tfenv.git" ~/.tfenv
+        cd ~/.tfenv || exit
 
         sudo ln -sfn ~/.tfenv/bin/* "$BIN_DIR" || true
-    elif [[ -d "$HOME/.tfenv" && $TFENV_VER && "$UPDATE" == "true" ]]
+    elif [[ -d ~/.tfenv && $TFENV_VER && "$UPDATE" == "true" ]]
     then
         printf "INFO: Updating tfenv.\n"
-        export PATH=$PATH:$HOME/.tfenv/bin
-        cd "$HOME/.tfenv" || exit
+        cd ~/.tfenv || exit
         git reset master --hard
         git fetch --all --tags
         git checkout "v$TFENV_VER"
-        cd "$WL_GC_TM_WORKSPACE" || exit 1
     fi
 
+    cd "$WL_GC_TM_WORKSPACE" || exit 1
+
     # shellcheck disable=SC2143
-    if [[ ! $(grep "export PATH=\$PATH:\$HOME/.tfenv/bin" "$SHELL_PROFILE") ]]
+    if [[ ! $(grep "export PATH=\$PATH:~/.tfenv/bin" "$SHELL_PROFILE") ]]
     then
         printf "INFO: Add tfenv bin dir to PATH via %s.\n" "$SHELL_PROFILE"
-        echo "export PATH=\$PATH:\$HOME/.tfenv/bin" >> "$SHELL_PROFILE"
+        echo "export PATH=\$PATH:~/.tfenv/bin" >> "$SHELL_PROFILE"
         #shellcheck disable=SC1090
         source "$SHELL_PROFILE"
     fi
@@ -109,29 +113,32 @@ function tfenv_and_terraform() {
 }
 
 function tgenv_and_terragrunt() {
+    cd ~/ || exit
+
     if [[ ( ! $(which tgenv) && $TGENV_VER) || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing tgenv.\n"
-        cd "$HOME" || exit
-        rm -rf "$HOME/.tgenv" || true
-        git clone --quiet "https://github.com/tgenv/tgenv.git" "$HOME/.tgenv"
-        cd .tgenv || exit
+        rm -rf ~/.tgenv || true
+        git clone --quiet "https://github.com/tgenv/tgenv.git" ~/.tgenv
+        cd ~/.tgenv || exit
+
         sudo ln -s ~/.tgenv/bin/* "$BIN_DIR" || true
-    elif [[ -d "$HOME/.tgenv" && $TGENV_VER && "$UPDATE" == "true" ]]
+    elif [[ -d ~/.tgenv && $TGENV_VER && "$UPDATE" == "true" ]]
     then
         printf "INFO: Updating tgenv.\n"
-        cd "$HOME/.tgenv" || exit
+        cd ~/.tgenv || exit
         git reset master --hard
         git fetch --all --tags
         git checkout "v$TGENV_VER"
-        cd "$WL_GC_TM_WORKSPACE" || exit 1
     fi
-    
+
+    cd "$WL_GC_TM_WORKSPACE" || exit 1
+
     # shellcheck disable=SC2143
-    if [[ ! $(grep "export PATH=\$PATH:\$HOME/.tgenv/bin" "$SHELL_PROFILE") ]]
+    if [[ ! $(grep "export PATH=\$PATH:~/.tgenv/bin" "$SHELL_PROFILE") ]]
     then
         printf "INFO: Add tgenv bindir to PATH via %s.\n" "$SHELL_PROFILE"
-        echo "export PATH=\$PATH:\$HOME/.tgenv/bin" >> "$SHELL_PROFILE"
+        echo "export PATH=\$PATH:~/.tgenv/bin" >> "$SHELL_PROFILE"
         #shellcheck disable=SC1090
         source "$SHELL_PROFILE"
     fi
@@ -140,10 +147,53 @@ function tgenv_and_terragrunt() {
     if [[ "$(tgenv list)" != *"$TG_VER"* ]]
     then
         printf "INFO: Installing Terragrunt via tgenv.\n"
-        tgenv install "$TG_VER"
+        tgenv install "$TG_VER" 
     fi
 
     tgenv use "$TG_VER"
+}
+
+# https://github.com/tofuutils/tofuenv#manual-linux-and-macos
+function tofuenv_and_tofu() {
+    cd ~/ || exit
+
+    if [[ ( ! $(which tofuenv) && $TOFUENV_VER) || "$UPDATE" == "true" ]]
+    then
+        printf "INFO: Installing tofuenv.\n"
+        rm -rf ~/.tofuenv || true
+        git clone --quiet https://github.com/tofuutils/tofuenv.git ~/.tofuenv
+        cd ~/.tofuenv || exit 1
+        git checkout "v$TOFUENV_VER"
+
+        sudo ln -sfn ~/.tofuenv/bin/* "$BIN_DIR"
+    elif [[ -d ~/.tofuenv && $TOFUENV_VER && "$UPDATE" == "true" ]]
+    then
+        printf "INFO: Updating tofuenv.\n"
+        cd ~/.tofuenv || exit
+        git reset master --hard
+        git fetch --all --tags
+        git checkout "v$TOFUENV_VER"
+    fi
+
+    cd "$WL_GC_TM_WORKSPACE" || exit 1
+
+    # shellcheck disable=SC2143
+    if [[ ! $(grep "export PATH=\$PATH:~/.tofuenv/bin" "$SHELL_PROFILE") ]]
+    then
+        printf "INFO: Add tofuenv bin dir to PATH via %s.\n" "$SHELL_PROFILE"
+        echo "export PATH=\$PATH:~/.tofuenv/bin" >> "$SHELL_PROFILE"
+        #shellcheck disable=SC1090
+        source "$SHELL_PROFILE"
+    fi
+
+    # install OpenTofu version only if not already present on the host
+    if [[ "$(tofuenv list)" != *"$TOFU_VER"* ]]
+    then
+        printf "INFO: Installing OpenTofu via tofuenv.\n"
+        tofuenv install "$TOFU_VER"
+    fi
+
+    tofuenv use "$TOFU_VER"
 }
 
 function binary_based_tools() {
@@ -214,17 +264,18 @@ function binary_based_tools() {
     fi
 }
 
-function install_terraform_tools() {
+function install_iac_tools() {
 
     printf "INFO: Processing TERRAFORM tools.\n"
 
     # do not change order
-    configure_terraform_runtime
-    golang_based_terraform_tools
+    binary_based_tools
+    configure_iac_runtime
+    golang_based_iac_tools
+    python_based_iac_tools
     tfenv_and_terraform
     tgenv_and_terragrunt
-    binary_based_tools
-    python_based_terraform_tools
+    tofuenv_and_tofu
 
     # output versions - grouped based on the syntax/alphabetical of the tool name
     printf "INFO: Output Terraform tool versions.\n"
@@ -239,6 +290,7 @@ function install_terraform_tools() {
     terragrunt --version
     tfenv --version
     tgenv --version
+    tofu --version
 
     kics version
 }

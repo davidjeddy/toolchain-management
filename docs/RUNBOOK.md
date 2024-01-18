@@ -65,4 +65,4 @@ checkov --version
 
 **Fix**
 
-Remove the checkov binary. It is the wrong one. Re-install checkov via ./libs/bash/install.sh. Be sure the "$HOME/.worldline_pps_profile" is being sourced.
+Remove the checkov binary. It is the wrong one. Re-install checkov via ./libs/bash/install.sh. Be sure `~/.worldline_pps_profile` is being sourced.

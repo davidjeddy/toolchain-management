@@ -1,4 +1,6 @@
 #!groovy
+/* groovylint-disable CompileStatic, GStringExpressionWithinString, LineLength, NestedBlockDepth, UnusedImport */
+
 //- Library Imports
 @Library('jenkins-pipeline')
 import com.ingenico.epayments.ci.common.PipelineCommon
@@ -8,11 +10,13 @@ import com.ingenico.epayments.ci.common.Slack
 String gitlabApiToken       = 'jenkins-user-gitlab-test-api-token'
 String gitlabConnectionName = 'gitlab-test-igdcs'
 String gitlabProjectId      = 3440
-String gitlabProjectPath    = 'cicd/terraform/tools/toolchain-management/-/tree'
 
 String gitSSHCreds          = 'jenkins-gitlab-test-igdcs'
 String slackChannel         = 'nl-pros-centaurus-squad-releases'
+String slackMsgSourceAcct   = ':jenkins:'
 String workerNode           = 'bambora-aws-slave-terraform'
+
+String gitTargetBranch      = 'main'
 
 // No need to edit below this line
 
@@ -25,24 +29,24 @@ pipeline {
     }
     options {
         gitLabConnection(gitlabConnectionName)
-        timestamps ()
+        timestamps()
         // https://stackoverflow.com/questions/38096004/how-to-add-a-timeout-step-to-jenkins-pipeline
         timeout(time: 30, unit: 'MINUTES')
     }
-    // source https://stackoverflow.com/questions/36651432/how-to-implement-post-build-stage-using-jenkins-pipeline-plug-in
-    // source https://plugins.jenkins.io/gitlab-plugin/
+    // https://stackoverflow.com/questions/36651432/how-to-implement-post-build-stage-using-jenkins-pipeline-plug-in
+    // https://plugins.jenkins.io/gitlab-plugin/
     post {
         // always, changed, fixed, regression, aborted, failure, success, unstable, unsuccessful, and cleanup
         failure {
             script {
-                if (env.gitlabBranch == 'main') {
+                if (env.gitlabBranch == gitTargetBranch) {
                     // if main, send to nl-pros-equad-releases
-                    def slack = new Slack(this.steps, this.env)
+                    object slack = new Slack(this.steps, this.env)
                     slack.slackNotification(
                         slackChannel,
                         env.JOB_NAME,
                         ":alert: ${env.BRANCH_NAME} branch pipeline failed.",
-                        ':jenkins:'
+                        slackMsgSourceAcct
                     )
                 }
             }
@@ -50,23 +54,26 @@ pipeline {
         }
         fixed {
             script {
-                if (env.gitlabBranch == 'main') {
+                if (env.gitlabBranch == gitTargetBranch) {
                     // if main, send to nl-pros-equad-releases
-                    def slack = new Slack(this.steps, this.env)
+                    object slack = new Slack(this.steps, this.env)
                     slack.slackNotification(
                         slackChannel,
                         env.JOB_NAME,
                         ":green_check_mark: ${env.BRANCH_NAME} branch build fixed.",
-                        ':jenkins:'
+                        slackMsgSourceAcct
                     )
                 }
             }
+            /* groovylint-disable-next-line DuplicateMapLiteral, DuplicateStringLiteral */
             updateGitlabCommitStatus name: 'build', state: 'failed'
         }
         success {
+            /* groovylint-disable-next-line DuplicateStringLiteral */
             updateGitlabCommitStatus name: 'build', state: 'success'
         }
         unstable {
+            /* groovylint-disable-next-line DuplicateMapLiteral, DuplicateStringLiteral */
             updateGitlabCommitStatus name: 'build', state: 'success'
         }
     }
@@ -78,7 +85,7 @@ pipeline {
                         credentialsId:  gitlabApiToken,
                         variable:       'gitlabPAT'
                     )]) {
-                        sh '''#!/bin/bash
+                        sh '''#!/bin/bash -e
                             curl \
                                 --form "note=# Build Pipeline\n\nNumber: ${BUILD_NUMBER}\n\nUrl: ${BUILD_URL}console" \
                                 --header "PRIVATE-TOKEN: ''' +  env.gitlabPAT + '''" \
@@ -91,14 +98,14 @@ pipeline {
         }
         stage('Clean Workspace') {
             steps {
-                echo "INFO: Clean workspace"
+                echo 'INFO: Clean workspace'
                 cleanWs()
             }
         }
         stage('Print ENV VARs') {
             steps {
                 script {
-                    sh '''
+                    sh '''#!/bin/bash -e
                         echo "INFO: Printing ENV VARs"
                         # We do not want the default AWS credentials from Jenkins
                         unset JENKINS_AWS_CREDENTIALSID
@@ -112,12 +119,12 @@ pipeline {
         }
         stage('Git Checkout') {
             steps {
-                echo "Checkout main branch"
+                echo 'Checkout main branch'
                 // Needed for compliance, sast, tagging
                 git credentialsId: gitSSHCreds,
                     url: env.GIT_URL,
-                    branch: "main"
-                echo "Checkout feature branch"
+                    branch: gitTargetBranch
+                echo 'Checkout feature branch'
                 git credentialsId: gitSSHCreds,
                     url: env.GIT_URL,
                     branch: env.BRANCH_NAME
@@ -129,13 +136,13 @@ pipeline {
                 // Jenkins worker nodes have [cracklib](https://github.com/cracklib/cracklib) system package installed.
                 // It provides a `packer` in the PATH, ie name collision with Hashcorp Packer.
                 // So, skip installing misc tools for now until a resolution is found
-                sh './libs/bash/install.sh --skip_aws_tools true --skip_misc_tools true --skip_terraform_tools true --update true'
+                sh './libs/bash/install.sh --skip_aws_tools true --skip_misc_tools true --skip_iac_tools true --update true'
             }
         }
         // Then we install the AWS CLI and related tools
         stage('Toolchain Mngr: install.sh --update only for AWS tools') {
             steps {
-                sh './libs/bash/install.sh --skip_misc_tools true --skip_terraform_tools true --skip_system_tools true --update true'
+                sh './libs/bash/install.sh --skip_misc_tools true --skip_iac_tools true --skip_system_tools true --update true'
             }
         }
         // We do not install misc tools due to a name collision with the package `packer` on RHEL based machines
@@ -152,7 +159,7 @@ pipeline {
         stage('Tagging') {
             steps {
                 script {
-                    if (env.BRANCH_NAME == 'main') {
+                    if (env.BRANCH_NAME == gitTargetBranch) {
                         // credentials to git push via ssh
                         withCredentials([sshUserPrivateKey(
                             credentialsId: gitSSHCreds,
@@ -229,6 +236,6 @@ pipeline {
     triggers {
         // Run during the midnight hour Mon-Fri
         // https://www.jenkins.io/doc/book/pipeline/syntax/ -> Jenkins cron syntax
-        cron(env.BRANCH_NAME == 'main' ?  'H 0 * * 1-5' : '')
+        cron(env.BRANCH_NAME == gitTargetBranch ?  'H 0 * * 1-5' : '')
     }
 }

@@ -62,3 +62,6 @@ Thumbs.db
 
 # Toolchain specific
 libs/kics
+
+# Log files
+*.log

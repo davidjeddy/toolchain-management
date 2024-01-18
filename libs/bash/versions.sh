@@ -39,7 +39,7 @@ export IPJTT_VER="1.8.2"
 ## https://pypi.org/project/onelogin-aws-cli/
 export ONELOGIN_AWS_CLI_VER="0.1.19"
 
-# Terraform related tools
+# Iac related tools
 ## https://github.com/bridgecrewio/checkov/releases
 export CHECKOV_VER="3.1.31"
 ## https://github.com/infracost/infracost/releases
@@ -60,10 +60,14 @@ export TFLINT_VER="0.47.0"
 export TRIVY_VER="0.44.1"
 ## https://github.com/gruntwork-io/terragrunt/releases
 export TG_VER="0.48.7"
-## https://github.com/cunymatthieu/tgenv/releases
-export TGENV_VER="0.0.3"
+## https://github.com/tgenv/tgenv/releases
+export TGENV_VER="1.1.0"
 ## https://github.com/tenable/terrascan/releases
 export TRSCAN_VER="1.18.3"
+## https://github.com/tofuutils/tofuenv/tags
+export TOFUENV_VER="1.0.3"
+## https://github.com/tofu/tofu/releases
+export TOFU_VER="1.6.0"
 
 # Misc tools
 ## https://github.com/hashicorp/packer/releases
@@ -103,17 +107,19 @@ echo "ONELOGIN_AWS_CLI_VER: $ONELOGIN_AWS_CLI_VER"
 # Misc tools
 echo "PKR_VER: $PKR_VER"
 
-# Terraform/Terragrunt version controlers
+# IaC version controllers
+echo "TOFU_VER: $TOFU_VER"
 echo "TF_VER: $TF_VER"
 echo "TFENV_VER: $TFENV_VER"
-echo "TFSEC_VER: $TFSEC_VER"
 echo "TG_VER: $TG_VER"
 echo "TGENV_VER: $TGENV_VER"
+echo "TOFUENV_VER: $TOFUENV_VER"
 
-# Terraform Compliance
+# IaC Compliance
 echo "INFRACOST_VER: $INFRACOST_VER"
 echo "KICS_VER: $KICS_VER"
 echo "TFDOCS_VER: $TFDOCS_VER"
 echo "TFLINT_VER: $TFLINT_VER"
+echo "TFSEC_VER: $TFSEC_VER"
 echo "TRIVY_VER: $TRIVY_VER"
 echo "TRSCAN_VER: $TRSCAN_VER"
