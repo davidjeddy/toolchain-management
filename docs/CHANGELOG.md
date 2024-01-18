@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.33.1] - 2024-01-17
+
+### Fixed
+
+- syntax error in `libs/bash/aws/ecs_update_service_task.sh`
+
 ## [0.33.0] - 2024-01-17
 
 ### Fixed

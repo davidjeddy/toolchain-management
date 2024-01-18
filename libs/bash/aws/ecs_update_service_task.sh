@@ -56,7 +56,7 @@ then \
   exit 0; \
 fi; \
 cd $(pwd)/%; \
-rm *.log \
+rm *.log || true; \
 terraform init -no-color | tee init.log; \
 terraform plan -no-color | tee plan.log; \
 terraform apply --auto-approve -no-color | tee apply.log; \
