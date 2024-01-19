@@ -18,6 +18,12 @@ WORKSPACE=$(git rev-parse --show-toplevel)
 export WORKSPACE
 printf "WORKSPACE: %s\n" "${WORKSPACE}"
 
+if [[ ! -d "$WORKSPACE/.tmp/toolchain-management/libs/kics/assets" ]]
+then
+    printf "ERR: IAC tool KICS query library missing from .tmp/toolchain-management/libs. Please re-run ./libs/bash/install.sh and retry your commit."
+    exit 1
+fi
+
 # get a list of changed files when using only the git staged list against previouse commit
 git fetch --all
 declare TF_FILES_CHANGED

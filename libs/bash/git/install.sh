@@ -38,7 +38,7 @@ printf "INFO: execute toolchain-management installer...\n"
 # TODO move this to the toolchain installer project, as part of the install process
 if [[ ! -d "$THIS_WORKSPACE/.tmp/toolchain-management/libs/kics" ]]
 then
-    printf "INFO: Install miissing KICS query library\n"
+    printf "INFO: Install missing KICS query library\n"
 
     # shellcheck disable=1091
     source "$THIS_WORKSPACE/.tmp/toolchain-management/libs/bash/versions.sh"
