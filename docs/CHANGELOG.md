@@ -12,6 +12,16 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.34.1] - 2024-01-19
+
+## Addd
+
+- check for KICS query library during pre-commit execution
+
+## Fixed
+
+- spelling error
+
 ## [0.34.0] - 2024-01-18
 
 ## Addd
