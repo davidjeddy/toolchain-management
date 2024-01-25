@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.34.2] - 2024-01-25
+
+## Added
+
+- TLS cipher check helper script
+
 ## [0.34.1] - 2024-01-19
 
 ## Addd

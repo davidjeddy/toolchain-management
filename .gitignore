@@ -65,3 +65,6 @@ libs/kics
 
 # Log files
 *.log
+
+# Workspace tmp files
+SCRATCH.md
