@@ -103,8 +103,8 @@ function generateSBOM() {
         fi
         git add sbom.xml || true
     } || {
-        cat "$(pwd)/sbom.xml" || exit 1
-        echo "ERR: checkov SBOM failed to generate.":q
+        echo "ERR: checkov SBOM failed to generate."
+        cat "$(pwd)/sbom.xml"
         exit 1
     }
 }
@@ -148,8 +148,8 @@ function terraformCompliance() {
                 > "$(pwd)/.tmp/junit-checkov.xml"
         fi
     } || {
-        cat "$(pwd)/.tmp/junit-checkov.xml" || exit 1
         echo "ERR: checkov failed. Check report saved to .tmp/junit-checkov.xml"
+        cat "$(pwd)/.tmp/junit-checkov.xml"
         exit 1
     }
 
@@ -189,8 +189,8 @@ function terraformCompliance() {
                 --type "Terraform"
         fi
     } || {
-        cat "$(pwd)/.tmp/junit-kics.xml" || exit 1
         echo "ERR: kics failed. Check report saved to .tmp/junit-kics.xml"
+        cat "$(pwd)/.tmp/junit-kics.xml"
         exit 1
     }
 
@@ -222,8 +222,8 @@ function terraformCompliance() {
                 > "$(pwd)/.tmp/junit-tfsec.xml"
         fi
     } || {
-        cat "$(pwd)/.tmp/junit-tfsec.xml" || exit 1
         echo "ERR: tfsec failed. Check report saved to .tmp/junit-tfsec.xml"
+        cat "$(pwd)/.tmp/junit-tfsec.xml"
         exit 1
     }
 
@@ -256,8 +256,8 @@ function terraformCompliance() {
     #                 > .tmp/junit-trivy.xml
     #         fi
     #     } || {
-    #         cat "$(pwd)/.tmp/junit-trivy.xml" || exit 1
     #         echo "ERR: trivy failed. Check Junit reports in .tmp"
+    #         cat "$(pwd)/.tmp/junit-trivy.xml"
     #         exit 1
     #     }
     # fi
@@ -289,8 +289,8 @@ function terraformCompliance() {
 
     #     fi
     # } || {
-    #     cat "$(pwd)/.tmp/junit-xeol.xml" || exit 1
     #     echo "ERR: xeol failed. Check Junit reports in .tmp"
+    #     cat "$(pwd)/.tmp/junit-xeol.xml"
     #     exit 1
     # }
 }
@@ -324,8 +324,8 @@ function terraformLinting() {
                 > .tmp/junit-tflint.xml
         fi
     } || {
-        cat "$(pwd)/.tmp/junit-tflint.xml" || exit 1
         echo "ERR: tflint failed. Check Junit reports in .tmp"
+        cat "$(pwd)/.tmp/junit-tflint.xml"
         exit 1
     }
 }
