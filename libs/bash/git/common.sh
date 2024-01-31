@@ -1,15 +1,108 @@
 #!/bin/bash -e
 
-# Required
-# ENV VAR (pwd) must be set
+## fn()
 
-# TODO use `parallel` to execute functions at the same time to reduce wait time
+function exec() {
+  # args
+  
+  local RANGE
+  if [[ ! $1 ]]
+  then 
+      printf "ERR: Argument 1 must be a git diff range string.\n"
+      exit 1
+  fi
+  RANGE="${1}"
+
+  # vars
+
+  local MODULES_DIR
+
+  local ORIG_PWD
+  ORIG_PWD="$(pwd)"
+  export ORIG_PWD
+
+  local WORKSPACE
+  WORKSPACE=$(git rev-parse --show-toplevel)
+  export WORKSPACE
+  printf "WORKSPACE: %s\n" "${WORKSPACE}"
+
+  # logi
+
+  # get a list of changed files when using only the git staged list against previouse commit
+  git fetch --all
+  local CMD
+  CMD="git diff ${RANGE} --name-only"
+  local TF_FILES_CHANGED
+  TF_FILES_CHANGED=$(eval "${CMD}" | grep tf\$ | \
+      grep -v .tmp/ | \
+      grep -v docs/ | \
+      grep -v examples/ | \
+      grep -v libs/ | \
+      grep -v README.md | \
+      grep -v sbom.xml | \
+      grep -v terraform.tf \
+      || true \
+  )
+  export TF_FILES_CHANGED
+  printf "INFO: TF_FILES_CHANGED value is \n%s\n" "$TF_FILES_CHANGED"
+
+  if  [[ $TF_FILES_CHANGED == "" ]]
+  then
+      printf "INFO: TF_FILES_CHANGED is empty; no iac changes detected, exiting.\n"
+      exit 1
+  fi
+
+  if [[ $TF_FILES_CHANGED != "" ]]
+  then
+      MODULES_DIR=$(echo "$TF_FILES_CHANGED" | xargs -L1 dirname | sort | uniq)
+      printf "INFO: MODULES_DIR value is \n%s\n" "$MODULES_DIR"
+  fi
+
+  for DIR in $MODULES_DIR
+  do
+      printf "INFO: Reset to project home directory.\n"
+      cd "${WORKSPACE}" || exit 1
+
+      printf "INFO: Changing into %s dir if it still exists.\n" "${DIR}"
+      cd "$DIR" || continue
+
+      # If a lock file exists, AND the cache directory does not, the module needs to be initilized.
+      if [[ -f "$(pwd)/terraform.lock.hcl" && ! -d "$(pwd)/terraform" ]]
+      then
+          terraform init -no-color
+          terraform providers lock -platform=linux_amd64
+      fi
+
+      # Create tmp dir to hold artifacts and reports
+      createTmpDir
+
+      # Do not allow in-project shared modules
+      doNotAllowSharedModulesInsideDeploymentProjects
+
+      # best practices and security scanning
+      iacCompliance
+
+      # linting and syntax formatting
+      iacLinting
+
+      # generate docs and meta-data only if checks do not fail
+      documentation
+
+      # supply chain attastation generation and diff comparison
+      generateSBOM
+  done
+
+  ## wrap up
+
+  cd "$ORIG_PWD" || exit
+
+}
 
 # Make tmp dir to hold artifacts and reports per module
 function createTmpDir() {
-    if [[ ! -d "./.tmp" ]]
+    if [[ ! -d "$(pwd)/.tmp" ]]
     then
-        mkdir -p "./.tmp"
+        mkdir -p "$(pwd)/.tmp"
     fi
 }
 
@@ -17,13 +110,13 @@ function doNotAllowSharedModulesInsideDeploymentProjects() {
     printf "INFO: Do not allow shared modules inside a deployment project.\n"
 
     #shellcheck disable=SC2002 # We do want to cat the file contents and pipeline into jq
-    if [[ ! -f ".terraform/modules/modules.json" ]]
+    if [[ ! -f "$(pwd)/terraform/modules/modules.json" ]]
     then
         return 0
     fi
 
     # shellcheck disable=SC2002
-    MODULE_SOURCES=$(cat ".terraform/modules/modules.json" | jq '.Modules[] | .Source')
+    MODULE_SOURCES=$(cat "$(pwd)/terraform/modules/modules.json" | jq '.Modules[] | .Source')
 
     for MODULE_SOURCE in $MODULE_SOURCES
     do
@@ -41,7 +134,7 @@ function doNotAllowSharedModulesInsideDeploymentProjects() {
 function documentation() {
     printf "INFO: Validating generated documentation.\n"
 
-    if [[ ! -f "./README.md" ]]
+    if [[ ! -f "$(pwd)/README.md" ]]
     then
         printf "ALERT: README.md not found in module, creating from template.\n"
         # Get module name and uppercase it
@@ -89,7 +182,7 @@ function generateSBOM() {
     {
         if [[ -f "checkov.yml" ]]
         then
-            # use configuration file if present. Created due to terraform/deployments/terraform/aws/worldline-gc-keycloak-dev/eu-west-1/keycloak/iohd being created BEFORE complaince was mandatory    
+            # use configuration file if present. Created due to terraform/aws/worldline-gc-keycloak-dev/eu-west-1/keycloak/iohd being created BEFORE complaince was mandatory    
             checkov \
                 --config-file checkov.yml \
                 --directory . \
@@ -104,12 +197,12 @@ function generateSBOM() {
         git add sbom.xml || true
     } || {
         echo "ERR: checkov SBOM failed to generate."
-        cat "$(pwd)/sbom.xml"
+        cat "sbom.xml"
         exit 1
     }
 }
 
-function terraformCompliance() {
+function iacCompliance() {
     printf "INFO: Executing Compliance and SAST scanners...\n"
 
     printf "INFO: checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov)...\n"
@@ -169,8 +262,8 @@ function terraformCompliance() {
                 --no-color \
                 --no-progress \
                 --output-name "junit-kics" \
-                --output-path "./.tmp" \
-                --path "./" \
+                --output-path "$(pwd)/.tmp" \
+                --path "$(pwd)/" \
                 --queries-path "${WORKSPACE}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
                 --report-formats "junit" \
                 --type "Terraform"
@@ -182,8 +275,8 @@ function terraformCompliance() {
                 --no-color \
                 --no-progress \
                 --output-name "junit-kics" \
-                --output-path "./.tmp" \
-                --path "./" \
+                --output-path "$(pwd)/.tmp" \
+                --path "$(pwd)/" \
                 --queries-path "${WORKSPACE}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
                 --report-formats "junit" \
                 --type "Terraform"
@@ -295,8 +388,8 @@ function terraformCompliance() {
     # }
 }
 
-function terraformLinting() {
-    printf "INFO: Executing Terraform Linting.\n"
+function iacLinting() {
+    printf "INFO: Executing iac Linting.\n"
 
     printf "INFO: Terraform/Terragrunt fmt and linting...\n"
     terraform fmt -no-color -recursive .

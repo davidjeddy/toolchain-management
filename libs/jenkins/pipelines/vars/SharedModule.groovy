@@ -34,6 +34,7 @@ def call(
             GITLAB_CREDENTIALSID = credentials("${gitlabPAT}")
         }
         options {
+            ansiColor('xterm') // https://plugins.jenkins.io/ansicolor/
             gitLabConnection(gitlabConnectionName)
             skipStagesAfterUnstable()
             timeout(time: jobTimeout, unit: 'MINUTES') // https://stackoverflow.com/questions/38096004/how-to-add-a-timeout-step-to-jenkins-pipeline

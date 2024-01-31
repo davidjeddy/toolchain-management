@@ -12,6 +12,16 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.35.0] - 2024-01-29
+
+## ADDED
+
+- pre-push git hook to ensure feature branch compliance before review is created
+
+## FIXED
+
+- pre-commit compliance checks now only diff against the previous commit
+
 ## [0.34.3] - 2024-01-29
 
 ## Added
