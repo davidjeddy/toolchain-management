@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.35.2] - 2024-01-31
+
+## FIXED
+
+- Incorrect exit code when no changes to IAC code
+
 ## [0.35.1] - 2024-01-31
 
 ## FIXED
