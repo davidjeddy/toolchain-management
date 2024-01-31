@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.35.1] - 2024-01-31
+
+## FIXED
+
+- Git hooks should have the ability to be executed
+
 ## [0.35.0] - 2024-01-29
 
 ## ADDED

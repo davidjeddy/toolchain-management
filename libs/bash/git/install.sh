@@ -61,13 +61,11 @@ cd "$THIS_WORKSPACE" || exit 1
 
 printf "ALERT: Installing Git pre-commit hooks.\n"
 rm -rf "$THIS_WORKSPACE/.git/hooks/pre-commit" || true
-ln -sfn "$THIS_WORKSPACE/.tmp/toolchain-management/libs/bash/git/pre_commit.sh" "$THIS_WORKSPACE/.git/hooks/pre-commit"
-chmod +x "$THIS_WORKSPACE/.git/hooks/pre-commit"
+ln -sfn "$THIS_WORKSPACE/.tmp/toolchain-management/libs/bash/git/pre-commit.sh" "$THIS_WORKSPACE/.git/hooks/pre-commit"
 
 printf "ALERT: Installing Git pre-push hooks.\n"
 rm -rf "$THIS_WORKSPACE/.git/hooks/pre-push" || true
 ln -sfn "$THIS_WORKSPACE/.tmp/toolchain-management/libs/bash/git/pre-push.sh" "$THIS_WORKSPACE/.git/hooks/pre-push"
-chmod +x "$THIS_WORKSPACE/.git/hooks/pre-push"
 
 # Post-landing reset
 cd "$THIS_WORKSPACE" || exit 1
