@@ -26,7 +26,7 @@ function golang_based_iac_tools() {
         tar -xf kics.tar.gz
         cd "kics-${KICS_VER}" || exit 1
 
-        printf "INFO: Building kics. (If the process hangs, try disablig proxy/firewalls. Go needs to ability to download packages via Git(ssh).\n"
+        printf "INFO: Building kics. (If the process hangs, try disablig proxy/firewalls. Go needs the ability to download packages via ssh protocol.\n"
         # Make sure GO >=1.11 modules are enabled
         declare GO111MODULE
         export GO111MODULE="on"

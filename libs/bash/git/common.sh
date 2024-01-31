@@ -49,7 +49,7 @@ function exec() {
   if  [[ $TF_FILES_CHANGED == "" ]]
   then
       printf "INFO: TF_FILES_CHANGED is empty; no iac changes detected, exiting.\n"
-      exit 1
+      exit 0
   fi
 
   if [[ $TF_FILES_CHANGED != "" ]]
