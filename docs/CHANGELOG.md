@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.36.0] - 2024-02-01
+
+### FIXED
+
+- Reworked pre-* git hooks to work better with automation tools
+
 ## [0.35.2] - 2024-01-31
 
 ## FIXED

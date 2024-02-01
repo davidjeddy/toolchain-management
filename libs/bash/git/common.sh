@@ -4,36 +4,28 @@
 
 function exec() {
   # args
-  
-  local RANGE
+
+  local PRJ_ROOT
   if [[ ! $1 ]]
   then 
-      printf "ERR: Argument 1 must be a git diff range string.\n"
+      printf "ERR: Argument 1 must be path to root of project.\n"
       exit 1
   fi
-  RANGE="${1}"
+  PRJ_ROOT="${1}"
 
-  # vars
-
-  local MODULES_DIR
-
-  local ORIG_PWD
-  ORIG_PWD="$(pwd)"
-  export ORIG_PWD
-
-  local WORKSPACE
-  WORKSPACE=$(git rev-parse --show-toplevel)
-  export WORKSPACE
-  printf "WORKSPACE: %s\n" "${WORKSPACE}"
-
-  # logi
+  local CHANGE_LIST
+  if [[ ! $2 ]]
+  then 
+      printf "ERR: Argument 2 must be change file list.\n"
+      exit 1
+  fi
+  CHANGE_LIST="${2}"
 
   # get a list of changed files when using only the git staged list against previouse commit
-  git fetch --all
-  local CMD
-  CMD="git diff ${RANGE} --name-only"
   local TF_FILES_CHANGED
-  TF_FILES_CHANGED=$(eval "${CMD}" | grep tf\$ | \
+  # shellcheck disable=SC2002
+  TF_FILES_CHANGED=$(printf "%s" "${CHANGE_LIST}" | \
+      grep tf\$ | \
       grep -v .tmp/ | \
       grep -v docs/ | \
       grep -v examples/ | \
@@ -52,6 +44,7 @@ function exec() {
       exit 0
   fi
 
+  local MODULES_DIR
   if [[ $TF_FILES_CHANGED != "" ]]
   then
       MODULES_DIR=$(echo "$TF_FILES_CHANGED" | xargs -L1 dirname | sort | uniq)
@@ -60,8 +53,8 @@ function exec() {
 
   for DIR in $MODULES_DIR
   do
-      printf "INFO: Reset to project home directory.\n"
-      cd "${WORKSPACE}" || exit 1
+      printf "INFO: Reset to project root.\n"
+      cd "${PRJ_ROOT}" || exit 1
 
       printf "INFO: Changing into %s dir if it still exists.\n" "${DIR}"
       cd "$DIR" || continue
@@ -94,7 +87,7 @@ function exec() {
 
   ## wrap up
 
-  cd "$ORIG_PWD" || exit
+  cd "$PRJ_ROOT" || exit
 
 }
 
@@ -246,7 +239,7 @@ function iacCompliance() {
         exit 1
     }
 
-    # Note: `WORKSPACE` is defined in pre_commit.sh and must point to the root of the project.
+    # Note: `PRJ_ROOT` is defined in pre_commit.sh and must point to the root of the project.
     printf "INFO: KICS executing...\n"
     {
         rm -rf "$(pwd)/.tmp/junit-kics.xml" || exit 1
@@ -264,7 +257,7 @@ function iacCompliance() {
                 --output-name "junit-kics" \
                 --output-path "$(pwd)/.tmp" \
                 --path "$(pwd)/" \
-                --queries-path "${WORKSPACE}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
+                --queries-path "${PRJ_ROOT}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
                 --report-formats "junit" \
                 --type "Terraform"
         else
@@ -277,7 +270,7 @@ function iacCompliance() {
                 --output-name "junit-kics" \
                 --output-path "$(pwd)/.tmp" \
                 --path "$(pwd)/" \
-                --queries-path "${WORKSPACE}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
+                --queries-path "${PRJ_ROOT}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
                 --report-formats "junit" \
                 --type "Terraform"
         fi
