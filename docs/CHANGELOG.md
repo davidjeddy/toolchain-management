@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.36.1] - 2024-02-09
+
+### ADDED
+
+- Jenkins triggers.pollSCM to ensure deleted/merged branches are removed from Jenkins daily
+
 ## [0.36.0] - 2024-02-01
 
 ### FIXED
