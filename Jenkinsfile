@@ -234,8 +234,8 @@ pipeline {
         }
     }
     triggers {
-        // Run during the midnight hour Mon-Fri
-        // https://www.jenkins.io/doc/book/pipeline/syntax/ -> Jenkins cron syntax
-        cron(env.BRANCH_NAME == gitTargetBranch ?  'H 0 * * 1-5' : '')
+        // https://www.jenkins.io/doc/book/pipeline/syntax/
+        cron(env.BRANCH_NAME == gitTargetBranch ?  'H 0 * * 1-5' : '') // Run during the midnight hour Mon-Fri
+        pollSCM('H 23 * * 1-5')                                        // Check branch status during the 2300 hour Mon-Fri daily
     }
 }
