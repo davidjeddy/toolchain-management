@@ -89,7 +89,7 @@ TASK_DETAILS=$(aws ecs describe-tasks \
   --query "tasks[] | sort_by(@, &startedAt) | [-1].[taskArn, containers[?starts_with(name, \`fluent-bit\`) == \`false\` && starts_with(name, \`smtp-relay\`) == \`false\` && starts_with(name, \`install-oneagent\`) == \`false\`].runtimeId]" \
   --output text)
 TASK_ID=$(echo "$TASK_DETAILS" | sed '1p;d' | cut -d "/" -f 3)
-CONTAINER_RUNTIME_ID=$(echo "$TASK_DETAILS" | sed '2p;d')
+CONTAINER_RUNTIME_ID=$(echo "$TASK_DETAILS" | sed '2p;d' | cut -f 2)
 
 # forward local port
 

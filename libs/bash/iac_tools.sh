@@ -19,6 +19,9 @@ function golang_based_iac_tools() {
     if [[ ( ! $(which kics) && $KICS_VER) || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing kics.\n"
+         # Only KICS needs the .tmp to sort its query library
+        mkdir -p "$ORIG_PWD/.tmp" || exit 1
+
         cd "$WL_GC_TM_WORKSPACE/.tmp" || exit 1
 
         # obtain source archive
