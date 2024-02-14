@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.36.2] - 2024-02-13
+
+## FIXED
+
+- Incorrect Container id extracted from task detail, leading failure of db port forwarding from ecs task
+
 ## [0.36.1] - 2024-02-09
 
 ### ADDED
