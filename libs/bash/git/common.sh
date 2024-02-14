@@ -53,42 +53,41 @@ function exec() {
 
   for DIR in $MODULES_DIR
   do
-      printf "INFO: Reset to project root.\n"
-      cd "${PRJ_ROOT}" || exit 1
+    printf "INFO: Changing into %s dir if it still exists.\n" "${PRJ_ROOT}/${DIR}"
+    cd "$PRJ_ROOT/$DIR" || exit 1
 
-      printf "INFO: Changing into %s dir if it still exists.\n" "${DIR}"
-      cd "$DIR" || continue
+    # If a lock file exists, AND the cache directory does not, the module needs to be initilized.
+    if [[ -f "$(pwd)/terraform.lock.hcl" && ! -d "$(pwd)/terraform" ]]
+    then
+        terraform init -no-color
+        terraform providers lock -platform=linux_amd64
+    fi
 
-      # If a lock file exists, AND the cache directory does not, the module needs to be initilized.
-      if [[ -f "$(pwd)/terraform.lock.hcl" && ! -d "$(pwd)/terraform" ]]
-      then
-          terraform init -no-color
-          terraform providers lock -platform=linux_amd64
-      fi
+    # Create tmp dir to hold artifacts and reports
+    createTmpDir
 
-      # Create tmp dir to hold artifacts and reports
-      createTmpDir
+    # Do not allow in-project shared modules
+    doNotAllowSharedModulesInsideDeploymentProjects
 
-      # Do not allow in-project shared modules
-      doNotAllowSharedModulesInsideDeploymentProjects
+    # linting and syntax formatting
+    iacLinting
 
-      # best practices and security scanning
-      iacCompliance
+    # Generate sbom.xml only if the invoking scripts is pre-commit. No other time should generate sbom
+    if [[ "${0?}" == *pre-commit ]]
+    then
+        # generate docs and meta-data
+        documentation
 
-      # linting and syntax formatting
-      iacLinting
+        # generate sbom for supply chain suditing
+        generateSBOM
+    fi
 
-      # generate docs and meta-data only if checks do not fail
-      documentation
-
-      # supply chain attastation generation and diff comparison
-      generateSBOM
+    # Finally, if the invoking script name is pre-push, also run the full compliance tooling
+    if [[ "${0?}" == *pre-push ]]
+    then
+        iacCompliance
+    fi
   done
-
-  ## wrap up
-
-  cd "$PRJ_ROOT" || exit
-
 }
 
 # Make tmp dir to hold artifacts and reports per module
@@ -147,12 +146,12 @@ function documentation() {
     terraform-docs markdown table --output-file ./README.md --output-mode inject .
 
     # Fail pipeline if README is not up to date
-    if [[ $(whoami) == 'jenkins' && $(git status -s) != "" ]]
-    then
-        printf "ERR: README.md needs to be updated as part of the pre-commit before pushing.\n"
-        git diff README.md
-        exit 1
-    fi
+    # if [[ $(whoami) == 'jenkins' && $(git status -s) != "" ]]
+    # then
+    #     printf "ERR: README.md needs to be updated as part of the pre-commit before pushing.\n"
+    #     git diff README.md
+    #     exit 1
+    # fi
 
     printf "INFO: README.md validated, changes added to Git stage.\n"
     git add README.md

@@ -15,20 +15,19 @@ function golang_based_iac_tools() {
     # Because pipelines do not have a full shell, be sure to include the PATH in the execution shell
     # shellcheck disable=SC1090
     source "$SHELL_PROFILE"
+    
+    # Always download kics to enable re/build of the query library on every install
+    printf "INFO: Downloading kics archive.\n"
+    mkdir -p "$WL_GC_TM_WORKSPACE/.tmp" || exit 1
+    cd "$WL_GC_TM_WORKSPACE/.tmp" || exit 1
+    # obtain source archive
+    curl -sL --show-error "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" -o "kics.tar.gz"
+    tar -xf kics.tar.gz
 
+    # build executable if needed
     if [[ ( ! $(which kics) && $KICS_VER) || "$UPDATE" == "true" ]]
     then
-        printf "INFO: Installing kics.\n"
-         # Only KICS needs the .tmp to sort its query library
-        mkdir -p "$ORIG_PWD/.tmp" || exit 1
-
-        cd "$WL_GC_TM_WORKSPACE/.tmp" || exit 1
-
-        # obtain source archive
-        curl -sL --show-error "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" -o "kics.tar.gz"
-        tar -xf kics.tar.gz
         cd "kics-${KICS_VER}" || exit 1
-
         printf "INFO: Building kics. (If the process hangs, try disablig proxy/firewalls. Go needs the ability to download packages via ssh protocol.\n"
         # Make sure GO >=1.11 modules are enabled
         declare GO111MODULE
@@ -38,17 +37,12 @@ function golang_based_iac_tools() {
 
         sudo install bin/kics "$BIN_DIR"
         cd "../" || exit 1
-
-        # Copy only the assets to a path we can access after rm'ing the source archive and build dir
-        rm -rf "$WL_GC_TM_WORKSPACE/.tmp/kics" || true
-        mkdir -p "$WL_GC_TM_WORKSPACE/.tmp/kics"
-        cp -rf "$WL_GC_TM_WORKSPACE/.tmp/kics-${KICS_VER}/assets" "$WL_GC_TM_WORKSPACE/.tmp/kics" || exit 1
-
-        # Clean up and reset
-        printf "INFO: Clean up KICS resources.\n"
-        rm -rf "kics*.*" # remove all KICS FS resources with `.` in the name
-        cd "$WL_GC_TM_WORKSPACE" || exit 1
     fi
+
+    # Always rebuild KICS query library during an install
+    rm -rf "$WL_GC_TM_WORKSPACE/libs/kics" || true
+    mkdir -p "$WL_GC_TM_WORKSPACE/libs/kics"
+    cp -rf "$WL_GC_TM_WORKSPACE/.tmp/kics-${KICS_VER}/assets" "$WL_GC_TM_WORKSPACE/libs/kics" || exit 1
 }
 
 function python_based_iac_tools() {

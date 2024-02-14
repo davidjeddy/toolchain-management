@@ -79,7 +79,7 @@ function yum_systems() {
     if [[ $(cat "/etc/redhat-release") == *Fedora* ]]
     then
         # Fedora (Developer DWS Workstations Linux VM)
-        sudo yum install -y \
+        sudo dnf install -y \
             bzip2 \
             bzip2-devel \
             ca-certificates \
@@ -93,6 +93,7 @@ function yum_systems() {
             jq \
             libffi-devel \
             parallel \
+            skopeo \
             podman \
             python3-distutils-extra \
             tree \
@@ -110,6 +111,7 @@ function yum_systems() {
             gcc-c++ \
             git \
             git-lfs \
+            skopeo \
             gnupg \
             gnupg2 \
             jq \
@@ -130,9 +132,9 @@ function yum_systems() {
 }
 
 function install_goenv() {
-    if [[ ( ! $(which goenv) && $GO_VER && $GOENV_VER ) || "$UPDATE" == "true" ]]
+    if [[ ( ! $(which goenv) && "$GO_VER" ) || "$UPDATE" == "true" ]]
     then
-        printf "INFO: Installing goenv to %s to enable Go\n" ~/.goenv
+        printf "INFO: Installing goenv to %s to enable Go support\n" ~/.goenv
         rm -rf ~/.goenv || true
         git clone --quiet "https://github.com/syndbg/goenv.git" ~/.goenv
 
@@ -146,14 +148,9 @@ function install_goenv() {
                 echo "eval $(~/.goenv/bin/goenv init -)"
             } >> "$SHELL_PROFILE"
         fi
-
-        #shellcheck disable=SC1090
-        source "$SHELL_PROFILE"
-        goenv install --force --quiet "$GO_VER"
-
-    elif [[ ( $(which go) && $GO_VER && $GOENV_VER ) ]]
+    elif [[ ( $(which go) && "$GOENV_VER" ) ]]
     then
-        printf "INFO: Updating Go via goenv.\n"
+        printf "INFO: Updating goenv.\n"
         declare OLD_PWD
         OLD_PWD="$(pwd)"
         cd ~/.goenv || exit 1
@@ -162,12 +159,22 @@ function install_goenv() {
         git fetch --all --tags
         git checkout "$GOENV_VER"
         cd "$OLD_PWD" || exit 1
-
-        #shellcheck disable=SC1090
-        source "$SHELL_PROFILE"
+    else
+        printf "ERR: GO_VER and / or GOENV_VER must be defined."
+        exit 1
     fi
 
-    goenv global "$GO_VER"
+    # shellcheck disable=SC1090
+    source "$SHELL_PROFILE"
+
+    # Set Go version is not already equal to desired version
+    if [[ $(go version) != *$GO_VER* ]]
+    then
+        #shellcheck disable=SC1090
+        source "$SHELL_PROFILE"
+        goenv install --force --quiet "$GO_VER"
+        goenv global "$GO_VER"
+    fi
 }
 
 function install_python3() {
