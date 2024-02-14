@@ -7,6 +7,7 @@ then
     set -x
 fi
 
+# We must get the root of the project and load the common fn() before calling specific action related fn()
 if [[ ! $WORKSPACE ]]
 then
     declare WORKSPACE

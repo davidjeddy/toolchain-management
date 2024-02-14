@@ -20,7 +20,7 @@ printf "INFO: THIS_WORKSPACE %s\n" "${THIS_WORKSPACE}"
 
 # pre-flight checks and resets
 
-printf " INFO: Removing existing .tmp if exists\n"
+printf "INFO: Removing existing .tmp if exists\n"
 rm -rf "$THIS_WORKSPACE/.tmp" || exit 12
 
 ## functions
@@ -31,6 +31,13 @@ rm -rf "$THIS_WORKSPACE/.tmp" || exit 12
 rm -rf "$THIS_WORKSPACE/.tmp/toolchain-management" || true
 printf "INFO: Clone toolchain-management project locally into %s/.tmp\n" "$(pwd)"
 git clone --quiet git@gitlab.test.igdcs.com:cicd/terraform/tools/toolchain-management.git "$THIS_WORKSPACE/.tmp/toolchain-management"
+
+if [[ $WL_TF_TOOLING_BRANCH ]]
+then
+    cd "$THIS_WORKSPACE/.tmp/toolchain-management"
+    git checkout "$WL_TF_TOOLING_BRANCH"
+    cd "$THIS_WORKSPACE"
+fi
 
 printf "INFO: execute toolchain-management installer...\n"
 "$THIS_WORKSPACE/.tmp/toolchain-management/libs/bash/install.sh" "$@"

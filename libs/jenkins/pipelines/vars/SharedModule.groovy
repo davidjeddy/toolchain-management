@@ -163,7 +163,10 @@ def call(
                         )]) {
                             sh '''#!/bin/bash
                                 # shellcheck disable=1091
-                                source "$(pwd)/.tmp/toolchain-management/libs/bash/git/pre_commit_functions.sh"
+                                ## Old location
+                                source "$(pwd)/.tmp/toolchain-management/libs/bash/git/pre_commit_functions.sh" || true
+                                ## New location
+                                source "$(pwd)/.tmp/toolchain-management/libs/bash/git/common.sh" || true
 
                                 # Do not allow in-project shared modules
                                 doNotAllowSharedModulesInsideDeploymentProjects

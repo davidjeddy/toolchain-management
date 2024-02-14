@@ -12,6 +12,17 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.37.0] - 2024-02-13
+
+### ADDED
+
+- [containers/skopeo](https://github.com/containers/skopeo) to replace Worldline container-image-mirror be-spok solution in the near future
+- Ability to override the toolchain project branch from downstream projects via `./libs/bash/git/install.sh`
+
+### FIXED
+
+- pre-commit and pre-push process to prevent race condition regardng sbom.xml generation and appending to commits
+
 ## [0.36.2] - 2024-02-13
 
 ## FIXED
