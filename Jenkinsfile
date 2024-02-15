@@ -45,7 +45,7 @@ pipeline {
                     slack.slackNotification(
                         slackChannel,
                         env.JOB_NAME,
-                        ":alert: ${env.BRANCH_NAME} branch pipeline failed.",
+                        ":alert: Build failed.\n Build URL: ${env.BUILD_URL}console",
                         slackMsgSourceAcct
                     )
                 }
