@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.37.1] - 2024-02-15
+
+### FIXED
+
+- Missing URL in failure notification in Jenkinsfile
+
 ## [0.37.0] - 2024-02-13
 
 ### ADDED
