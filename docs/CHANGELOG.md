@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.38.0] - 2024-02-21
+
+### FIXED
+
+- `./libs/bash/ecs_service_port_proxy.sh` iterated to better handle port proxying for remote hosts, not only RDS
+
 ## [0.37.1] - 2024-02-15
 
 ### FIXED
