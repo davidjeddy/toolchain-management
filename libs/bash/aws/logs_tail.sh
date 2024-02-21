@@ -121,9 +121,10 @@ fi
 
 TASK_ID="$(echo "$TASK_ARN" | cut -d "/" -f 3)"
 
-LOG_STREAM=snd/"${SERVICE_NAME}"/"${TASK_ID}"
+LOG_STREAM="${CLUSTER_NAME:0:3}"/"${SERVICE_NAME}"/"${TASK_ID}"
 
 LOG_GROUP_JSON=$(aws logs describe-log-streams --log-group-name "${CLUSTER_NAME}" \
+  --region "${REGION_NAME}" \
   --log-stream-name-prefix "${LOG_STREAM}" \
   --output json)
 
@@ -132,7 +133,7 @@ readarray -t LOG_STREAMS < <(echo "${LOG_GROUP_JSON}" | jq -r -c '.logStreams[]'
 NUMBER_OF_RESULTS="${#LOG_STREAMS[@]}"
 
 if [ "${NUMBER_OF_RESULTS}" != 1 ]; then
-  LOG_STREAM=snd/"${SERVICE_NAME}"-firelens-"${TASK_ID}"
+  LOG_STREAM="${CLUSTER_NAME:0:3}"/"${SERVICE_NAME}"-firelens-"${TASK_ID}"
 fi
 
 printf "Log stream name: %s\n" "${LOG_STREAM}"
