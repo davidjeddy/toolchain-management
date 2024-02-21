@@ -256,7 +256,7 @@ function iacCompliance() {
                 --output-name "junit-kics" \
                 --output-path "$(pwd)/.tmp" \
                 --path "$(pwd)/" \
-                --queries-path "${PRJ_ROOT}/.tmp/toolchain-management/.tmp/kics/assets/queries/terraform/aws" \
+                --queries-path "${PRJ_ROOT}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
                 --report-formats "junit" \
                 --type "Terraform"
         else
@@ -269,7 +269,7 @@ function iacCompliance() {
                 --output-name "junit-kics" \
                 --output-path "$(pwd)/.tmp" \
                 --path "$(pwd)/" \
-                --queries-path "${PRJ_ROOT}/.tmp/toolchain-management/.tmp/kics/assets/queries/terraform/aws" \
+                --queries-path "${PRJ_ROOT}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
                 --report-formats "junit" \
                 --type "Terraform"
         fi

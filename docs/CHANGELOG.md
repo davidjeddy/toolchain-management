@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.38.1] - 2024-02-21
+
+### FIXED
+
+- Path to KICS libs
+
 ## [0.38.0] - 2024-02-21
 
 ### FIXED
