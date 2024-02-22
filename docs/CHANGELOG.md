@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.38.2] - 2024-02-21
+
+### FIXED
+
+- Continue processing if a IaC directory shows as deleted in the Git stage
+
 ## [0.38.1] - 2024-02-21
 
 ### FIXED
