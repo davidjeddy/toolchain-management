@@ -54,7 +54,7 @@ function exec() {
   for DIR in $MODULES_DIR
   do
     printf "INFO: Changing into %s dir if it still exists.\n" "${PRJ_ROOT}/${DIR}"
-    cd "$PRJ_ROOT/$DIR" || exit 1
+    cd "$PRJ_ROOT/$DIR" || continue
 
     # If a lock file exists, AND the cache directory does not, the module needs to be initilized.
     if [[ -f "$(pwd)/terraform.lock.hcl" && ! -d "$(pwd)/terraform" ]]
