@@ -3,120 +3,117 @@
 ## fn()
 
 function exec() {
-  # args
+    printf "INFO: starting exec()\n"
 
-  local PRJ_ROOT
-  if [[ ! $1 ]]
-  then 
-      printf "ERR: Argument 1 must be path to root of project.\n"
-      exit 1
-  fi
-  PRJ_ROOT="${1}"
+    # args
 
-  local CHANGE_LIST
-  if [[ ! $2 ]]
-  then 
-      printf "ERR: Argument 2 must be change file list.\n"
-      exit 1
-  fi
-  CHANGE_LIST="${2}"
+    local PRJ_ROOT
+    if [[ ! $1 ]]; then
+        printf "ERR: Argument 1 must be path to root of project.\n"
+        exit 1
+    fi
+    PRJ_ROOT="${1}"
 
-  # get a list of changed files when using only the git staged list against previouse commit
-  local TF_FILES_CHANGED
-  # shellcheck disable=SC2002
-  TF_FILES_CHANGED=$(printf "%s" "${CHANGE_LIST}" | \
-      grep tf\$ | \
-      grep -v .tmp/ | \
-      grep -v docs/ | \
-      grep -v examples/ | \
-      grep -v libs/ | \
-      grep -v README.md | \
-      grep -v sbom.xml | \
-      grep -v terraform.tf \
-      || true \
-  )
-  export TF_FILES_CHANGED
-  printf "INFO: TF_FILES_CHANGED value is \n%s\n" "$TF_FILES_CHANGED"
+    local CHANGE_LIST
+    if [[ ! $2 ]]; then
+        printf "ERR: Argument 2 must be change file list.\n"
+        exit 1
+    fi
+    CHANGE_LIST="${2}"
 
-  if  [[ $TF_FILES_CHANGED == "" ]]
-  then
-      printf "INFO: TF_FILES_CHANGED is empty; no iac changes detected, exiting.\n"
-      exit 0
-  fi
+    # Non loop related fn() calls
+    validateBranchName
 
-  local MODULES_DIR
-  if [[ $TF_FILES_CHANGED != "" ]]
-  then
-      MODULES_DIR=$(echo "$TF_FILES_CHANGED" | xargs -L1 dirname | sort | uniq)
-      printf "INFO: MODULES_DIR value is \n%s\n" "$MODULES_DIR"
-  fi
+    # get a list of changed files when using only the git staged list against previouse commit
+    local TF_FILES_CHANGED
+    # shellcheck disable=SC2002
+    TF_FILES_CHANGED=$(
+        printf "%s" "${CHANGE_LIST}" |
+            grep tf\$ |
+            grep -v .tmp/ |
+            grep -v docs/ |
+            grep -v examples/ |
+            grep -v libs/ |
+            grep -v README.md |
+            grep -v sbom.xml |
+            grep -v terraform.tf ||
+            true
+    )
+    export TF_FILES_CHANGED
+    printf "INFO: TF_FILES_CHANGED value is \n%s\n" "$TF_FILES_CHANGED"
 
-  for DIR in $MODULES_DIR
-  do
-    printf "INFO: Changing into %s dir if it still exists.\n" "${PRJ_ROOT}/${DIR}"
-    cd "$PRJ_ROOT/$DIR" || continue
-
-    # If a lock file exists, AND the cache directory does not, the module needs to be initilized.
-    if [[ -f "$(pwd)/terraform.lock.hcl" && ! -d "$(pwd)/terraform" ]]
-    then
-        terraform init -no-color
-        terraform providers lock -platform=linux_amd64
+    if [[ $TF_FILES_CHANGED == "" ]]; then
+        printf "INFO: TF_FILES_CHANGED is empty; no iac changes detected, exiting.\n"
+        exit 0
     fi
 
-    # Create tmp dir to hold artifacts and reports
-    createTmpDir
-
-    # Do not allow in-project shared modules
-    doNotAllowSharedModulesInsideDeploymentProjects
-
-    # linting and syntax formatting
-    iacLinting
-
-    # Generate sbom.xml only if the invoking scripts is pre-commit. No other time should generate sbom
-    if [[ "${0?}" == *pre-commit ]]
-    then
-        # generate docs and meta-data
-        documentation
-
-        # generate sbom for supply chain suditing
-        generateSBOM
+    local MODULES_DIR
+    if [[ $TF_FILES_CHANGED != "" ]]; then
+        MODULES_DIR=$(echo "$TF_FILES_CHANGED" | xargs -L1 dirname | sort | uniq)
+        printf "INFO: MODULES_DIR value is \n%s\n" "$MODULES_DIR"
     fi
 
-    # Finally, if the invoking script name is pre-push, also run the full compliance tooling
-    if [[ "${0?}" == *pre-push ]]
-    then
-        iacCompliance
-    fi
-  done
+    for DIR in $MODULES_DIR; do
+        printf "INFO: Changing into %s dir if it still exists.\n" "${PRJ_ROOT}/${DIR}"
+        cd "$PRJ_ROOT/$DIR" || continue
+
+        # If a lock file exists, AND the cache directory does not, the module needs to be initilized.
+        if [[ -f "$(pwd)/terraform.lock.hcl" && ! -d "$(pwd)/terraform" ]]; then
+            terraform init -no-color
+            terraform providers lock -platform=linux_amd64
+        fi
+
+        # Create tmp dir to hold artifacts and reports
+        createTmpDir
+
+        # Do not allow in-project shared modules
+        doNotAllowSharedModulesInsideDeploymentProjects
+
+        # linting and syntax formatting
+        iacLinting
+
+        # Generate sbom.xml only if the invoking scripts is pre-commit. No other time should generate sbom
+        if [[ "${0?}" == *pre-commit ]]; then
+
+            # generate docs and meta-data
+            documentation
+
+            # generate sbom for supply chain suditing
+            generateSBOM
+        fi
+
+        # Finally, if the invoking script name is pre-push, also run the full compliance tooling
+        if [[ "${0?}" == *pre-push ]]; then
+            iacCompliance
+        fi
+    done
 }
 
 # Make tmp dir to hold artifacts and reports per module
 function createTmpDir() {
-    if [[ ! -d "$(pwd)/.tmp" ]]
-    then
+    printf "INFO: starting createTmpDir()\n"
+
+    if [[ ! -d "$(pwd)/.tmp" ]]; then
         mkdir -p "$(pwd)/.tmp"
     fi
 }
 
 function doNotAllowSharedModulesInsideDeploymentProjects() {
-    printf "INFO: Do not allow shared modules inside a deployment project.\n"
+    printf "INFO: starting doNotAllowSharedModulesInsideDeploymentProjects()\n"
 
     #shellcheck disable=SC2002 # We do want to cat the file contents and pipeline into jq
-    if [[ ! -f "$(pwd)/terraform/modules/modules.json" ]]
-    then
+    if [[ ! -f "$(pwd)/terraform/modules/modules.json" ]]; then
         return 0
     fi
 
     # shellcheck disable=SC2002
     MODULE_SOURCES=$(cat "$(pwd)/terraform/modules/modules.json" | jq '.Modules[] | .Source')
 
-    for MODULE_SOURCE in $MODULE_SOURCES
-    do
+    for MODULE_SOURCE in $MODULE_SOURCES; do
         echo "INFO: Checking module source $MODULE_SOURCE"
 
         # https://linuxize.com/post/how-to-check-if-string-contains-substring-in-bash/
-        if [[ "$MODULE_SOURCE" =~ "file://"* ]]
-         then
+        if [[ "$MODULE_SOURCE" =~ "file://"* ]]; then
             echo "ERROR: It is not allowed to use shared modules placed inside a deployment project. Please use published modules from a registry."
             exit 1
         fi
@@ -124,20 +121,19 @@ function doNotAllowSharedModulesInsideDeploymentProjects() {
 }
 
 function documentation() {
-    printf "INFO: Validating generated documentation.\n"
+    printf "INFO: starting documentation()\n"
 
-    if [[ ! -f "$(pwd)/README.md" ]]
-    then
+    if [[ ! -f "$(pwd)/README.md" ]]; then
         printf "ALERT: README.md not found in module, creating from template.\n"
         # Get module name and uppercase it
         #shellcheck disable=SC2046 # Not sure why shellcheck complains about this
         MODULE_NAME=$(basename $(pwd))
         MODULE_NAME=${MODULE_NAME^^}
-        
+
         # Add markers for tf_docs to insert API documentation
         echo "# ${MODULE_NAME}
         <\!-- BEGIN_TF_DOCS -->
-        <\!-- END_TF_DOCS -->" | awk '{$1=$1;print}' > README.md
+        <\!-- END_TF_DOCS -->" | awk '{$1=$1;print}' >README.md
         sed -i 's/\\//' README.md
     fi
 
@@ -158,33 +154,31 @@ function documentation() {
 }
 
 function generateSBOM() {
-    printf "INFO: generating sbom using checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov)...\n"
+    printf "INFO: starting generateSBOM()\n"
 
+    printf "INFO: Ignore warning about 'Failed to download module', this is due to a limitation of checkov\n"
     # Do not generate SBOM is jenkins user, just ensure it exists
-    if [[ $(whoami) == 'jenkins' && ! -f sbom.xml ]]
-    then
+    if [[ $(whoami) == 'jenkins' && ! -f sbom.xml ]]; then
         printf "ERR: sbom.xml missing, failing."
         exit 1
-    elif [[ $(whoami) == 'jenkins' && -f sbom.xml ]]
-    then
+    elif [[ $(whoami) == 'jenkins' && -f sbom.xml ]]; then
         printf "INFO: Automation user detected, not generated sbom.xml"
         return 0
     fi
 
     {
-        if [[ -f "checkov.yml" ]]
-        then
-            # use configuration file if present. Created due to terraform/aws/worldline-gc-keycloak-dev/eu-west-1/keycloak/iohd being created BEFORE complaince was mandatory    
+        if [[ -f "checkov.yml" ]]; then
+            # use configuration file if present. Created due to terraform/aws/worldline-gc-keycloak-dev/eu-west-1/keycloak/iohd being created BEFORE complaince was mandatory
             checkov \
                 --config-file checkov.yml \
                 --directory . \
                 --output cyclonedx \
-                > "$(pwd)/sbom.xml"
+                >"$(pwd)/sbom.xml"
         else
             checkov \
                 --directory . \
                 --output cyclonedx \
-                > "$(pwd)/sbom.xml"
+                >"$(pwd)/sbom.xml"
         fi
         git add sbom.xml || true
     } || {
@@ -195,14 +189,13 @@ function generateSBOM() {
 }
 
 function iacCompliance() {
-    printf "INFO: Executing Compliance and SAST scanners...\n"
+    printf "INFO: starting iacCompliance()\n"
 
     printf "INFO: checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov)...\n"
     {
         rm -rf "$(pwd)/.tmp/junit-checkov.xml" || exit 1
         touch "$(pwd)/.tmp/junit-checkov.xml" || exit 1
-        if [[ -f "checkov.yml" ]]
-        then
+        if [[ -f "checkov.yml" ]]; then
             printf "INFO: checkov configuration file found, using it.\n"
             checkov \
                 --config-file checkov.yml \
@@ -216,7 +209,7 @@ function iacCompliance() {
                 --skip-path .tmp/ \
                 --skip-path examples/ \
                 --skip-path libs/ \
-                > "$(pwd)/.tmp/junit-checkov.xml"
+                >"$(pwd)/.tmp/junit-checkov.xml"
         else
             printf "INFO: checkov configuration NOT file found.\n"
             checkov \
@@ -230,7 +223,7 @@ function iacCompliance() {
                 --skip-path examples/ \
                 --output junitxml \
                 --skip-path libs/ \
-                > "$(pwd)/.tmp/junit-checkov.xml"
+                >"$(pwd)/.tmp/junit-checkov.xml"
         fi
     } || {
         echo "ERR: checkov failed. Check report saved to .tmp/junit-checkov.xml"
@@ -243,8 +236,7 @@ function iacCompliance() {
     {
         rm -rf "$(pwd)/.tmp/junit-kics.xml" || exit 1
         touch "$(pwd)/.tmp/junit-kics.xml" || exit 1
-        if [[ -f "kics.yml" ]]
-        then
+        if [[ -f "kics.yml" ]]; then
             printf "INFO: KICS configuration file found, using it.\n"
             # kics cli argument `--queries-path` must contain an absolute path, else a `/` gets pre-pended.
             kics scan \
@@ -283,8 +275,7 @@ function iacCompliance() {
     {
         rm -rf "$(pwd)/.tmp/junit-tfsec.xml" || exit 1
         touch "$(pwd)/.tmp/junit-tfsec.xml" || exit 1
-        if [[ -f "tfsec.yml" ]]
-        then
+        if [[ -f "tfsec.yml" ]]; then
             printf "INFO: tfsec configuration file found, using it.\n"
             tfsec . \
                 --concise-output \
@@ -294,7 +285,7 @@ function iacCompliance() {
                 --format junit \
                 --no-color \
                 --no-module-downloads \
-                > "$(pwd)/.tmp/junit-tfsec.xml"
+                >"$(pwd)/.tmp/junit-tfsec.xml"
         else
             printf "INFO: tfsec configuration NOT file found.\n"
             tfsec . \
@@ -304,7 +295,7 @@ function iacCompliance() {
                 --format junit \
                 --no-color \
                 --no-module-downloads \
-                > "$(pwd)/.tmp/junit-tfsec.xml"
+                >"$(pwd)/.tmp/junit-tfsec.xml"
         fi
     } || {
         echo "ERR: tfsec failed. Check report saved to .tmp/junit-tfsec.xml"
@@ -381,16 +372,14 @@ function iacCompliance() {
 }
 
 function iacLinting() {
-    printf "INFO: Executing iac Linting.\n"
+    printf "INFO: starting iacLinting()\n"
 
-    printf "INFO: Terraform/Terragrunt fmt and linting...\n"
     terraform fmt -no-color -recursive .
     terragrunt hclfmt .
 
     printf "INFO: tflint executing...\n"
     {
-        if [[ -f "tflint.hcl" ]]
-        then
+        if [[ -f "tflint.hcl" ]]; then
             tflint \
                 --chdir="$(pwd)" \
                 --config="tflint.hcl" \
@@ -398,7 +387,7 @@ function iacLinting() {
                 --no-color \
                 --format=junit \
                 --ignore-module=SOURCE \
-                > .tmp/junit-tflint.xml
+                >.tmp/junit-tflint.xml
         else
             tflint \
                 --chdir="$(pwd)" \
@@ -406,11 +395,34 @@ function iacLinting() {
                 --no-color \
                 --format=junit \
                 --ignore-module=SOURCE \
-                > .tmp/junit-tflint.xml
+                >.tmp/junit-tflint.xml
         fi
     } || {
         echo "ERR: tflint failed. Check Junit reports in .tmp"
         cat "$(pwd)/.tmp/junit-tflint.xml"
         exit 1
     }
+}
+
+function validateBranchName() {
+    printf "INFO: starting validateBranchName()\n"
+
+    local BRANCH_NAME
+    BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
+
+    # {action}/{ticket}/{description}
+    local REGEX
+    REGEX="^(add|fix|remove)\/([A-Z]{1,10})\-([X0-9]{1,10})\/([a-z_]){8,256}"
+
+    if [[ ! $BRANCH_NAME =~ $REGEX ]]; then
+        printf "ERR: Branch names must align with the pattern: {action}/{ticket-id}/{description}.\n"
+        printf "ERR: The RegEx pattern is as follows: %s\n" "$REGEX"
+        printf "Examples:\n"
+        printf "* add/ICON-37949/ecs_service_connect_updating_connect_msc7_services\n"
+        printf "* remove/ICON-XXXXX/connect_msc7_internal_security_testing_resources\n"
+        printf "* fix/ICON-38823/enable_resource_policy_on_efs_volumes_connect_preprod\n"
+        printf "* add/ICON-38546/activegate_update_cron_task\n"
+        printf "* fix/ENINC-39733/rds_instance_size_for_connect_prod\n"
+        exit 1
+    fi
 }

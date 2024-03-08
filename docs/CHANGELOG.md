@@ -12,6 +12,12 @@ Action Keywords:
 `FIXED`   : Functionality existed but did not behave as expected.
 `REMOVED` : Functionality is no longer available.
 
+## [0.38.3] - 2024-03-08
+
+### ADDED
+
+- Git branch naming pattern enforcement
+
 ## [0.38.2] - 2024-02-21
 
 ### FIXED
