@@ -8,9 +8,15 @@
 
 Action Keywords:
 
-`ADDED`   : Functionality did not exist previously.
-`FIXED`   : Functionality existed but did not behave as expected.
-`REMOVED` : Functionality is no longer available.
+`ADD`   : Functionality did not exist previously.
+`FIX`   : Functionality existed but did not behave as expected.
+`REMOVE` : Functionality is no longer available.
+
+## [0.38.4] - 2024-03-14
+
+### FIX
+
+- Support ServiceNow ticket pattern when checking git branch naming
 
 ## [0.38.3] - 2024-03-08
 
