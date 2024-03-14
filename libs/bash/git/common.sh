@@ -412,7 +412,7 @@ function validateBranchName() {
 
     # {action}/{ticket}/{description}
     local REGEX
-    REGEX="^(add|fix|remove)\/([A-Z]{1,10})\-([X0-9]{1,10})\/([a-z_]){8,256}"
+    REGEX="^(add|fix|remove)\/([A-Z]{1,10})(\-)?([X0-9]{1,10})\/([a-z0-9_]){8,256}"
 
     if [[ ! $BRANCH_NAME =~ $REGEX ]]; then
         printf "ERR: Branch names must align with the pattern: {action}/{ticket-id}/{description}.\n"
@@ -423,6 +423,7 @@ function validateBranchName() {
         printf "* fix/ICON-38823/enable_resource_policy_on_efs_volumes_connect_preprod\n"
         printf "* add/ICON-38546/activegate_update_cron_task\n"
         printf "* fix/ENINC-39733/rds_instance_size_for_connect_prod\n"
+        printf "* fix/INC0784730/stag_config_center_website_monitor_downga.\n"
         exit 1
     fi
 }
