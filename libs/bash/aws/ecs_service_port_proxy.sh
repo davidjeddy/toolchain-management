@@ -1,4 +1,6 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+
+set -e
 
 # usage: /path/to/script/ecs_service_port_proxy.sh
 #        /path/to/script/ecs_service_port_proxy.sh 

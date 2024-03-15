@@ -1,258 +1,154 @@
-<p align="center">
-  <img width="354" src=".github/images/tfsec_worded.png">
-</p>
+# Toolchain Management
 
-[![GoReportCard](https://goreportcard.com/badge/github.com/aquasecurity/tfsec)](https://goreportcard.com/report/github.com/aquasecurity/tfsec)
-[![Join Our Slack](https://img.shields.io/badge/Slack-Join-green)](https://slack.aquasec.com/)
-[![Docker Build](https://img.shields.io/docker/v/tfsec/tfsec?label=docker)](https://hub.docker.com/r/tfsec/tfsec)
-[![Homebrew](https://img.shields.io/badge/dynamic/json.svg?url=https://formulae.brew.sh/api/formula/tfsec.json&query=$.versions.stable&label=homebrew)](https://formulae.brew.sh/formula/tfsec)
-[![Chocolatey](https://img.shields.io/chocolatey/v/tfsec)](https://chocolatey.org/packages/tfsec)
-[![AUR version](https://img.shields.io/aur/version/tfsec-bin)](https://aur.archlinux.org/packages/tfsec-bin)
-[![VScode Extension](https://img.shields.io/visual-studio-marketplace/v/tfsec.tfsec?label=vscode)](https://marketplace.visualstudio.com/items?itemName=tfsec.tfsec)
+## Table of Contents
 
-## 📣 tfsec to Trivy Migration
+- [Toolchain Management](#toolchain-management)
+  - [Table of Contents](#table-of-contents)
+  - [Description](#description)
+  - [Purpose](#purpose)
+  - [Requirements / Supported Platforms](#requirements--supported-platforms)
+  - [Tools Includes (but are not limited to)](#tools-includes-but-are-not-limited-to)
+    - [AWS](#aws)
+    - [Terraform](#terraform)
+    - [Language Run-times](#language-run-times)
+  - [Usage](#usage)
+    - [WARNING](#warning)
+    - [Install](#install)
+    - [Usage](#usage-1)
+    - [Update Toolchain](#update-toolchain)
+  - [Development](#development)
+  - [Additional Information](#additional-information)
 
-As part of our goal to provide a comprehensive open source security solution for all, we have been consolidating all of our scanning-related efforts in one place, and that is [Trivy](https://github.com/aquasecurity/trivy). 
+## Description
 
-Over the past year, tfsec has laid the foundations to Trivy's IaC & misconfigurations scanning capabilities, including Terraform scanning, which has been natively supported in Trivy for a long time now.
+Collection of resources and tools used to manage IAC projects.
 
-Going forward we want to encourage the tfsec community to transition over to Trivy. Moving to Trivy gives you the same excellent Terraform scanning engine, with some extra benefits:
+## Purpose
 
-1. Access to more languages and features in the same tool.
-2. Access to more integrations with tools and services through the rich ecosystem around Trivy.
-3. Commercially supported by Aqua as well as by a the passionate Trivy community.
-tfsec will continue to remain available for the time being, although our engineering attention will be directed at Trivy going forward.
+Ensure compliance with community and securitybest practices via the shift-left pattern. This enables the presenting violations regarding organizational auditing, linting, security, and style guides as soon as an engineer attempts to save code. Additionally, toolchain has to ability to enforce the version of the tools installed. Ensure the engineering teams can stay up to date without messing around updating each to individually.
 
-## tfsec to Trivy migration guide
+Currently only localhost Fedora VM/QEMU and Jenkins RHEL pipeline tools are supported. 
 
-For further information on how Trivy compares to tfsec and moving from tfsec to Trivy, do have a look at the [migration guide.](https://github.com/aquasecurity/tfsec/blob/master/tfsec-to-trivy-migration-guide.md)
+Engineer commits change to localhost git project -> toolchain triggered (pre-commit hook) -> scanning tools execute -> if violations are found, the save is aborted
 
-## Overview
-tfsec uses static analysis of your terraform code to spot potential misconfigurations.
+## Requirements / Supported Platforms
 
-### Features
+- [Fedora](https://fedoraproject.org/)(recommended) or [RHEL](https://en.wikipedia.org/wiki/Red_Hat_Enterprise_Linux)(second option) based are the only distributions currently supported
+  - UTM / [Installing Fedora Workstation 39 QEMU via UTM on DWS Apple M2 MacBook Pro](https://confluence.worldline-solutions.com/display/PPSTECHNO/Installing+Fedora+Workstation+38+on+DWS+Apple+M2+MacBook+Pro)
+  - VirtualBox / [Installing Fedora Workstation 38 Virtual Machine on DWS Workstation](https://confluence.techno.ingenico.com/display/PPS/Installing+Fedora+Workstatio+38+Virtual+Machine+on+DWS+Workstation)
+- [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) >= 5.x
+- [Git](https://git-scm.com/) >= 2.x
 
-- :cloud: Checks for misconfigurations across all major (and some minor) cloud providers
-- :no_entry: Hundreds of built-in rules
-- :nesting_dolls: Scans modules (local and remote)
-- :heavy_plus_sign: Evaluates HCL expressions as well as literal values
-- :arrow_right_hook: Evaluates Terraform functions e.g. `concat()`
-- :link: Evaluates relationships between Terraform resources
-- :toolbox: Compatible with the Terraform CDK
-- :no_good: Applies (and embellishes) user-defined Rego policies
-- :page_with_curl: Supports multiple output formats: lovely (default), JSON, SARIF, CSV, CheckStyle, JUnit, text, Gif.
-- :hammer_and_wrench: Configurable (via CLI flags and/or config file)
-- :zap: Very fast, capable of quickly scanning huge repositories
-- :electric_plug: Plugins for popular IDEs available ([JetBrains](https://plugins.jetbrains.com/plugin/18687-tfsec-findings-explorer), [VSCode](https://marketplace.visualstudio.com/items?itemName=tfsec.tfsec) and [Vim](https://github.com/aquasecurity/vim-tfsec))
-- :house_with_garden: Community-driven - come and chat with us [on Slack](https://slack.aquasec.com/)!
+## Tools Includes (but are not limited to)
 
-## Recommended by Thoughtworks
+### AWS
 
-Rated _Adopt_ by the [Thoughtworks Tech Radar](https://www.thoughtworks.com/en-gb/radar/tools/tfsec):
+- AWS CLI
+- iam-policy-json-to-terraform (x86)
 
-> For our projects using Terraform, tfsec has quickly become a default static analysis tool to detect potential security risks. It's easy to integrate into a CI pipeline and has a growing library of checks against all of the major cloud providers and platforms like Kubernetes. Given its ease of use, we believe tfsec could be a good addition to any Terraform project.
+### Terraform
 
-## Example Output
+- Checkov
+- Infracost
+- KICS
+- Terraform version manager
+- Terragrunt version manager
+- tf-docs
+- tflint
 
-![Example screenshot](screenshot.png)
+### Language Run-times
 
-## Installation
-
-Install with [brew/linuxbrew](https://brew.sh)
-
-```bash
-brew install tfsec
-```
-
-Install with [Chocolatey](https://chocolatey.org/)
-
-```cmd
-choco install tfsec
-```
-
-Install with [Scoop](https://scoop.sh/)
-
-```cmd
-scoop install tfsec
-```
-Bash script (Linux):
-
-```console
-curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
-```
-
-You can also grab the binary for your system from the [releases page](https://github.com/aquasecurity/tfsec/releases).
-
-Alternatively, install with Go:
-
-```bash
-go install github.com/aquasecurity/tfsec/cmd/tfsec@latest
-```
-
-Please note that using `go install` will install directly from the `master` branch and version numbers will not be reported via `tfsec --version`.
-
-### Signing
-
-The binaries on the [releases page](https://github.com/aquasecurity/tfsec/releases) are signed with the tfsec signing key `D66B222A3EA4C25D5D1A097FC34ACEFB46EC39CE`
-
-Form more information check the [signing page](SIGNING.md) for instructions on verification.
+- Golang
+- Python
 
 ## Usage
 
-tfsec will scan the specified directory. If no directory is specified, the current working directory will be used.
+### WARNING
 
-The exit status will be non-zero if tfsec finds problems, otherwise the exit status will be zero.
+- System packages managed by `apt` or `yum` will be installed / updated to the latest version on every execution.
+- Toolchain managed packages will be replaced with the version defined in `${PROJECT_ROOT}/libs/bash/versions.sh` when `--update true` argument is provided.
 
-```bash
-tfsec .
+### Install
+
+```sh
+git clone [project URL]
 ```
 
-## Use with Docker
+### Usage
 
-As an alternative to installing and running tfsec on your system, you may run tfsec in a Docker container.
+Take from ./libs/bash/install.sh header section.
 
-There are a number of Docker options available
+```sh
+# Example usage:
 
-| Image Name | Base | Comment |
-|------------|------|---------|
-|[aquasec/tfsec](https://hub.docker.com/r/aquasec/tfsec)|alpine|Normal tfsec image|
-|[aquasec/tfsec-alpine](https://hub.docker.com/r/aquasec/tfsec-alpine)|alpine|Exactly the same as aquasec/tfsec, but for those whole like to be explicit|
-|[aquasec/tfsec-ci](https://hub.docker.com/r/aquasec/tfsec-ci)|alpine|tfsec with no entrypoint - useful for CI builds where you want to override the command|
-|[aquasec/tfsec-scratch](https://hub.docker.com/r/aquasec/tfsec-scratch)|scratch|An image built on scratch - nothing frilly, just runs tfsec|
-
-To run:
-
-```bash
-docker run --rm -it -v "$(pwd):/src" aquasec/tfsec /src
+./libs/bash/install.sh
+./libs/bash/install.sh --arch amd64 --platform darwin
+./libs/bash/install.sh --arch amd64 --platform darwin --update true
+./libs/bash/install.sh --arch aarch64
+./libs/bash/install.sh --arch aarch64 --shell_profile "$HOME/.zshell_profile"
+./libs/bash/install.sh --arch aarch64 --platform linux --skip_misc_tools true
+./libs/bash/install.sh --bin_dir "/usr/bin" --skip_aws_tools true --update true
+./libs/bash/install.sh --skip_aws_tools true --update true
+./libs/bash/install.sh --skip_system_tools true --skip_terraform_tools true --skip_misc_tools true
 ```
 
-## Use with Visual Studio Code
+### Update Toolchain
 
-A Visual Studio Code extension is being developed to integrate with tfsec results. More information can be found on the [tfsec Marketplace page](https://marketplace.visualstudio.com/items?itemName=tfsec.tfsec)
-
-## Use as GitHub Action
-
-If you want to run tfsec on your repository as a GitHub Action, you can use [https://github.com/aquasecurity/tfsec-pr-commenter-action](https://github.com/aquasecurity/tfsec-pr-commenter-action).
-
-## Use as an Azure DevOps Pipelines Task
-
-You can now install the [official tfsec task](https://marketplace.visualstudio.com/items?itemName=AquaSecurityOfficial.tfsec-official). Please raise any issues/feature requests on the [task repository](https://github.com/aquasecurity/tfsec-azure-pipelines-task).
-
-## Ignoring Warnings
-
-You may wish to ignore some warnings. If you'd like to do so, you can
-simply add a comment containing `tfsec:ignore:<rule>` to the offending
-line in your templates. Alternatively, you can add the comment to the line above the block containing the issue, or to the module block to ignore all occurrences of an issue inside the module.
-
-For example, to ignore an open security group rule:
-
-```terraform
-resource "aws_security_group_rule" "my-rule" {
-    type = "ingress"
-    cidr_blocks = ["0.0.0.0/0"] #tfsec:ignore:aws-vpc-no-public-ingress-sgr
-}
+```sh
+./libs/bash/install.sh --update true
 ```
 
-...or...
+Note: `--skip_*_tools` and `--update` can be used together to update specific tool groups
 
-```terraform
-resource "aws_security_group_rule" "my-rule" {
-    type = "ingress"
-    #tfsec:ignore:aws-vpc-no-public-ingress-sgr
-    cidr_blocks = ["0.0.0.0/0"]
-}
+## Development
+
+Start a shell session at the root of the project. Then set the required default ENV VARs.
+
+```sh
+ARCH="aarch64"
+BIN_DIR="/usr/local/bin"
+PLATFORM="linux"
+PROJECT_ROOT=$(git rev-parse --show-toplevel)
+SHELL_PROFILE="$HOME/.worldline_pps_profile"
+UPDATE="false"
+WL_GC_TM_WORKSPACE=$(git rev-parse --show-toplevel)
+
+source "$PROJECT_ROOT/libs/bash/versions.sh"
 ```
 
-If you're not sure which line to add the comment on, just check the
-tfsec output for the line number of the discovered problem.
+Now you should be ready to run all the commands manually.
 
-You can ignore multiple rules by concatenating the rules on a single line:
+## Testing on localhost
 
-```terraform
-#tfsec:ignore:aws-s3-enable-bucket-encryption tfsec:ignore:aws-s3-enable-bucket-logging
-resource "aws_s3_bucket" "my-bucket" {
-  bucket = "foobar"
-  acl    = "private"
-}
+These are the `stage` commands the Jenkinsfile will run, minus tagging.
+
+```sh
+./libs/bash/install.sh --skip_cloud_tools true --skip_misc_tools true --skip_iac_tools true --update true --skip_system_tools true
+./libs/bash/install.sh --skip_misc_tools true --update true
+./libs/bash/install.sh --skip_cloud_tools true --skip_misc_tools true --skip_iac_tools true --update true
+./libs/bash/install.sh --skip_misc_tools true --skip_iac_tools true --skip_system_tools true --update true
+./libs/bash/install.sh --skip_cloud_tools true --skip_misc_tools true --skip_system_tools true --update true
+./libs/bash/install.sh --skip_misc_tools true
 ```
 
-### Expiration Date
-You can set expiration date for `ignore` with `yyyy-mm-dd` format. This is a useful feature when you want to ensure ignored issue won't be forgotten and should be revisited in the future.
-```
-#tfsec:ignore:aws-s3-enable-bucket-encryption:exp:2025-01-02
-```
-Ignore like this will be active only till `2025-01-02`, after this date it will be deactivated.
+## Versioning
 
-## Disable checks
+This project follows [SemVer 2.0](https://semver.org/).
 
-You may wish to exclude some checks from running. If you'd like to do so, you can
-simply add new argument `-e check1,check2,etc` to your cmd command
+```quote
+Given a version number MAJOR.MINOR.PATCH, increment the:
 
-```bash
-tfsec . -e general-secrets-sensitive-in-variable,google-compute-disk-encryption-customer-keys
+1. MAJOR version when you make incompatible API changes,
+2. MINOR version when you add functionality in a backwards compatible manner, and
+3. PATCH version when you make backwards compatible bug fixes.
+
+Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
 ```
 
-## Including values from .tfvars
+## Contributors
 
-You can include values from a tfvars file in the scan,  using, for example: `--tfvars-file terraform.tfvars`.
+## Additional Information
 
-## Included Checks
-
-tfsec supports many popular cloud and platform providers
-
-| Checks                                                                                  |
-|:----------------------------------------------------------------------------------------|
-| [AWS Checks](https://aquasecurity.github.io/tfsec/latest/checks/aws/)                   |
-| [Azure Checks](https://aquasecurity.github.io/tfsec/latest/checks/azure/)               |
-| [GCP Checks](https://aquasecurity.github.io/tfsec/latest/checks/google/)                |
-| [CloudStack Checks](https://aquasecurity.github.io/tfsec/latest/checks/cloudstack/)     |
-| [DigitalOcean Checks](https://aquasecurity.github.io/tfsec/latest/checks/digitalocean/) |
-| [GitHub Checks](https://aquasecurity.github.io/tfsec/latest/checks/github/)             |
-| [Kubernetes Checks](https://aquasecurity.github.io/tfsec/latest/checks/kubernetes/)     |
-| [OpenStack Checks](https://aquasecurity.github.io/tfsec/latest/checks/openstack/)       |
-| [Oracle Checks](https://aquasecurity.github.io/tfsec/latest/checks/oracle/)             |
-
-## Running in CI
-
-tfsec is designed for running in a CI pipeline. You may wish to run tfsec as part of your build without coloured
-output. You can do this using `--no-colour` (or `--no-color` for our American friends).
-
-## Output options
-
-You can output tfsec results as JSON, CSV, Checkstyle, Sarif, JUnit or just plain old human-readable format. Use the `--format` flag
-to specify your desired format.
-
-## GitHub Security Alerts
-If you want to integrate with Github Security alerts and include the output of your tfsec checks you can use the [tfsec-sarif-action](https://github.com/marketplace/actions/run-tfsec-with-sarif-upload) Github action to run the static analysis then upload the results to the security alerts tab.
-
-The alerts generated for [tfsec-example-project](https://github.com/tfsec/tfsec-example-project) look like this.
-
-![github security alerts](codescanning.png)
-
-When you click through the alerts for the branch, you get more information about the actual issue.
-
-![github security alerts](scanningalert.png)
-
-For more information about adding security alerts, check [the GitHub documentation](https://docs.github.com/en/code-security/repository-security-advisories/about-github-security-advisories-for-repositories)
-
-## Support for older terraform versions
-
-If you need to support versions of terraform which use HCL v1
-(terraform <0.12), you can use `v0.1.3` of tfsec, though support is
-very limited and has fewer checks.
-
-## Contributing
-
-We always welcome contributions; big or small, it can be documentation updates, adding new checks or something bigger. Please check the [Contributing Guide](CONTRIBUTING.md) for details on how to help out.
-
-### Some People who have contributed
-
-<a href = "https://github.com/aquasecurity/tfsec/graphs/contributors">
-  <img src = "https://contrib.rocks/image?repo=aquasecurity/tfsec"/>
-</a>
-
-Made with [contributors-img](https://contrib.rocks).
-
-`tfsec` is an [Aqua Security](https://aquasec.com) open source project.
-Learn about our open source work and portfolio [here](https://www.aquasec.com/products/open-source-projects/).
-Join the community, and talk to us about any matter in [GitHub Discussion](https://github.com/aquasecurity/tfsec/discussions) or [Slack](https://slack.aquasec.com).
+- Adding visual aids to any / all the above sections above is recommended.
+- Based on [README Maturity Model](https://github.com/LappleApple/feedmereadmes/blob/master/README-maturity-model.md); strive for a Level 5 `Product-oriented README`.
+- Additional documentation available in [./docs/](./docs/).

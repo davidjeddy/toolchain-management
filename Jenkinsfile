@@ -130,26 +130,37 @@ pipeline {
                     branch: env.BRANCH_NAME
             }
         }
-        // This stage must be first to ensure system packages and language runtimes are availabe
-        stage('Toolchain Mngr: install.sh --update only for System tools') {
+        // Typical run 
+        stage('./libs/bash/install.sh normal install without --update true') {
             steps {
-                // Jenkins worker nodes have [cracklib](https://github.com/cracklib/cracklib) system package installed.
-                // It provides a `packer` in the PATH, ie name collision with Hashcorp Packer.
-                // So, skip installing misc tools for now until a resolution is found
-                sh './libs/bash/install.sh --skip_aws_tools true --skip_misc_tools true --skip_iac_tools true --update true'
+                sh './libs/bash/install.sh'
             }
         }
-        // Then we install the AWS CLI and related tools
-        stage('Toolchain Mngr: install.sh --update only for AWS tools') {
+        // Negative run
+        stage('./libs/bash/install.sh focus on cloud tools without --update true') {
             steps {
-                sh './libs/bash/install.sh --skip_misc_tools true --skip_iac_tools true --skip_system_tools true --update true'
+                sh './libs/bash/install.sh --skip_iac_tools true --skip_misc_tools true --skip_system_tools true'
             }
         }
-        // We do not install misc tools due to a name collision with the package `packer` on RHEL based machines
-        // Finally TG and related tools
-        stage('Toolchain Mngr: install.sh --update only for Terraform tools') {
+        stage('./libs/bash/install.sh focus on iac tools without --update true') {
             steps {
-                sh './libs/bash/install.sh --skip_aws_tools true --skip_misc_tools true --skip_system_tools true --update true'
+                sh './libs/bash/install.sh --skip_cloud_tools true --skip_misc_tools true --skip_system_tools true'
+            }
+        }
+        stage('./libs/bash/install.sh focus on misc tools without --update true') {
+            steps {
+                sh './libs/bash/install.sh --skip_cloud_tools true --skip_iac_tools true --skip_system_tools true'
+            }
+        }
+        stage('./libs/bash/install.sh focus on system tools without --update true') {
+            steps {
+                sh './libs/bash/install.sh --skip_cloud_tools true --skip_iac_tools true --skip_misc_tools true'
+            }
+        }
+        // Typical run with update
+        stage('./libs/bash/install.sh all tool sets and with --update true') {
+            steps {
+                sh './libs/bash/install.sh --update true'
             }
         }
         // if on the main branch and CHANGELOG diff

@@ -1,17 +1,21 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+
+set -e
 
 # Example usage:
 # Note `--skip_*_tools` and `--update` can be used together to update specific tool groups
 # ./libs/bash/install.sh
-# ./libs/bash/install.sh --arch amd64 --platform darwin
-# ./libs/bash/install.sh --arch amd64 --platform darwin --update true
-# ./libs/bash/install.sh --arch arm32 --platform linux
-# ./libs/bash/install.sh --arch arm32 --platform linux --shell_profile ~/.zshell_profile
-# ./libs/bash/install.sh --arch arm32 --platform linux --skip_misc_tools true
-# ./libs/bash/install.sh --bin_dir "/usr/bin" --skip_aws_tools true --update true
-# ./libs/bash/install.sh --skip_aws_tools true --update true
+# ./libs/bash/install.sh --platform darwin
+# ./libs/bash/install.sh --platform darwin --update true
+# ./libs/bash/install.sh --platform linux
+# ./libs/bash/install.sh --platform linux --shell_profile ~/.zshell_profile
+# ./libs/bash/install.sh --platform linux --skip_misc_tools true
+# ./libs/bash/install.sh --bin_dir "/usr/bin" --skip_cloud_tools true --update true
+# ./libs/bash/install.sh --skip_cloud_tools true --update true
 # ./libs/bash/install.sh --skip_system_tools true --skip_iac_tools true --skip_misc_tools true
 
+# On Apple M1/M2/ARM
+# ./libs/bash/bash-5.2$ ./libs/bash/install.sh
 # checks
 
 ## do NOT run script as root
@@ -25,13 +29,13 @@ fi
 # cli arg parsing
 
 ## Internal VARs
-declare ALTARCH
 declare ARCH
+declare ALT_ARCH
 declare BIN_DIR
 declare ORIG_PWD
 declare PLATFORM
 declare SHELL_PROFILE
-declare SKIP_AWS_TOOLS
+declare SKIP_CLOUD_TOOLS
 declare SKIP_MISC_TOOLS
 declare SKIP_SYSTEM_TOOLS
 declare SKIP_IAC_TOOLS
@@ -60,14 +64,20 @@ done
 
 # Argument Defaults
 
-if [[ "$ARCH" == "" ]]
+ARCH=$(uname -m)
+if [[ $ARCH = *aarch64* && $ARCH = *x84_64* ]]
 then
-    ARCH="amd64"
+    printf "ERR: Unsupport process architecture detected from %s. Please submit a change request with the additions for your machine type." $(uname -m)
+    # exit 1
 fi
 
-if [[ "$ALTARCH" == "" ]]
+ALT_ARCH=""
+if [[ $ARCH == "x86_64" ]]
 then
-    ALTARCH="x86_64"
+    ALT_ARCH="amd64"
+elif [[ $ARCH == "aarch64" ]]
+then
+    ALT_ARCH="arm64"
 fi
 
 if [[ "${BIN_DIR}" == "" ]]
@@ -103,34 +113,34 @@ then
 fi
 
 # to prevent sub-shells from duplicating outputs into $SHELL_PROFILE export all the values
-export ALTARCH
+export ALT_ARCH
 export ARCH
 export BIN_DIR
 export ORIG_PWD
 export PLATFORM
-export WL_GC_TM_WORKSPACE
 export SHELL_PROFILE
-export SKIP_AWS_TOOLS
+export SKIP_CLOUD_TOOLS
+export SKIP_IAC_TOOLS
 export SKIP_MISC_TOOLS
 export SKIP_SYSTEM_TOOLS
-export SKIP_IAC_TOOLS
 export UPDATE
+export WL_GC_TM_WORKSPACE
 
 ## output runtime configuration
 printf "INFO: Executing with the following argument configurations.\n"
 
-echo "ALTARCH: $ALTARCH"
+echo "ALT_ARCH: $ALT_ARCH"
 echo "ARCH: $ARCH"
 echo "BIN_DIR: $BIN_DIR"
 echo "ORIG_PWD: $ORIG_PWD"
 echo "PLATFORM: $PLATFORM"
-echo "WL_GC_TM_WORKSPACE: $WL_GC_TM_WORKSPACE"
 echo "SHELL_PROFILE: $SHELL_PROFILE"
-echo "SKIP_AWS_TOOLS: $SKIP_AWS_TOOLS"
+echo "SKIP_CLOUD_TOOLS: $SKIP_CLOUD_TOOLS"
+echo "SKIP_IAC_TOOLS: $SKIP_IAC_TOOLS"
 echo "SKIP_MISC_TOOLS: $SKIP_MISC_TOOLS"
 echo "SKIP_SYSTEM_TOOLS: $SKIP_SYSTEM_TOOLS"
-echo "SKIP_IAC_TOOLS: $SKIP_IAC_TOOLS"
 echo "UPDATE: $UPDATE"
+echo "WL_GC_TM_WORKSPACE: $WL_GC_TM_WORKSPACE"
 
 ## Execution
 
@@ -142,9 +152,10 @@ printf "INFO: Sourcing tool versions.sh in install.sh.\n"
 source "$WL_GC_TM_WORKSPACE/libs/bash/versions.sh"
 
 # Does $SHELL_PROFILE exist?
-if [[ ! -f $SHELL_PROFILE ]]
+if [[ ! -f $SHELL_PROFILE || $UPDATE == "true" ]]
 then 
-    printf "INFO: Creating toolchain shell .profile at %s.\n" "$SHELL_PROFILE"
+    printf "INFO: Creating toolchain shell profile at %s\n" "$SHELL_PROFILE"
+    rm -rf "$SHELL_PROFILE" || true
     touch "$SHELL_PROFILE" || exit 1
 
     printf "INFO: Add BIN_DIR to PATH via in %s.\n" "$SHELL_PROFILE"
@@ -152,11 +163,10 @@ then
     echo "export PATH=\$PATH:$WL_GC_TM_WORKSPACE/libs/bash" >> "$SHELL_PROFILE"
 fi
 
-# Add tribe profile to .bash_profile if it exists
-# Other tribes can add additional shell profiles as ~/[[business_unit]]_[[tribe]]_profile
 # https://linuxize.com/post/bashrc-vs-bash-profile/
+# Other tribes can add additional shell profiles as ~/[[business_unit]]_[[tribe]]_profile
 
-# interactive login shells
+# Add tribe profile to ~/.bash_profile for interactive shells
 # shellcheck disable=SC2143
 if [[ -f ~/.bash_profile && ! $(grep "source $SHELL_PROFILE" ~/.bash_profile) ]]
 then
@@ -166,7 +176,7 @@ then
     source ~/.bash_profile || exit 1
 fi
 
-# non-interactive login shells
+# Add tribe profile to ~/.bashrc for non-interactive shells
 # shellcheck disable=SC2143
 if [[ -f ~/.bashrc && ! $(grep "source $SHELL_PROFILE" ~/.bashrc) ]]
 then
@@ -188,12 +198,12 @@ then
 fi
 
 # Additional management sorted alphabetically
-if [[ $SKIP_AWS_TOOLS == "" ]]
+if [[ $SKIP_CLOUD_TOOLS == "" ]]
 then
     cd "$WL_GC_TM_WORKSPACE" || exit 1
     # shellcheck disable=SC1091
-    source "${WL_GC_TM_WORKSPACE}/libs/bash/aws_tools.sh"
-    install_aws_tools
+    source "${WL_GC_TM_WORKSPACE}/libs/bash/cloud_tools.sh"
+    install_cloud_tools
 fi
 
 if [[ $SKIP_MISC_TOOLS == "" ]]
@@ -212,25 +222,25 @@ then
     install_iac_tools
 fi
 
-# Post-processing checks
-
-printf "INFO: Sourcing %s\n" "$SHELL_PROFILE"
-# shellcheck disable=SC1090
-source "$SHELL_PROFILE" || exit 1
+# Post-processing checkups
 
 printf "INFO: Changing back to original working dir.\n"
 cd "$ORIG_PWD" || exit 1
 
-if [[ ! -f ~/.aws/credentials ]]
+if [[ ! -f ~/.aws/credentials && $(whoami) != 'jenkins' ]]
 then
     printf "INFO: Looks like you do not yet have a ~/.aws/credentials configured, pleaes run the AWS configuration process as detailed here https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html.\n"
 fi
 
-if [[ ! -f ~/.terraformrc ]]
+if [[ ! -f ~/.terraformrc && $(whoami) != 'jenkins' ]]
 then
     printf "INFO: Looks like you do not yet have a ~/.terraformrc credentials configuration, pleaes follow https://confluence.techno.ingenico.com/display/PPS/Using+Shared+Modules+from+GitLab+Private+Registry#UsingSharedModulesfromGitLabPrivateRegistry-localhost before attempting to use Terraf.\n"
 fi
 
+# shellcheck disable=SC1091
+source $SHELL_PROFILE
+
+# Done
 printf "INFO: Please start your shell session to ensure the PATH value is reloaded.\n"
 
-printf "INFO: Toolchain install.sh completed successfully.\n"
+printf "INFO: ...Done.\n"

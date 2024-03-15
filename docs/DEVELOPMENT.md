@@ -43,11 +43,10 @@ TFDOCS_VER: 0.16.0
 TFLINT_VER: 0.47.0
 TFSEC_VER: 1.28.4
 TRIVY_VER: 0.44.1
-TRSCAN_VER: 1.18.3
 INFO: PATH value is: /home/david/.local/bin:/home/david/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/home/david/Projects/Worldline/gitlab.test.igdcs.com/cicd/terraform/tools/toolchain-management/libs/bash:/home/david/.goenv/bin:/home/david/.goenv/shims:/home/david/.local/bin:/home/david/.tfenv/bin:/home/david/.tgenv/bin:/home/david/.tofuenv/bin
 INFO: Installing system tool from source.
 which: no apt in (/home/david/.local/bin:/home/david/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/home/david/Projects/Worldline/gitlab.test.igdcs.com/cicd/terraform/tools/toolchain-management/libs/bash:/home/david/.goenv/bin:/home/david/.goenv/shims:/home/david/.local/bin:/home/david/.tfenv/bin:/home/david/.tgenv/bin:/home/david/.tofuenv/bin)
-INFO: Updating and installing system tools via yum.
+INFO: Updating and installing system tools via dnf.
 Last metadata expiration check: 1:47:35 ago on Fri 12 Jan 2024 09:35:28 AM CET.
 Dependencies resolved.
 Nothing to do.
@@ -119,7 +118,6 @@ Vulnerability DB:
   UpdatedAt: 2023-11-14 12:12:55.648130557 +0000 UTC
   NextUpdate: 2023-11-14 18:12:55.648130307 +0000 UTC
   DownloadedAt: 2023-11-14 14:29:45.971413325 +0000 UTC
-terrascan version: v1.18.3
 Infracost v0.10.28
 
 Update: A new version of Infracost is available: v0.10.28 → v0.10.31
@@ -179,11 +177,10 @@ TFDOCS_VER: 0.16.0
 TFLINT_VER: 0.47.0
 TFSEC_VER: 1.28.4
 TRIVY_VER: 0.44.1
-TRSCAN_VER: 1.18.3
 INFO: PATH value is: /home/david/.local/bin:/home/david/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/home/david/Projects/Worldline/gitlab.test.igdcs.com/cicd/terraform/tools/toolchain-management/libs/bash:/home/david/.goenv/bin:/home/david/.goenv/shims:/home/david/.local/bin:/home/david/.tfenv/bin:/home/david/.tgenv/bin:/home/david/.tofuenv/bin
 INFO: Installing system tool from source.
 which: no apt in (/home/david/.local/bin:/home/david/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/home/david/Projects/Worldline/gitlab.test.igdcs.com/cicd/terraform/tools/toolchain-management/libs/bash:/home/david/.goenv/bin:/home/david/.goenv/shims:/home/david/.local/bin:/home/david/.tfenv/bin:/home/david/.tgenv/bin:/home/david/.tofuenv/bin)
-INFO: Updating and installing system tools via yum.
+INFO: Updating and installing system tools via dnf.
 Last metadata expiration check: 1:52:13 ago on Fri 12 Jan 2024 09:35:28 AM CET.
 Dependencies resolved.
 Nothing to do.

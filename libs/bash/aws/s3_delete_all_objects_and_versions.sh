@@ -1,4 +1,6 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+
+set -e
 
 # source https://gist.github.com/weavenet/f40b09847ac17dd99d16
 # version 0.0.5

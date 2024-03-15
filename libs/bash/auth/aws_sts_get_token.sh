@@ -1,4 +1,6 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+
+set -e
 
 # Parameters:
 #   - MFA_DEVICE_ARN    the ARN of your MFA device (optional - if not provided, the script will try to get this information from user's account)

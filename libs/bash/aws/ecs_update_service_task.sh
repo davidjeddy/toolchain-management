@@ -1,7 +1,9 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 
-# example /home/david/Projects/Worldline/gitlab.test.igdcs.com/cicd/terraform/tools/toolchain-management/libs/bash/iac/cycle_modules.sh
-# usage   /home/david/Projects/Worldline/gitlab.test.igdcs.com/cicd/terraform/tools/toolchain-management/libs/bash/iac/cycle_modules.sh
+set -e
+
+# example ~/Projects/Worldline/gitlab.test.igdcs.com/cicd/terraform/tools/toolchain-management/libs/bash/iac/cycle_modules.sh
+# usage   ~/Projects/Worldline/gitlab.test.igdcs.com/cicd/terraform/tools/toolchain-management/libs/bash/iac/cycle_modules.sh
 
 # sources
 

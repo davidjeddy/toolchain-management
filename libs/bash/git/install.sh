@@ -1,4 +1,6 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+
+set -e
 
 # See header of terraform-toolchain-management project./libs/bash/install.sh for advanced argument options
 
@@ -51,7 +53,7 @@ then
     source "$THIS_WORKSPACE/.tmp/toolchain-management/libs/bash/versions.sh"
 
     cd "$THIS_WORKSPACE/.tmp" # tmp dir inside toolchain project
-    curl -sL --show-error "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" -o "kics.tar.gz"
+    curl --location --silent --show-error "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" -o "kics.tar.gz"
     tar -xf kics.tar.gz
     cd "kics-${KICS_VER}" || exit 1
 
