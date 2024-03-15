@@ -1,4 +1,6 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+
+set -e
 
 ## fn()
 
@@ -142,7 +144,7 @@ function documentation() {
     terraform-docs markdown table --output-file ./README.md --output-mode inject .
 
     # Fail pipeline if README is not up to date
-    # if [[ $(whoami) == 'jenkins' && $(git status -s) != "" ]]
+    # if [[ $(git status -s) != "" && $(whoami) == 'jenkins' ]]
     # then
     #     printf "ERR: README.md needs to be updated as part of the pre-commit before pushing.\n"
     #     git diff README.md
@@ -158,10 +160,12 @@ function generateSBOM() {
 
     printf "INFO: Ignore warning about 'Failed to download module', this is due to a limitation of checkov\n"
     # Do not generate SBOM is jenkins user, just ensure it exists
-    if [[ $(whoami) == 'jenkins' && ! -f sbom.xml ]]; then
+    if [[ ! -f sbom.xml && $(whoami) == 'jenkins' ]]
+    then
         printf "ERR: sbom.xml missing, failing."
         exit 1
-    elif [[ $(whoami) == 'jenkins' && -f sbom.xml ]]; then
+    elif [[ -f sbom.xml && $(whoami) == 'jenkins' ]]
+    then
         printf "INFO: Automation user detected, not generated sbom.xml"
         return 0
     fi
@@ -414,7 +418,8 @@ function validateBranchName() {
     local REGEX
     REGEX="^(add|fix|remove)\/([A-Z]{1,10})(\-)?([X0-9]{1,10})\/([a-z0-9_]){8,256}"
 
-    if [[ ! $BRANCH_NAME =~ $REGEX ]]; then
+    if [[ ! $BRANCH_NAME =~ $REGEX && $BRANCH_NAME != 'main' && $BRANCH_NAME != 'master' ]]
+    then
         printf "ERR: Branch names must align with the pattern: {action}/{ticket-id}/{description}.\n"
         printf "ERR: The RegEx pattern is as follows: %s\n" "$REGEX"
         printf "Examples:\n"

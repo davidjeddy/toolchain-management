@@ -18,6 +18,23 @@ Action Keywords:
 
 - Support ServiceNow ticket pattern when checking git branch naming
 
+## [0.40.0] - 2024-03-09
+
+### ADDED
+
+- [pyenv to manage Python and PIP versions](https://github.com/pyenv/pyenv)
+- `./libs/bash/install.sh` automaticly detects processor architecture (x86, aarch64, etc
+- Support for Apple Silicon (Arm/aarch64) based systems
+
+### FIXED
+
+- `#!/bin/bash -e` with `#!/usr/bin/env bash` with `set -e`
+- goenv now installed Golang ONLY if the go binary is not found or `--update true`
+
+### REMOVED
+
+- terrascan due to long open blocking issue and no support for `aarch64`/`arm64` via pre-compined binaries
+
 ## [0.38.3] - 2024-03-08
 
 ### ADDED
@@ -373,16 +390,16 @@ Action Keywords:
 
 ### Fixed
 
--Fixed installation of trivy package by putting current path prefix
--Removed unwanted packages(ca-certification, gnupg2, wget) installation from apt-systems
--Added gnupg2 package installation for Fedora and Red Hat
+- Fixed installation of trivy package by putting current path prefix
+- Removed unwanted packages(ca-certification, gnupg2, wget) installation from apt-systems
+- Added gnupg2 package installation for Fedora and Red Hat
 
 ## [0.23.0] - 2023-08-28
 
 ### Added
 
--Added script to install trivy
--Added script to install podman and builah for debian
+- Added script to install trivy
+- Added script to install podman and builah for debian
 
 ## [0.22.0] - 2023-08-28
 

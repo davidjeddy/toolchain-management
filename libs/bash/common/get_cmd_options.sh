@@ -1,4 +1,6 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+
+set -e
 
 function get_cmd_options() {
   declare VALID_ARGS

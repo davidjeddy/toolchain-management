@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -e
 
 function configure_iac_runtime() {
     # shellcheck disable=SC2143
@@ -21,7 +23,7 @@ function golang_based_iac_tools() {
     mkdir -p "$WL_GC_TM_WORKSPACE/.tmp" || exit 1
     cd "$WL_GC_TM_WORKSPACE/.tmp" || exit 1
     # obtain source archive
-    curl -sL --show-error "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" -o "kics.tar.gz"
+    curl --location --silent --show-error "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" -o "kics.tar.gz"
     tar -xf kics.tar.gz
 
     # build executable if needed
@@ -37,6 +39,8 @@ function golang_based_iac_tools() {
 
         sudo install bin/kics "$BIN_DIR"
         cd "../" || exit 1
+
+        kics version
     fi
 
     # Always rebuild KICS query library during an install
@@ -62,27 +66,28 @@ function python_based_iac_tools() {
 
         # Do diff distro's put the Python package bins in different locations?
         chmod +x ~/.local/bin/checkov || exit 1
+
+        echo "checkov $(checkov --version)"
     fi
 }
 
 # TODO the following couple of functions are functionally the same, just different source project / target dir. Can we abstract this all?
 
 function tfenv_and_terraform() {
-
-    cd ~/ || exit
+    cd ~/ || exit 1
 
     if [[ ( ! $(which tfenv) && $TFENV_VER) || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing tfenv.\n"
         rm -rf ~/.tfenv || true
         git clone --quiet "https://github.com/tfutils/tfenv.git" ~/.tfenv
-        cd ~/.tfenv || exit
+        cd ~/.tfenv || exit 1
 
         sudo ln -sfn ~/.tfenv/bin/* "$BIN_DIR" || true
     elif [[ -d ~/.tfenv && $TFENV_VER && "$UPDATE" == "true" ]]
     then
         printf "INFO: Updating tfenv.\n"
-        cd ~/.tfenv || exit
+        cd ~/.tfenv || exit 1
         git reset master --hard
         git fetch --all --tags
         git checkout "v$TFENV_VER"
@@ -107,10 +112,14 @@ function tfenv_and_terraform() {
     fi
 
     tfenv use "$TF_VER"
+
+    tfenv --version
+
+    terraform --version
 }
 
 function tgenv_and_terragrunt() {
-    cd ~/ || exit
+    cd ~/ || exit 1
 
     if [[ ( ! $(which tgenv) && $TGENV_VER) || "$UPDATE" == "true" ]]
     then
@@ -148,11 +157,15 @@ function tgenv_and_terragrunt() {
     fi
 
     tgenv use "$TG_VER"
+
+    tgenv --version
+
+    terragrunt --version
 }
 
 # https://github.com/tofuutils/tofuenv#manual-linux-and-macos
 function tofuenv_and_tofu() {
-    cd ~/ || exit
+    cd ~/ || exit 1
 
     if [[ ( ! $(which tofuenv) && $TOFUENV_VER) || "$UPDATE" == "true" ]]
     then
@@ -166,7 +179,7 @@ function tofuenv_and_tofu() {
     elif [[ -d ~/.tofuenv && $TOFUENV_VER && "$UPDATE" == "true" ]]
     then
         printf "INFO: Updating tofuenv.\n"
-        cd ~/.tofuenv || exit
+        cd ~/.tofuenv || exit 1
         git reset master --hard
         git fetch --all --tags
         git checkout "v$TOFUENV_VER"
@@ -191,26 +204,15 @@ function tofuenv_and_tofu() {
     fi
 
     tofuenv use "$TOFU_VER"
+
+    tofu --version
 }
 
 function binary_based_tools() {
-    if [[ ( ! $(which terrascan) && "${TRSCAN_VER}" ) || "$UPDATE" = "true" ]]
-    then
-        # this one ia problem child due to the URL and non-standard use of x86_64 > amd64. AND the '_' delimiter makes bash think variable variables are present
-        printf "INFO: Installing terrascan.\n"
-        curl -sL --show-error "https://github.com/tenable/terrascan/releases/download/v${TRSCAN_VER}/terrascan_${TRSCAN_VER}_${PLATFORM}_${ALTARCH}.tar.gz" -o "terrascan.tar.gz"
-        tar -xf terrascan.tar.gz terrascan
-        sudo rm -rf "$BIN_DIR/terrascan" || true
-        sudo install --target-directory="$BIN_DIR" terrascan
-        rm -rf terrascan*
-    fi
-
     if [[ ( ! $(which tfsec) && "$TFSEC_VER" ) || "$UPDATE" = "true" ]]
     then
         printf "INFO: Installing tfsec.\n"
-        curl -sL --show-error "https://github.com/aquasecurity/tfsec/releases/download/v${TFSEC_VER}/tfsec_${TFSEC_VER}_${PLATFORM}_${ARCH}.tar.gz" -o "tfsec.tar.gz"
-        tar -xf tfsec.tar.gz
-        sudo rm -rf "$BIN_DIR/tfsec" || true
+        curl --location --silent --show-error "https://github.com/aquasecurity/tfsec/releases/download/v${TFSEC_VER}/tfsec-${PLATFORM}-${ALT_ARCH}" -o "tfsec"
         sudo install --target-directory="$BIN_DIR" tfsec
         rm -rf tfsec*
     fi
@@ -220,30 +222,56 @@ function binary_based_tools() {
         printf "INFO: Installing trivy (tfsec successor).\n"
         if [[ $(which apt) ]]
         then
-          curl -sL --show-error "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VER}/trivy_${TRIVY_VER}_${PLATFORM^}-64bit.deb" -o "trivy.deb"
+          echo "INFO: Installing Trivy for x86 based apt managed system."
+          curl --location --silent --show-error "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VER}/trivy_${TRIVY_VER}_${PLATFORM^}-64bit.deb" -o "trivy.deb"
           sudo apt install ./trivy.deb
+        elif [[ $(which dnf) && $ARCH == 'aarch64' ]]
+        then
+          echo "INFO: Installing Trivy for ARM based dnf managed system."
+          sudo rpm -Uvh "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VER}/trivy_${TRIVY_VER}_${PLATFORM^}-${ALT_ARCH^^}.rpm"
+        elif [[ $(which yum) && $ARCH == 'x86_64' ]]
+        then
+          # https://unix.stackexchange.com/questions/43114/how-to-install-remove-upgrade-rpm-packages-on-red-hat
+          echo "INFO: Installing Trivy for X86 based rpm managed system."
+          # Because RPM wants to be a complete pain and just update the package, so fine, we will force a non-failure code return
+          # The aws-bambora Jenkins worker is going away soon enough anyways.
+          sudo rpm -Uvh "https://github.com/aquasecurity/trivy/releases/download/v0.49.1/trivy_0.49.1_Linux-64bit.rpm" || true
         else
-          sudo rpm --install --replacepkgs "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VER}/trivy_${TRIVY_VER}_${PLATFORM^}-64bit.rpm"
+          echo "INFO: Unable to install trivy. No compatibile system and package manager found."
+          exit 1
         fi
+
         rm -rf trivy*
+
+        trivy --version
     fi
 
     if [[ ( ! $(which infracost) && "$INFRACOST_VER" ) || "$UPDATE" = "true" ]]
     then
         printf "INFO: Installing infracost.\n"
-        curl -sL --show-error "https://github.com/infracost/infracost/releases/download/v${INFRACOST_VER}/infracost-${PLATFORM}-${ARCH}.tar.gz" -o "infracost.tar.gz"
+        declare INFRACOST_URL
+        INFRACOST_URL="https://github.com/infracost/infracost/releases/download/v${INFRACOST_VER}/infracost-${PLATFORM}-${ALT_ARCH}.tar.gz"
+        echo "INFO: INFRACOST_URL: $INFRACOST_URL"
+
+        curl --location --silent --show-error "$INFRACOST_URL" -o "infracost.tar.gz"
         tar -xf infracost.tar.gz
-        mv "infracost-$PLATFORM-$ARCH" infracost || exit 1
+        mv "infracost-$PLATFORM-$ALT_ARCH" infracost || exit 1
         sudo rm -rf "$BIN_DIR/infracost" || true
         sudo install --target-directory="$BIN_DIR" infracost
         rm -rf infracost*
+
+        infracost --version
     fi
 
     if [[ ( ! $(which tflint) && "$TFLINT_VER" ) || "$UPDATE" = "true" ]]
     then
         # Must use {} around PLATFORM else Bash thinks varitable variable is presetn
         printf "INFO: Installing tflint.\n"
-        curl -sL --show-error "https://github.com/terraform-linters/tflint/releases/download/v${TFLINT_VER}/tflint_${PLATFORM}_${ARCH}.zip" -o "tflint.zip"
+        declare TFLINT_URL
+        TFLINT_URL="https://github.com/terraform-linters/tflint/releases/download/v${TFLINT_VER}/tflint_${PLATFORM}_${ALT_ARCH}.zip"
+        echo "INFO: TFLINT_URL: $TFLINT_URL"
+
+        curl --location --silent --show-error "$TFLINT_URL" -o "tflint.zip"
         unzip -qq "tflint.zip"
         sudo rm -rf "$BIN_DIR/tflint" || true
         sudo install --target-directory="$BIN_DIR" tflint
@@ -253,7 +281,11 @@ function binary_based_tools() {
     if [[ ( ! $(which terraform-docs) && "$TFDOCS_VER" ) || "$UPDATE" = "true" ]]
     then
         printf "INFO: Installing terraform-docs.\n"
-        curl -sL --show-error "https://github.com/terraform-docs/terraform-docs/releases/download/v${TFDOCS_VER}/terraform-docs-v${TFDOCS_VER}-${PLATFORM}-${ARCH}.tar.gz" -o "terraform-docs.tar.gz"
+        declare TFDOCS_URL
+        TFDOCS_URL="https://github.com/terraform-docs/terraform-docs/releases/download/v${TFDOCS_VER}/terraform-docs-v${TFDOCS_VER}-${PLATFORM}-${ALT_ARCH}.tar.gz"
+        echo "INFO: TFDOCS_URL: $TFDOCS_URL"
+
+        curl --location --silent --show-error "$TFDOCS_URL" -o "terraform-docs.tar.gz"
         tar -xf terraform-docs.tar.gz terraform-docs
         sudo rm -rf "$BIN_DIR/terraform-docs" || true
         sudo install --target-directory="$BIN_DIR" terraform-docs
@@ -273,21 +305,4 @@ function install_iac_tools() {
     tfenv_and_terraform
     tgenv_and_terragrunt
     tofuenv_and_tofu
-
-    # output versions - grouped based on the syntax/alphabetical of the tool name
-    printf "INFO: Output Terraform tool versions.\n"
-
-    echo "checkov $(checkov --version)"
-    trivy --version
-
-    echo "terrascan $(terrascan version)"
-
-    infracost --version
-    terraform --version
-    terragrunt --version
-    tfenv --version
-    tgenv --version
-    tofu --version
-
-    kics version
 }

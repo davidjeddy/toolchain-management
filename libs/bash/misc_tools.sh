@@ -1,20 +1,22 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -e
 
 function install_misc_tools() {
 
     printf "INFO: Processing MISC tools.\n"
 
-    if [[ $(which yum) ]]
+    if [[ $(whoami) == 'jenkins' ]]
     then
-        echo "WARN: Not installing Hashicorp Packer on RHEL basd systems due to package name collision"
+        echo "WARN: Not installing Hashicorp Packer on RHEL based Jenkins worker nodes systems due to package name collision"
         return 0
     fi
 
-    if [[ ( ! $(which packer) && "${PKR_VER}" || "$UPDATE" == "true") || "$UPDATE" == "true" ]]
+    if [[ ( ! $(which packer) && "${PKR_VER}" ) || "$UPDATE" == "true" ]]
     then
         printf "INFO: Installing Packer.\n"
-        curl -sL --show-error "https://releases.hashicorp.com/packer/${PKR_VER}/packer_${PKR_VER}_${PLATFORM}_${ARCH}.zip" -o "packer_${PKR_VER}_${PLATFORM}_${ARCH}.zip"
-        unzip -qq "packer_${PKR_VER}_${PLATFORM}_${ARCH}.zip"
+        curl --location --silent --show-error "https://releases.hashicorp.com/packer/${PKR_VER}/packer_${PKR_VER}_${PLATFORM}_${ALT_ARCH}.zip" -o "packer_${PKR_VER}_${PLATFORM}_${ALT_ARCH}.zip"
+        unzip -qq "packer_${PKR_VER}_${PLATFORM}_${ALT_ARCH}.zip"
         sudo install packer "$BIN_DIR"
         rm -rf packer*
     fi
