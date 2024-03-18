@@ -9,7 +9,7 @@
   - [Requirements / Supported Platforms](#requirements--supported-platforms)
   - [Tools Includes (but are not limited to)](#tools-includes-but-are-not-limited-to)
     - [AWS](#aws)
-    - [Terraform](#terraform)
+    - [Terraform / OpenTofu](#terraform--opentofu)
     - [Language Run-times](#language-run-times)
   - [Usage](#usage)
     - [WARNING](#warning)
@@ -17,6 +17,9 @@
     - [Usage](#usage-1)
     - [Update Toolchain](#update-toolchain)
   - [Development](#development)
+  - [Testing on localhost](#testing-on-localhost)
+  - [Versioning](#versioning)
+  - [Contributors](#contributors)
   - [Additional Information](#additional-information)
 
 ## Description
@@ -46,7 +49,7 @@ Engineer commits change to localhost git project -> toolchain triggered (pre-com
 - AWS CLI
 - iam-policy-json-to-terraform (x86)
 
-### Terraform
+### Terraform / OpenTofu
 
 - Checkov
 - Infracost
