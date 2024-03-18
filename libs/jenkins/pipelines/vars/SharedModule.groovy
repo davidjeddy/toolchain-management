@@ -178,10 +178,10 @@ def call(
                                 generateSBOM
 
                                 # best practices and security scanning
-                                terraformCompliance
+                                iacCompliance
 
                                 # linting and syntax formatting
-                                terraformLinting
+                                iacLinting
 
                                 # urlencoding using CURL https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736
                                 # Send payload via GitLab API https://docs.gitlab.com/ee/api/commits.html#post-comment-to-commit

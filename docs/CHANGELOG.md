@@ -12,11 +12,11 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
-## [0.38.4] - 2024-03-14
+## [0.40.1] - 2024-03-18
 
 ### FIX
 
-- Support ServiceNow ticket pattern when checking git branch naming
+- Missed fn() references terraformCompliance and terraformLint redirected to iacCompliance and iacLint
 
 ## [0.40.0] - 2024-03-09
 
@@ -34,6 +34,12 @@ Action Keywords:
 ### REMOVED
 
 - terrascan due to long open blocking issue and no support for `aarch64`/`arm64` via pre-compined binaries
+
+## [0.38.4] - 2024-03-14
+
+### FIX
+
+- Support ServiceNow ticket pattern when checking git branch naming
 
 ## [0.38.3] - 2024-03-08
 
