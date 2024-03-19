@@ -21,6 +21,7 @@ function exec() {
         printf "INFO: Use ENV VAR value WORKSPACE: %s\n" "$WORKSPACE"
         export WORKSPACE
     elif [[ ! $WORKSPACE && ! ${1} ]]
+    then
         printf "ERR: Argument 1 or WORKSPACE must be path to root of project.\n"
         exit 1
     fi
