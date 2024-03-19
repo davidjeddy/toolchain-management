@@ -12,6 +12,13 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.40.2] - 2024-03-19
+
+### FIX
+
+- `WL_GC_TM_WORKSPACE` is now the more specific `WL_GC_TM_WORKSPACE`
+- setting `WL_GC_TM_WORKSPACE` now much more easy to understand
+  
 ## [0.40.1] - 2024-03-18
 
 ### FIX

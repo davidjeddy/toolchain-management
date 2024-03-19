@@ -15,8 +15,7 @@ set -e
 # ./libs/bash/install.sh --skip_system_tools true --skip_iac_tools true --skip_misc_tools true
 
 # On Apple M1/M2/ARM
-# ./libs/bash/bash-5.2$ ./libs/bash/install.sh
-# checks
+# ./libs/bash/install.sh
 
 ## do NOT run script as root
 
@@ -94,12 +93,13 @@ then
     PLATFORM="linux"
 fi
 
-WL_GC_TM_WORKSPACE=$(git rev-parse --show-toplevel)
-if [[ "$(ps -o comm= $PPID)" == *"install.sh" ]]
+if [[ "$(ps -o args= $PPID)" == *install.sh* ]]
 then
     # If this script is called by another install.sh script; we expect this project to be inside the $(pwd)/.tmp dir
     # https://stackoverflow.com/questions/20572934/get-the-name-of-the-caller-script-in-bash-script
     WL_GC_TM_WORKSPACE="$(pwd)/.tmp/toolchain-management"
+else
+    WL_GC_TM_WORKSPACE="$(pwd)"
 fi
 
 if [[ "$SHELL_PROFILE" == "" ]]
@@ -144,7 +144,7 @@ echo "WL_GC_TM_WORKSPACE: $WL_GC_TM_WORKSPACE"
 
 ## Execution
 
-printf "INFO: Changing to project root.\n"
+printf "INFO: Changing to Toolchain project root.\n"
 cd "$WL_GC_TM_WORKSPACE" || exit 1
 
 printf "INFO: Sourcing tool versions.sh in install.sh.\n"
