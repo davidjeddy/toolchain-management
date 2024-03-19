@@ -145,11 +145,11 @@ def call(
                         branch: env.BRANCH_NAME
                 }
             }
-            stage('Install System Dependencies') {
+            stage('Install Dependencies') {
                 steps {
                     script {
-                        sh '''
-                            ./libs/bash/install.sh
+                        sh '''#!/usr/bin/env bash set -e
+                            ${WORKSPACE}/libs/bash/install.sh
                         '''
                     }
                 }
@@ -161,12 +161,10 @@ def call(
                             credentialsId:  gitlabApiToken,
                             variable:       'gitlabPAT'
                         )]) {
-                            sh '''#!/bin/bash
+                            sh '''#!/usr/bin/env bash set -e
                                 # shellcheck disable=1091
-                                ## Old location
-                                source "$(pwd)/.tmp/toolchain-management/libs/bash/git/pre_commit_functions.sh" || true
                                 ## New location
-                                source "$(pwd)/.tmp/toolchain-management/libs/bash/git/common.sh" || true
+                                source "${WORKSPACE}/.tmp/toolchain-management/libs/bash/git/common.sh" || true
 
                                 # Do not allow in-project shared modules
                                 doNotAllowSharedModulesInsideDeploymentProjects
@@ -194,7 +192,7 @@ def call(
                         }
                     }
 
-                    archive includes: '$(pwd)/.tmp/junit*.xml'
+                    archive includes: '${WORKSPACE}/.tmp/junit*.xml'
                 }
             }
             // if on the main branch and CHANGELOG diff
@@ -312,14 +310,14 @@ def call(
                                     # https://linuxize.com/post/how-to-check-if-string-contains-substring-in-bash/
                                     if [[ "$LOV" != *"$TAG"* ]]
                                     then
-                                        rm "$(pwd)/.tmp/'''+gitlabProjectName+'''-$TAG.tgz" || true
+                                        rm "${WORKSPACE}/.tmp/'''+gitlabProjectName+'''-$TAG.tgz" || true
                                         tar \
                                             --create \
                                             --directory . \
                                             --exclude=.git \
                                             --exclude=.tmp \
                                             --exclude=.tgz \
-                                            --file "$(pwd)/.tmp/'''+gitlabProjectName+'''-$TAG.tgz" \
+                                            --file "${WORKSPACE}/.tmp/'''+gitlabProjectName+'''-$TAG.tgz" \
                                             --gzip \
                                             .
 
@@ -327,7 +325,7 @@ def call(
                                             --header "PRIVATE-TOKEN: ''' +  env.gitlabPAT + '''" \
                                             --insecure \
                                             --location \
-                                            --upload-file "$(pwd)/.tmp/'''+gitlabProjectName+'''-$TAG.tgz" \
+                                            --upload-file "${WORKSPACE}/.tmp/'''+gitlabProjectName+'''-$TAG.tgz" \
                                             --url "https://'''+gitlabHost+'''/api/v4/projects/''' + gitlabProjectId + '''/packages/terraform/modules/'''+gitlabProjectName+'''/aws/$TAG/file"
                                     fi
                                 '''

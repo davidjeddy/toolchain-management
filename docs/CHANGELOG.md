@@ -16,6 +16,12 @@ Action Keywords:
 
 ### FIX
 
+- `$(pwd)` and `PRJ_ROOT` replaced with `WORKSPACE`. Must similar solution to lean on a well known ENV VAR
+
+## [0.40.1] - 2024-03-18
+
+### FIX
+
 - Missed fn() references terraformCompliance and terraformLint redirected to iacCompliance and iacLint
 
 ## [0.40.0] - 2024-03-09
