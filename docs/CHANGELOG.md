@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.40.4] - 2024-03-19
+
+### REMOVED
+
+- Returned README validation check to pre 0.40.x disablement
+
 ## [0.40.3] - 2024-03-19
 
 ### FIX
