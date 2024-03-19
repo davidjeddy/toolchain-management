@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.40.5] - 2024-03-19
+
+### FIX
+
+- Path to junit-* reports reverted to use `$(pwd)`
+  
 ## [0.40.4] - 2024-03-19
 
 ### REMOVED

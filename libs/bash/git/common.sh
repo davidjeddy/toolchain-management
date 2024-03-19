@@ -185,12 +185,12 @@ function generateSBOM() {
                 --config-file checkov.yml \
                 --directory . \
                 --output cyclonedx \
-                >"${WORKSPACE}/sbom.xml"
+                > "$(pwd)/sbom.xml"
         else
             checkov \
                 --directory . \
                 --output cyclonedx \
-                >"${WORKSPACE}/sbom.xml"
+                > "$(pwd)/sbom.xml"
         fi
         git add sbom.xml || true
     } || {
@@ -221,7 +221,7 @@ function iacCompliance() {
                 --skip-path .tmp/ \
                 --skip-path examples/ \
                 --skip-path libs/ \
-                > "${WORKSPACE}/.tmp/junit-checkov.xml"
+                > "$(pwd)/.tmp/junit-checkov.xml"
         else
             printf "INFO: checkov configuration NOT file found.\n"
             checkov \
@@ -235,7 +235,7 @@ function iacCompliance() {
                 --skip-path examples/ \
                 --output junitxml \
                 --skip-path libs/ \
-                > "${WORKSPACE}/.tmp/junit-checkov.xml"
+                > "$(pwd)/.tmp/junit-checkov.xml"
         fi
     } || {
         echo "ERR: checkov failed. Check report saved to .tmp/junit-checkov.xml"
@@ -296,7 +296,7 @@ function iacCompliance() {
                 --format junit \
                 --no-color \
                 --no-module-downloads \
-                > "${WORKSPACE}/.tmp/junit-tfsec.xml"
+                > "$(pwd)/.tmp/junit-tfsec.xml"
         else
             printf "INFO: tfsec configuration NOT file found.\n"
             tfsec . \
@@ -306,7 +306,7 @@ function iacCompliance() {
                 --format junit \
                 --no-color \
                 --no-module-downloads \
-                > "${WORKSPACE}/.tmp/junit-tfsec.xml"
+                > "$(pwd)/.tmp/junit-tfsec.xml"
         fi
     } || {
         echo "ERR: tfsec failed. Check report saved to .tmp/junit-tfsec.xml"
@@ -332,7 +332,7 @@ function iacCompliance() {
     #                 --non-recursive \
     #                 --output junit-xml \
     #                 --use-colors f \
-    #                 > .tmp/junit-trivy.xml
+    #                 > "$(pwd)/.tmp/junit-trivy.xml"
     #         else
     #             printf "INFO: trivy configuration NOT file found.\n"
     #             trivy scan \
@@ -340,7 +340,7 @@ function iacCompliance() {
     #                 --non-recursive \
     #                 --output junit-xml \
     #                 --use-colors f \
-    #                 > .tmp/junit-trivy.xml
+    #                 > "$(pwd)/.tmp/junit-trivy.xml"
     #         fi
     #     } || {
     #         echo "ERR: trivy failed. Check Junit reports in .tmp"
@@ -398,7 +398,7 @@ function iacLinting() {
                 --no-color \
                 --format=junit \
                 --ignore-module=SOURCE \
-                >.tmp/junit-tflint.xml
+                > "$(pwd)/.tmp/junit-tflint.xml"
         else
             tflint \
                 --chdir="${WORKSPACE}" \
@@ -406,7 +406,7 @@ function iacLinting() {
                 --no-color \
                 --format=junit \
                 --ignore-module=SOURCE \
-                >.tmp/junit-tflint.xml
+                > "$(pwd)/.tmp/junit-tflint.xml"
         fi
     } || {
         echo "ERR: tflint failed. Check Junit reports in .tmp"
