@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.40.3] - 2024-03-19
+
+### FIX
+
+- Jenkinsfile syntax when running sh sub-shell
+
 ## [0.40.2] - 2024-03-19
 
 ### FIX

@@ -148,7 +148,8 @@ def call(
             stage('Install Dependencies') {
                 steps {
                     script {
-                        sh '''#!/usr/bin/env bash set -e
+                        sh '''#!/usr/bin/env bash
+                            set -e
                             ${WORKSPACE}/libs/bash/install.sh
                         '''
                     }
@@ -161,7 +162,9 @@ def call(
                             credentialsId:  gitlabApiToken,
                             variable:       'gitlabPAT'
                         )]) {
-                            sh '''#!/usr/bin/env bash set -e
+                            sh '''#!/usr/bin/env bash
+                                set -e
+
                                 # shellcheck disable=1091
                                 ## New location
                                 source "${WORKSPACE}/.tmp/toolchain-management/libs/bash/git/common.sh" || true
