@@ -12,6 +12,14 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.40.6] - 2024-03-20
+
+### FIX
+
+- Pip is now used on global level to reduce complexity related to local installations with --user parameter
+- Fixed wrong usage of $WORKSPACE env that caused file errors in the pipeline
+- Fixed checkov not being installed properly
+
 ## [0.40.5] - 2024-03-19
 
 ### FIX

@@ -62,12 +62,7 @@ function install_cloud_tools() {
 
         # We always want the latest vesrsion of tools installed via pip
         printf "INFO: Installing onelogin-aws-cli compliance tool.\n"
-        # https://github.com/bridgecrewio/checkov
-        pip install -U onelogin-aws-cli=="$ONELOGIN_AWS_CLI_VER" --user
-
-        # Do diff distro's put the Python package bins in different locations?
-        # Why does this package name entry script different than the package name?
-        chmod +x ~/.local/bin/onelogin-aws-login
+        pip install -U onelogin-aws-cli=="$ONELOGIN_AWS_CLI_VER"
 
         onelogin-aws-login --version
         echo "onelogin-aws-cli $(pip show onelogin-aws-cli)"
