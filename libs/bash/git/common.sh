@@ -70,7 +70,7 @@ function exec() {
         cd "$WORKSPACE/$DIR" || continue
 
         # If a lock file exists, AND the cache directory does not, the module needs to be initilized.
-        if [[ -f "${WORKSPACE}/terraform.lock.hcl" && ! -d "${WORKSPACE}/terraform" ]]; then
+        if [[ -f "terraform.lock.hcl" && ! -d "terraform" ]]; then
             terraform init -no-color
             terraform providers lock -platform=linux_amd64
         fi
@@ -105,8 +105,8 @@ function exec() {
 function createTmpDir() {
     printf "INFO: starting createTmpDir()\n"
 
-    if [[ ! -d "${WORKSPACE}/.tmp" ]]; then
-        mkdir -p "${WORKSPACE}/.tmp"
+    if [[ ! -d ".tmp" ]]; then
+        mkdir -p ".tmp"
     fi
 }
 
@@ -114,12 +114,12 @@ function doNotAllowSharedModulesInsideDeploymentProjects() {
     printf "INFO: starting doNotAllowSharedModulesInsideDeploymentProjects()\n"
 
     #shellcheck disable=SC2002 # We do want to cat the file contents and pipeline into jq
-    if [[ ! -f "${WORKSPACE}/terraform/modules/modules.json" ]]; then
+    if [[ ! -f "./terraform/modules/modules.json" ]]; then
         return 0
     fi
 
     # shellcheck disable=SC2002
-    MODULE_SOURCES=$(cat "${WORKSPACE}/terraform/modules/modules.json" | jq '.Modules[] | .Source')
+    MODULE_SOURCES=$(cat "./terraform/modules/modules.json" | jq '.Modules[] | .Source')
 
     for MODULE_SOURCE in $MODULE_SOURCES; do
         echo "INFO: Checking module source $MODULE_SOURCE"
@@ -135,11 +135,10 @@ function doNotAllowSharedModulesInsideDeploymentProjects() {
 function documentation() {
     printf "INFO: starting documentation()\n"
 
-    if [[ ! -f "${WORKSPACE}/README.md" ]]; then
+    if [[ ! -f "README.md" ]]; then
         printf "ALERT: README.md not found in module, creating from template.\n"
         # Get module name and uppercase it
-        #shellcheck disable=SC2046 # Not sure why shellcheck complains about this
-        MODULE_NAME=$(basename ${WORKSPACE})
+        MODULE_NAME=$(basename "${WORKSPACE}")
         MODULE_NAME=${MODULE_NAME^^}
 
         # Add markers for tf_docs to insert API documentation
@@ -205,8 +204,8 @@ function iacCompliance() {
 
     printf "INFO: checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov)...\n"
     {
-        rm -rf "${WORKSPACE}/.tmp/junit-checkov.xml" || exit 1
-        touch "${WORKSPACE}/.tmp/junit-checkov.xml" || exit 1
+        rm -rf ".tmp/junit-checkov.xml" || exit 1
+        touch ".tmp/junit-checkov.xml" || exit 1
         if [[ -f "checkov.yml" ]]; then
             printf "INFO: checkov configuration file found, using it.\n"
             checkov \
@@ -221,7 +220,7 @@ function iacCompliance() {
                 --skip-path .tmp/ \
                 --skip-path examples/ \
                 --skip-path libs/ \
-                > "$(pwd)/.tmp/junit-checkov.xml"
+                > ".tmp/junit-checkov.xml"
         else
             printf "INFO: checkov configuration NOT file found.\n"
             checkov \
@@ -235,18 +234,18 @@ function iacCompliance() {
                 --skip-path examples/ \
                 --output junitxml \
                 --skip-path libs/ \
-                > "$(pwd)/.tmp/junit-checkov.xml"
+                > ".tmp/junit-checkov.xml"
         fi
     } || {
         echo "ERR: checkov failed. Check report saved to .tmp/junit-checkov.xml"
-        cat "${WORKSPACE}/.tmp/junit-checkov.xml"
+        cat ".tmp/junit-checkov.xml"
         exit 1
     }
 
     printf "INFO: KICS executing...\n"
     {
-        rm -rf "${WORKSPACE}/.tmp/junit-kics.xml" || exit 1
-        touch "${WORKSPACE}/.tmp/junit-kics.xml" || exit 1
+        rm -rf ".tmp/junit-kics.xml" || exit 1
+        touch ".tmp/junit-kics.xml" || exit 1
         if [[ -f "kics.yml" ]]; then
             printf "INFO: KICS configuration file found, using it.\n"
             # kics cli argument `--queries-path` must contain an absolute path, else a `/` gets pre-pended.
@@ -257,8 +256,8 @@ function iacCompliance() {
                 --no-color \
                 --no-progress \
                 --output-name "junit-kics" \
-                --output-path "${WORKSPACE}/.tmp" \
-                --path "${WORKSPACE}/" \
+                --output-path ".tmp" \
+                --path "." \
                 --queries-path "${WORKSPACE}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
                 --report-formats "junit" \
                 --type "Terraform"
@@ -270,22 +269,22 @@ function iacCompliance() {
                 --no-color \
                 --no-progress \
                 --output-name "junit-kics" \
-                --output-path "${WORKSPACE}/.tmp" \
-                --path "${WORKSPACE}/" \
+                --output-path ".tmp" \
+                --path "." \
                 --queries-path "${WORKSPACE}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
                 --report-formats "junit" \
                 --type "Terraform"
         fi
     } || {
         echo "ERR: kics failed. Check report saved to .tmp/junit-kics.xml"
-        cat "${WORKSPACE}/.tmp/junit-kics.xml"
+        cat ".tmp/junit-kics.xml"
         exit 1
     }
 
     printf "INFO: tfsec executing...\n"
     {
-        rm -rf "${WORKSPACE}/.tmp/junit-tfsec.xml" || exit 1
-        touch "${WORKSPACE}/.tmp/junit-tfsec.xml" || exit 1
+        rm -rf ".tmp/junit-tfsec.xml" || exit 1
+        touch ".tmp/junit-tfsec.xml" || exit 1
         if [[ -f "tfsec.yml" ]]; then
             printf "INFO: tfsec configuration file found, using it.\n"
             tfsec . \
@@ -296,7 +295,7 @@ function iacCompliance() {
                 --format junit \
                 --no-color \
                 --no-module-downloads \
-                > "$(pwd)/.tmp/junit-tfsec.xml"
+                > ".tmp/junit-tfsec.xml"
         else
             printf "INFO: tfsec configuration NOT file found.\n"
             tfsec . \
@@ -306,11 +305,11 @@ function iacCompliance() {
                 --format junit \
                 --no-color \
                 --no-module-downloads \
-                > "$(pwd)/.tmp/junit-tfsec.xml"
+                > ".tmp/junit-tfsec.xml"
         fi
     } || {
         echo "ERR: tfsec failed. Check report saved to .tmp/junit-tfsec.xml"
-        cat "${WORKSPACE}/.tmp/junit-tfsec.xml"
+        cat ".tmp/junit-tfsec.xml"
         exit 1
     }
 
@@ -320,8 +319,8 @@ function iacCompliance() {
     # then
     #     printf "INFO: trivy executing...\n"
     #     {
-    #         rm -rf "${WORKSPACE}/.tmp/junit-trivy.xml" || exit 1
-    #         touch "${WORKSPACE}/.tmp/junit-trivy.xml" || exit 1
+    #         rm -rf ".tmp/junit-trivy.xml" || exit 1
+    #         touch ".tmp/junit-trivy.xml" || exit 1
     #         if [[ -f "trivy.yml" ]]
     #         then
     #             # use configuration file if present.
@@ -332,7 +331,7 @@ function iacCompliance() {
     #                 --non-recursive \
     #                 --output junit-xml \
     #                 --use-colors f \
-    #                 > "$(pwd)/.tmp/junit-trivy.xml"
+    #                 > ".tmp/junit-trivy.xml"
     #         else
     #             printf "INFO: trivy configuration NOT file found.\n"
     #             trivy scan \
@@ -340,11 +339,11 @@ function iacCompliance() {
     #                 --non-recursive \
     #                 --output junit-xml \
     #                 --use-colors f \
-    #                 > "$(pwd)/.tmp/junit-trivy.xml"
+    #                 > ".tmp/junit-trivy.xml"
     #         fi
     #     } || {
     #         echo "ERR: trivy failed. Check Junit reports in .tmp"
-    #         cat "${WORKSPACE}/.tmp/junit-trivy.xml"
+    #         cat ".tmp/junit-trivy.xml"
     #         exit 1
     #     }
     # fi
@@ -352,8 +351,8 @@ function iacCompliance() {
     # EOL scanning tool
     # printf "INFO: xeol executing...\n"
     # {
-    #     rm -rf "${WORKSPACE}/.tmp/junit-xeol.xml" || exit 1
-    #     touch "${WORKSPACE}/.tmp/junit-xeol.xml" || exit 1
+    #     rm -rf ".tmp/junit-xeol.xml" || exit 1
+    #     touch ".tmp/junit-xeol.xml" || exit 1
     #     if [[ -f "trivy.yml" ]]
     #     then
     #         # use configuration file if present.
@@ -361,7 +360,7 @@ function iacCompliance() {
     #         xeol \
     #             --config xeol.yml \
     #             --fail-on-eol-found \
-    #             --file "${WORKSPACE}/.tmp/junit-xeol.xml"\
+    #             --file ".tmp/junit-xeol.xml"\
     #             --lookahead 1y \
     #             --name "$(basename "${WORKSPACE}")" \
     #             --project-name "$(basename "${WORKSPACE}")"
@@ -369,7 +368,7 @@ function iacCompliance() {
     #         printf "INFO: xeol configuration NOT file found.\n"
     #         xeol \
     #             --fail-on-eol-found \
-    #             --file "${WORKSPACE}/.tmp/junit-xeol.xml"\
+    #             --file ".tmp/junit-xeol.xml"\
     #             --lookahead 1y \
     #             --name "$(basename "${WORKSPACE}")" \
     #             --project-name "$(basename "${WORKSPACE}")"
@@ -377,7 +376,7 @@ function iacCompliance() {
     #     fi
     # } || {
     #     echo "ERR: xeol failed. Check Junit reports in .tmp"
-    #     cat "${WORKSPACE}/.tmp/junit-xeol.xml"
+    #     cat ".tmp/junit-xeol.xml"
     #     exit 1
     # }
 }
@@ -392,25 +391,23 @@ function iacLinting() {
     {
         if [[ -f "tflint.hcl" ]]; then
             tflint \
-                --chdir="${WORKSPACE}" \
                 --config="tflint.hcl" \
                 --no-module \
                 --no-color \
                 --format=junit \
                 --ignore-module=SOURCE \
-                > "$(pwd)/.tmp/junit-tflint.xml"
+                > ".tmp/junit-tflint.xml"
         else
             tflint \
-                --chdir="${WORKSPACE}" \
                 --no-module \
                 --no-color \
                 --format=junit \
                 --ignore-module=SOURCE \
-                > "$(pwd)/.tmp/junit-tflint.xml"
+                > ".tmp/junit-tflint.xml"
         fi
     } || {
         echo "ERR: tflint failed. Check Junit reports in .tmp"
-        cat "${WORKSPACE}/.tmp/junit-tflint.xml"
+        cat ".tmp/junit-tflint.xml"
         exit 1
     }
 }

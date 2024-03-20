@@ -50,22 +50,15 @@ function golang_based_iac_tools() {
 }
 
 function python_based_iac_tools() {
-    # Because pipelines do not have a full shell, be sure to include the PATH to the Python binaries
-    # shellcheck disable=SC2155
-    export PATH=$PATH:/home/$(whoami)/.local/bin
-
-    if [[ ! $(which checkov) && "${CHECKOV_VER}" || "$UPDATE" == "true" ]]
+    if [[ ( ! $(which checkov) && "${CHECKOV_VER}" ) || "$UPDATE" == "true" ]]
     then
-        printf "INFO: Remove old Checkovl if it exists.\n"
+        printf "INFO: Remove old Checkov if it exists.\n"
         pip uninstall -y checkov || true
 
         # We always want the latest vesrsion of tools installed via pip
         printf "INFO: Installing Checkov compliance tool.\n"
         # https://github.com/bridgecrewio/checkov
-        pip install -U checkov=="$CHECKOV_VER" --user
-
-        # Do diff distro's put the Python package bins in different locations?
-        chmod +x ~/.local/bin/checkov || exit 1
+        pip install -U checkov=="$CHECKOV_VER"
 
         echo "checkov $(checkov --version)"
     fi

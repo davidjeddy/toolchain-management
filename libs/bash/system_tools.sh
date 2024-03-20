@@ -230,19 +230,6 @@ function install_pip() {
     then
         printf "INFO: pip package manager not detected or update requested.\n"
 
-        # For python/pip site-packages at the user scope
-        # shellcheck disable=SC2143
-        if [[ ! $(grep "export PATH=\$PATH:~/.local/bin" "$SHELL_PROFILE") ]]
-        then
-            printf "INFO: Add pip site-package to PATH"
-            echo "export PATH=\$PATH:~/.local/bin" >> "$SHELL_PROFILE"
-            #shellcheck disable=SC1090
-            source "$SHELL_PROFIFLE"
-        fi
-
-        printf "INFO: Removing existing site-packages at %s\n" "/home/$(whoami)/.local/lib/python$PYTHON_MINOR_VER/site-packages"
-        rm -rf "/home/$(whoami)/.local/lib/python$PYTHON_MINOR_VER/site-packages" || true
-
         printf "INFO: Download pip installer.\n"
         curl --location --silent --show-error "https://bootstrap.pypa.io/get-pip.py" -o get-pip.py
 
