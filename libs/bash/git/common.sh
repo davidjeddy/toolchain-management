@@ -246,34 +246,39 @@ function iacCompliance() {
     {
         rm -rf ".tmp/junit-kics.xml" || exit 1
         touch ".tmp/junit-kics.xml" || exit 1
+
+        # find .tf and .hcl files in current folder comma separated, remove trailing comma using sed
+        filesToScan=$(find . -maxdepth 1 -type f \( -name "*.tf" -o -name "*.hcl" \) -printf "%f," | sed 's/,$//')
         if [[ -f "kics.yml" ]]; then
             printf "INFO: KICS configuration file found, using it.\n"
             # kics cli argument `--queries-path` must contain an absolute path, else a `/` gets pre-pended.
             kics scan \
                 --cloud-provider "aws" \
                 --config "kics.yml" \
-                --exclude-paths "*" \
                 --no-color \
                 --no-progress \
                 --output-name "junit-kics" \
                 --output-path ".tmp" \
-                --path "." \
+                --path "$filesToScan" \
                 --queries-path "${WORKSPACE}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
                 --report-formats "junit" \
-                --type "Terraform"
+                --type "Terraform" \
+                --verbose \
+                --log-level info
         else
             printf "INFO: KICS configuration NOT file found.\n"
             kics scan \
                 --cloud-provider "aws" \
-                --exclude-paths "*" \
                 --no-color \
                 --no-progress \
                 --output-name "junit-kics" \
                 --output-path ".tmp" \
-                --path "." \
+                --path "$filesToScan" \
                 --queries-path "${WORKSPACE}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
                 --report-formats "junit" \
-                --type "Terraform"
+                --type "Terraform" \
+                --verbose \
+                --log-level info
         fi
     } || {
         echo "ERR: kics failed. Check report saved to .tmp/junit-kics.xml"
