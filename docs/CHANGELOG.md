@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.40.7] - 2024-03-21
+
+### FIX
+
+- KICS now runs properly on module level instead of ignoring all files
+
 ## [0.40.6] - 2024-03-20
 
 ### FIX
