@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.40.8] - 2024-03-25
+
+### FIX
+
+- Architecture detection for ssm-manager-plugin in `cloud_tools.sh`
+
 ## [0.40.7] - 2024-03-21
 
 ### FIX

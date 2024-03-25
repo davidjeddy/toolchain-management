@@ -19,11 +19,22 @@ function install_cloud_tools() {
 
     # aws - ssm-session-manager plugin
     # https://stackoverflow.com/questions/12806176/checking-for-installed-packages-and-if-not-found-install
+    # shellcheck disable=SC2126
     if [[ $(which dnf) && $(dnf list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) -eq 0 ]]
     then
-        # Fedora
         echo "INFO: Installing AWS CLI session-manager-plugin via dnf system package manager.";
-        sudo dnf install -y "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_$ALT_ARCH/session-manager-plugin.rpm"
+        # Fedora
+        if [[ $(uname -m) == "x86_64" ]]
+        then
+            ## arm64
+            sudo dnf install -y "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm"
+        elif [[ $(uname -m) == "aarch64" ]]
+        then
+            ## amd64
+            sudo dnf install -y "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_$ALT_ARCH/session-manager-plugin.rpm"
+        else
+            prinf "ALERT: Unable to determine CPU architecture for AWS session-manager-plugin.\n"
+        fi
     elif [[ $(which yum) && $(yum list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) -eq 0 ]]
     then
         # RHEL
