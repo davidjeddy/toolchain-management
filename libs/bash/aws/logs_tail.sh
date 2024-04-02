@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -e
 
 # usage: /path/to/script/logs_tail.sh
 #        /path/to/script/logs_tail.sh -l
