@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.40.9] - 2024-03-28
+
+### ADD
+
+- `./libs/bash/aws/pull_and_push_container_images.sh` to help with mass pull-tag-push operations
+
 ## [0.40.8] - 2024-03-25
 
 ### FIX
