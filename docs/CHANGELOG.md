@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.40.10] - 2024-04-04
+
+### Fix
+
+- Bumped aws-cli version to support aws ecs service connect configuration execution
+
 ## [0.40.9] - 2024-03-28
 
 ### ADD

@@ -35,7 +35,7 @@ declare XEOL_VER
 
 # AWS related tools
 ## https://docs.aws.amazon.com/cli/latest/userguide/getting-started-version.html
-export AWSCLI_VER="2.13.8"
+export AWSCLI_VER="2.15.34"
 ## https://github.com/flosell/iam-policy-json-to-terraform/releases
 export IPJTT_VER="1.8.2"
 ## https://pypi.org/project/onelogin-aws-cli/
