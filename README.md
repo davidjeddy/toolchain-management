@@ -14,7 +14,7 @@
   - [Usage](#usage)
     - [WARNING](#warning)
     - [Install](#install)
-    - [Usage](#usage-1)
+    - [Invoke](#invoke)
     - [Update Toolchain](#update-toolchain)
   - [Development](#development)
   - [Testing on localhost](#testing-on-localhost)
@@ -77,7 +77,7 @@ Engineer commits change to localhost git project -> toolchain triggered (pre-com
 git clone [project URL]
 ```
 
-### Usage
+### Invoke
 
 Take from ./libs/bash/install.sh header section.
 

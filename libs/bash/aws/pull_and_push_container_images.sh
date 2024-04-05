@@ -2,11 +2,12 @@
 
 set -e
 
-# usage: pull_push_images.sh $AWS_ACCT_ID $AWS_REGION $ENV $APP $RND_STR $IMAGE_SOURCES()
-# example: pull_push_images.sh 730335529266 eu-west-1 dev toolbox kmsd "docker.io/jenkins/jenkins:2.440.2-lts-jdk17"
-# example: pull_push_images.sh 730335529266 eu-west-1 dev toolbox kmsd "docker.io/jenkins/jenkins:2.440.2-lts-jdk17=jenkins-controller, docker.io/alpine:3.19.1=ops-tooling, docker.io/library/sonarqube:9.9.4-community=sonarqube"
+# usage: pull_and_push_container_images.sh $AWS_ACCT_ID $AWS_REGION $ENV $APP $RND_STR $IMAGE_SOURCES()
+# example: pull_and_push_container_images.sh 730335529266 eu-west-1 dev toolbox kmsd "docker.io/jenkins/jenkins:2.440.2-lts-jdk17"
+# example: pull_and_push_container_images.sh 730335529266 eu-west-1 dev toolbox kmsd "docker.io/jenkins/jenkins:2.440.2-lts-jdk17=jenkins-controller, docker.io/alpine:3.19.1=ops-tooling, docker.io/library/sonarqube:9.9.4-community=sonarqube docker.io/sonatype/nexus3:3.67.0=nexus"
+# example: pull_and_push_container_images.sh 730335529266 eu-west-1 dev toolbox kmsd "docker.io/sonatype/nexus3:3.67.0=nexus"
 
-# Version: 0.1.0 - 2014-03-28
+# Version: 0.1.1 - 2014-03-28
 
 ## execution configuration
 
@@ -59,11 +60,12 @@ IFS=', ' read -ra IMAGE_CONFIGS <<< "${6}"
 ## Config output
 
 printf "INFO: ENV VAR configurations:\n"
+
+printf "INFO: APP: %s\n" "$APP"
 printf "INFO: AWS_ACCT_ID: %s\n" "$AWS_ACCT_ID"
 printf "INFO: AWS_REGION: %s\n" "$AWS_REGION"
 printf "INFO: ENV: %s\n" "$ENV"
-printf "INFO: APP: %s\n" "$APP"
-printf "INFO: RND: %s\n" "$RND"
+printf "INFO: RND_STR: %s\n" "$RND_STR"
 for IMAGE_CONFIG in "${IMAGE_CONFIGS[@]}"
 do
   printf "INFO: IMAGE_SOURCE: %s\n" "$IMAGE_CONFIG"
@@ -91,9 +93,11 @@ getSrvName() {
 
 ### Auth to target AWS ECR
 aws ecr get-login-password \
---profile "$AWS_PROFILE" \
---region "$AWS_REGION" \
-| podman login --username AWS --password-stdin "$AWS_ACCT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+  --profile "$AWS_PROFILE" \
+  --region "$AWS_REGION" \
+  | podman login \
+    --username AWS \
+    --password-stdin "$AWS_ACCT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
 for IMAGE_CONFIG in "${IMAGE_CONFIGS[@]}"
 do
@@ -125,8 +129,11 @@ do
   podman image list
 
   # Push image to AWS ECR
-  podman push "$TARGET_REPO:$IMAGE_TAG"
+  {
+    podman push "$TARGET_REPO:$IMAGE_TAG"
+  } || {
+    printf "WARN: Unable to push to target registry.\n"
+  }
 done
 
 printf "INFO: ...Done.\n"
-
