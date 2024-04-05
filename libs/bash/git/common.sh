@@ -114,12 +114,12 @@ function doNotAllowSharedModulesInsideDeploymentProjects() {
     printf "INFO: starting doNotAllowSharedModulesInsideDeploymentProjects()\n"
 
     #shellcheck disable=SC2002 # We do want to cat the file contents and pipeline into jq
-    if [[ ! -f "./terraform/modules/modules.json" ]]; then
+    if [[ ! -f "$(pwd)/.terraform/modules/modules.json" ]]; then
         return 0
     fi
 
     # shellcheck disable=SC2002
-    MODULE_SOURCES=$(cat "./terraform/modules/modules.json" | jq '.Modules[] | .Source')
+    MODULE_SOURCES=$(cat "$(pwd)/.terraform/modules/modules.json" | jq '.Modules[] | .Source')
 
     for MODULE_SOURCE in $MODULE_SOURCES; do
         echo "INFO: Checking module source $MODULE_SOURCE"

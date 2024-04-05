@@ -18,6 +18,10 @@ Action Keywords:
 
 - `./libs/bash/aws/pull_and_push_container_images.sh` to help with mass pull-tag-push operations
 
+### FIX
+
+- `./libs/bash/git/common.sh` doNotAllowSharedModulesInsideDeploymentProjects() having incorrect path to IAC `module.json`
+
 ## [0.40.8] - 2024-03-25
 
 ### FIX
