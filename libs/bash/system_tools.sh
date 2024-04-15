@@ -164,7 +164,7 @@ function install_goenv() {
         # shellcheck disable=SC2016
         {
             echo 'export GOENV_ROOT="$HOME/.goenv"'
-            echo 'export PATH="$GOENV_ROOT/bin:$PATH"'
+            echo 'export PATH="$GOENV_ROOT/bin:$GOENV_ROOT/shims:$PATH"'
             echo 'eval "$(goenv init -)"'
         } >> "$SHELL_PROFILE"
     else
@@ -264,6 +264,7 @@ function install_pyenv() {
         {
             echo 'export PYENV_ROOT="$HOME/.pyenv"'
             echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
+            echo 'export PATH="$PYENV_ROOT/shims:$PATH"'
             echo 'eval "$(pyenv init -)"'
             echo 'eval "$(pyenv virtualenv-init -)"'
         } >> "$SHELL_PROFILE"
