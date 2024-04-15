@@ -2,6 +2,10 @@
 
 set -e
 
+# shellcheck disable=SC1091
+# shellcheck source=/home/jenkins/
+source "$SHELL_PROFILE"
+
 function install_cloud_tools() {
 
     printf "INFO: Processing cloud tools.\n"
@@ -35,11 +39,13 @@ function install_cloud_tools() {
         else
             prinf "ALERT: Unable to determine CPU architecture for AWS session-manager-plugin.\n"
         fi
-    elif [[ $(which yum) && $(yum list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) -eq 0 ]]
+    elif [[ $(which yum) ]]
     then
         # RHEL
         echo "INFO: Installing AWS CLI session-manager-plugin via yum system package manager.";
-        sudo rpm -Uvh "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm"
+        # We have to manually remove the symlink to make the pacakge install idempotent
+        sudo rm "/usr/local/bin/session-manager-plugin" || true
+        sudo rpm -iUvh --replacepkgs "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm"
     elif [[ $(which apt) && $(apt list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) -eq 0 ]]
     then
         # Debian

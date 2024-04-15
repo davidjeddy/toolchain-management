@@ -12,6 +12,16 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.40.11] - 2024-05-15
+
+### Add
+
+- Source tribe/squad shell session during each phase of managed tool installing
+
+### Fix
+
+- Shell check warnings when installing Python
+
 ## [0.40.10] - 2024-04-04
 
 ### Fix

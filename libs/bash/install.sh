@@ -172,6 +172,7 @@ if [[ -f ~/.bash_profile && ! $(grep "source $SHELL_PROFILE" ~/.bash_profile) ]]
 then
     printf "INFO: Adding source %s to %s.\n" "$SHELL_PROFILE" ~/.bash_profile
     echo "source $SHELL_PROFILE" >> ~/.bash_profile
+    # shellcheck source=/home/jenkins/
     #shellcheck disable=SC1091
     source ~/.bash_profile || exit 1
 fi
@@ -182,6 +183,7 @@ if [[ -f ~/.bashrc && ! $(grep "source $SHELL_PROFILE" ~/.bashrc) ]]
 then
     printf "INFO: Adding source %s to %s.\n" "$SHELL_PROFILE" ~/.bashrc
     echo "source $SHELL_PROFILE" >> ~/.bashrc
+    # shellcheck source=/home/jenkins/
     #shellcheck disable=SC1091
     source ~/.bashrc || exit 1
 fi
@@ -237,8 +239,8 @@ then
     printf "INFO: Looks like you do not yet have a ~/.terraformrc credentials configuration, pleaes follow https://confluence.techno.ingenico.com/display/PPS/Using+Shared+Modules+from+GitLab+Private+Registry#UsingSharedModulesfromGitLabPrivateRegistry-localhost before attempting to use Terraf.\n"
 fi
 
-# shellcheck disable=SC1091
-source $SHELL_PROFILE
+# shellcheck disable=SC1091,SC1090
+source "$SHELL_PROFILE"
 
 # Done
 printf "INFO: Please start your shell session to ensure the PATH value is reloaded.\n"
