@@ -2,6 +2,10 @@
 
 set -e
 
+# shellcheck disable=SC1091
+# shellcheck source=/home/jenkins/
+source "$SHELL_PROFILE"
+
 # Debian (deprecated)
 function apt_systems() {
     printf "INFO: Updating and installing system tools via apt. \n"
@@ -157,6 +161,7 @@ function install_goenv() {
         git clone --quiet "https://github.com/syndbg/goenv.git" ~/.goenv
 
         printf "INFO: Add goenv bin dir to PATH via %s.\n" "$SHELL_PROFILE"
+        # shellcheck disable=SC2016
         {
             echo 'export GOENV_ROOT="$HOME/.goenv"'
             echo 'export PATH="$GOENV_ROOT/bin:$PATH"'
@@ -255,6 +260,7 @@ function install_pyenv() {
         ./libs/bash/installers/pyenv.sh || exit 1
 
         printf "INFO: Add pyenv bin dir to PATH via %s.\n" "$SHELL_PROFILE"
+        # shellcheck disable=SC2016
         {
             echo 'export PYENV_ROOT="$HOME/.pyenv"'
             echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
@@ -278,10 +284,10 @@ function install_pyenv() {
     source "$SHELL_PROFILE"
 
     printf "INFO: Installing Python via pyenv.\n"
-    pyenv install --force $PYTHON_VER
+    pyenv install --force "$PYTHON_VER"
 
     printf "INFO: Setting Python version globally.\n"
-    pyenv global $PYTHON_VER
+    pyenv global "$PYTHON_VER"
 
     # Ensure pip is installed and up to date
     ~/.pyenv/shims/python -m ensurepip --upgrade

@@ -2,6 +2,10 @@
 
 set -e
 
+# shellcheck disable=SC1091
+# shellcheck source=/home/jenkins/
+source "$SHELL_PROFILE"
+
 function install_misc_tools() {
 
     printf "INFO: Processing MISC tools.\n"
