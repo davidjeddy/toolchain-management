@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.41.2] - 2024-05-16
+
+### Fix
+
+- `./libs/bash/auth/onelogin_bambora_aws.sh` now validates for all login errors and prints the error message on failure
+
 ## [0.41.1] - 2024-05-16
 
 ### Fix
