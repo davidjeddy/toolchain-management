@@ -14,13 +14,9 @@ Action Keywords:
 
 ## [0.40.11] - 2024-05-15
 
-### Add
-
-- Source tribe/squad shell session during each phase of managed tool installing
-
 ### Fix
 
-- Shell check warnings when installing Python
+- `goenv` and `pyenv` shims added to `PATH`
 
 ## [0.40.10] - 2024-04-04
 
