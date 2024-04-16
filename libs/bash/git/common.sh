@@ -78,9 +78,6 @@ function exec() {
         # Create tmp dir to hold artifacts and reports
         createTmpDir
 
-        # Do not allow in-project shared modules
-        doNotAllowSharedModulesInsideDeploymentProjects
-
         # linting and syntax formatting
         iacLinting
 
@@ -96,6 +93,9 @@ function exec() {
 
         # Finally, if the invoking script name is pre-push, also run the full compliance tooling
         if [[ "${0?}" == *pre-push ]]; then
+            # Do not allow in-project shared modules
+            doNotAllowSharedModulesInsideDeploymentProjects
+
             iacCompliance
         fi
     done
