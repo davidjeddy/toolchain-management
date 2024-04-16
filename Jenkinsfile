@@ -139,22 +139,22 @@ pipeline {
         // Negative run
         stage('./libs/bash/install.sh focus on cloud tools without --update true') {
             steps {
-                sh './libs/bash/install.sh --skip_iac_tools true --skip_misc_tools true --skip_system_tools true'
+                sh './libs/bash/install.sh --skip_iac_tools true --skip_misc_tools true --skip_system_tools true --update true'
             }
         }
         stage('./libs/bash/install.sh focus on iac tools without --update true') {
             steps {
-                sh './libs/bash/install.sh --skip_cloud_tools true --skip_misc_tools true --skip_system_tools true'
+                sh './libs/bash/install.sh --skip_cloud_tools true --skip_misc_tools true --skip_system_tools true --update true'
             }
         }
         stage('./libs/bash/install.sh focus on misc tools without --update true') {
             steps {
-                sh './libs/bash/install.sh --skip_cloud_tools true --skip_iac_tools true --skip_system_tools true'
+                sh './libs/bash/install.sh --skip_cloud_tools true --skip_iac_tools true --skip_system_tools true --update true'
             }
         }
         stage('./libs/bash/install.sh focus on system tools without --update true') {
             steps {
-                sh './libs/bash/install.sh --skip_cloud_tools true --skip_iac_tools true --skip_misc_tools true'
+                sh './libs/bash/install.sh --skip_cloud_tools true --skip_iac_tools true --skip_misc_tools true --update true'
             }
         }
         // Typical run with update
@@ -163,81 +163,16 @@ pipeline {
                 sh './libs/bash/install.sh --update true'
             }
         }
-        // if on the main branch and CHANGELOG diff
-        // extract version number and message from CHANGELOG
-        // create tag with message, push to origin
-        // push tag to commit in GL
+        // if pipeline is running the main branch, tag a new release using changes content of CHANGLOG.md
         stage('Tagging') {
             steps {
                 script {
                     if (env.BRANCH_NAME == gitTargetBranch) {
-                        // credentials to git push via ssh
                         withCredentials([sshUserPrivateKey(
                             credentialsId: gitSSHCreds,
                             keyFileVariable: 'key'
                         )]) {
-                            // https://stackoverflow.com/questions/44330148/run-bash-command-on-jenkins-pipeline
-                            sh '''#!/bin/bash
-                                declare CHANGELOG_PATH
-                                declare LINES_FOR_CONTEXT
-                                declare MSG
-                                declare SEM_VER
-
-                                CHANGELOG_PATH=$(git diff HEAD~1 --name-only | grep CHANGELOG)
-                                printf "INFO: CHANGELOG_PATH is %s.\n" "$CHANGELOG_PATH"
-                                if [[ "$CHANGELOG_PATH" == "" ]]
-                                then
-                                    printf "INFO: No change log found, skipping tag creation.\n"
-                                    exit 0
-                                fi
-
-                                # get the messge from the CHANGELOG
-                                # Remove the git line leading `+` character
-                                # Remove the git status title line
-                                # Double backslash escape for Jenkins
-                                # https://stackoverflow.com/questions/59716090/how-to-remove-first-line-from-a-string
-                                MSG=$(git diff HEAD~1 --unified=0 "$CHANGELOG_PATH" | \
-                                    grep -E "^\\+" | \
-                                    sed 's/+//' | \
-                                    sed 1d
-                                )
-                                # output git diff, include --unified=2 to ensure unchanged text (up to 2 lines) in the middle of a diff is included. Specifically this ensures ### Added || ### Fixed || ### Deleted are included in the output
-                                # remove Git header
-                                # remove header $LINES_FOR_CONTEXT count of lines
-                                # remove tail $LINES_FOR_CONTEXT count of lines
-                                # remove lines starting with `-` (git remove) character
-                                # remove `+` from line if the first character (git add)
-                                LINES_FOR_CONTEXT=2
-                                printf "LINES_FOR_CONTEXT: %s\n" "$LINES_FOR_CONTEXT"
-                                MSG=$(git diff HEAD~1 --unified="$LINES_FOR_CONTEXT" "$CHANGELOG_PATH" | \
-                                    tail -n +$((5+$LINES_FOR_CONTEXT)) | \
-                                    tail -n +"$LINES_FOR_CONTEXT" | \
-                                    head -n -"$LINES_FOR_CONTEXT" | \
-                                    sed '/^-/d' | \
-                                    sed 's/+//'
-                                )
-                                printf "MSG: %s\n" "$MSG"
-
-                                # grep extract SemVer from string
-                                # https://stackoverflow.com/questions/16817646/extract-version-number-from-a-string
-                                SEM_VER=$( echo "$MSG" | head -n 1 | grep -Po "([0-9]+([.][0-9]+)+)" )
-                                printf "SEM_VER: %s\n" "$SEM_VER"
-
-                                if [[ ! "$SEM_VER" ]]
-                                then
-                                    printf "ERR: Valid SEM_VER not found. Is %s properly formatted?.\n" "$CHANGELOG_PATH"
-                                    exit 1
-                                fi
-
-                                # https://stackoverflow.com/questions/4457009/special-character-in-git-possible
-                                git tag \
-                                    --annotate "$SEM_VER" \
-                                    --cleanup="verbatim" \
-                                    --message="$(printf "%s" "$MSG")"
-                                git config --global push.default matching
-
-                                git push origin "$SEM_VER"
-                            '''
+                            sh './libs/bash/common/sem_ver_release_tagging.sh'
                         }
                     }
                 }

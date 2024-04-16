@@ -51,6 +51,9 @@ function golang_based_iac_tools() {
     rm -rf "$WL_GC_TM_WORKSPACE/libs/kics" || true
     mkdir -p "$WL_GC_TM_WORKSPACE/libs/kics"
     cp -rf "$WL_GC_TM_WORKSPACE/.tmp/kics-${KICS_VER}/assets" "$WL_GC_TM_WORKSPACE/libs/kics" || exit 1
+
+    which kics
+    kics version
 }
 
 function python_based_iac_tools() {
@@ -66,6 +69,11 @@ function python_based_iac_tools() {
 
         echo "checkov $(checkov --version)"
     fi
+
+    # -----
+
+    which checkov
+    checkov --version
 }
 
 # TODO the following couple of functions are functionally the same, just different source project / target dir. Can we abstract this all?
@@ -110,8 +118,11 @@ function tfenv_and_terraform() {
 
     tfenv use "$TF_VER"
 
-    tfenv --version
+    # -----
 
+    which tfenv
+    tfenv --version
+    which terraform
     terraform --version
 }
 
@@ -155,8 +166,11 @@ function tgenv_and_terragrunt() {
 
     tgenv use "$TG_VER"
 
-    tgenv --version
+    # -----
 
+    which tgenv
+    tgenv --version
+    which terragrunt
     terragrunt --version
 }
 
@@ -200,8 +214,11 @@ function tofuenv_and_tofu() {
         tofuenv install "$TOFU_VER"
     fi
 
-    tofuenv use "$TOFU_VER"
+    # -----
 
+    which tofuenv
+    tofuenv use "$TOFU_VER"
+    which tofu
     tofu --version
 }
 
@@ -225,22 +242,20 @@ function binary_based_tools() {
         elif [[ $(which dnf) && $ARCH == 'aarch64' ]]
         then
           echo "INFO: Installing Trivy for ARM based dnf managed system."
-          sudo rpm -Uvh "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VER}/trivy_${TRIVY_VER}_${PLATFORM^}-${ALT_ARCH^^}.rpm"
+          sudo rpm -Uvh --replacepkgs "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VER}/trivy_${TRIVY_VER}_${PLATFORM^}-${ALT_ARCH^^}.rpm"
         elif [[ $(which yum) && $ARCH == 'x86_64' ]]
         then
           # https://unix.stackexchange.com/questions/43114/how-to-install-remove-upgrade-rpm-packages-on-red-hat
           echo "INFO: Installing Trivy for X86 based rpm managed system."
           # Because RPM wants to be a complete pain and just update the package, so fine, we will force a non-failure code return
           # The aws-bambora Jenkins worker is going away soon enough anyways.
-          sudo rpm -Uvh "https://github.com/aquasecurity/trivy/releases/download/v0.49.1/trivy_0.49.1_Linux-64bit.rpm" || true
+          sudo rpm -Uvh --replacepkgs "https://github.com/aquasecurity/trivy/releases/download/v0.49.1/trivy_0.49.1_Linux-64bit.rpm" || true
         else
           echo "INFO: Unable to install trivy. No compatibile system and package manager found."
           exit 1
         fi
 
         rm -rf trivy*
-
-        trivy --version
     fi
 
     if [[ ( ! $(which infracost) && "$INFRACOST_VER" ) || "$UPDATE" = "true" ]]
@@ -256,8 +271,6 @@ function binary_based_tools() {
         sudo rm -rf "$BIN_DIR/infracost" || true
         sudo install --target-directory="$BIN_DIR" infracost
         rm -rf infracost*
-
-        infracost --version
     fi
 
     if [[ ( ! $(which tflint) && "$TFLINT_VER" ) || "$UPDATE" = "true" ]]
@@ -288,6 +301,19 @@ function binary_based_tools() {
         sudo install --target-directory="$BIN_DIR" terraform-docs
         rm -rf terraform-docs*
     fi
+
+    # -----
+
+    which tfsec
+    tfsec -version
+    which trivy
+    trivy --version
+    which infracost
+    infracost --version
+    which tflint
+    tflint --version
+    which terraform-docs
+    terraform-docs --version
 }
 
 function install_iac_tools() {

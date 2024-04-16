@@ -25,7 +25,8 @@ function install_misc_tools() {
         rm -rf packer*
     fi
 
-    # output versions - grouped based on the syntax then alphabetical of the tool name
-    printf "INFO: Output Misc tool versions.\n"
+    # -----
+
+    which packer
     echo "packer $(packer --version)"
 }

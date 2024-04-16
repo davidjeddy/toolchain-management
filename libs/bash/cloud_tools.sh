@@ -23,6 +23,7 @@ function install_cloud_tools() {
 
     # aws - ssm-session-manager plugin
     # https://stackoverflow.com/questions/12806176/checking-for-installed-packages-and-if-not-found-install
+    printf "INFO: Processing AWS session-manager-plugin.\n"
     # shellcheck disable=SC2126
     if [[ $(which dnf) && $(dnf list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) -eq 0 ]]
     then
@@ -39,7 +40,7 @@ function install_cloud_tools() {
         else
             prinf "ALERT: Unable to determine CPU architecture for AWS session-manager-plugin.\n"
         fi
-    elif [[ $(which yum) ]]
+    elif [[ $(which yum) && $(yum list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) -eq 0 ]]
     then
         # RHEL
         echo "INFO: Installing AWS CLI session-manager-plugin via yum system package manager.";
@@ -52,9 +53,6 @@ function install_cloud_tools() {
         echo "INFO: Installing AWS CLI session-manager-plugin via apt system package manager.";
         echo "WARN: Actually, no. Please submit MR to support Debian based systems.";
         exit 1
-    else
-        # Other
-        printf "WARN: AWS CLI session-manager-plugin NOT installed. Please install manually via https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html\n"
     fi
 
     # assitant tools
@@ -85,12 +83,17 @@ function install_cloud_tools() {
         echo "onelogin-aws-cli $(pip show onelogin-aws-cli)"
     fi
 
-    # output versions - grouped based on the syntax/alphabetical of the tool name
-    printf "INFO: Output AWS tool versions.\n"
+    # -----
 
+    which aws
+    aws --version
+    which onelogin-aws-login
+    onelogin-aws-login --version
     if [[ ! $ARCH == "aarch64" ]]
     then
         # Request submitted to support ARM https://github.com/flosell/iam-policy-json-to-terraform/issues/107
+        which iam-policy-json-to-terraform
         echo "iam-policy-json-to-terraform $(iam-policy-json-to-terraform --version)" 
     fi
+
 }
