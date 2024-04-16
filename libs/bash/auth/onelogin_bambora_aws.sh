@@ -26,15 +26,16 @@ PROFILE="$1"
 TOKEN="$2"
 TMP=$(yes "$TOKEN" | onelogin-aws-login -C "$PROFILE")
 
+# There appears to be only 1 success case and multiple failure scenarios so only checking for success
+if [[ ! "$TMP" =~ "Credentials cached" ]] 
+then
+  echo "$TMP"
+  exit 1
+fi
+
 # parse response
 AWS_PROFILE=${TMP##* }
 echo "INFO: AWS_PROFILE: $AWS_PROFILE"
-
-if [[ $AWS_PROFILE == "factor" ]]
-then
-  echo "FATAL: Authentication failed, please again manually. Exiting."
-  exit 1
-fi
 
 echo "copy/paste/execute the following line:
 export AWS_PROFILE=$AWS_PROFILE"
