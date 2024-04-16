@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.41.1] - 2024-05-16
+
+### Fix
+
+- Check IAC module source during pre-push, not always. Enabled local development of modules and committing of in-progress effort
+
 ## [0.41.0] - 2024-05-16
 
 ### Add
