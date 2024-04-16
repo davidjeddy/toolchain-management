@@ -12,6 +12,24 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.41.0] - 2024-05-16
+
+### Add
+
+- Version output of tool at the end of the handling function
+
+### Fix
+
+- Only install Golang or Python if missing or `--update true`
+- RPM based packages correct reinstall via `-replacepkgs` during `--update true` process
+- Tagging logic is now a shared `./libs/bash/common/sem_ver_release_tagging.sh` helper script
+- Tagging now only detects changes to the most recent SemVer block in `.docs/CHANGELOG.md`
+- When running tool groups and desiring re-install `--update true` must be provided
+
+### Remove
+
+- Deprecated `./libs/bash/system_tools.sh` functions related to language installation
+
 ## [0.40.11] - 2024-05-15
 
 ### Fix
@@ -84,11 +102,6 @@ Action Keywords:
 ### FIX
 
 - `$(pwd)` and `PRJ_ROOT` replaced with `WORKSPACE`. Must similar solution to lean on a well known ENV VAR
-
-## [0.40.1] - 2024-03-18
-
-### FIX
-
 - Missed fn() references terraformCompliance and terraformLint redirected to iacCompliance and iacLint
 
 ## [0.40.0] - 2024-03-09
@@ -96,7 +109,7 @@ Action Keywords:
 ### ADDED
 
 - [pyenv to manage Python and PIP versions](https://github.com/pyenv/pyenv)
-- `./libs/bash/install.sh` automaticly detects processor architecture (x86, aarch64, etc
+- `./libs/bash/install.sh` automatically detects processor architecture (x86, aarch64, etc
 - Support for Apple Silicon (Arm/aarch64) based systems
 
 ### FIXED
@@ -106,7 +119,7 @@ Action Keywords:
 
 ### REMOVED
 
-- terrascan due to long open blocking issue and no support for `aarch64`/`arm64` via pre-compined binaries
+- terrascan due to long open blocking issue and no support for `aarch64`/`arm64` via pre-compiled binaries
 
 ## [0.38.4] - 2024-03-14
 
@@ -136,7 +149,7 @@ Action Keywords:
 
 ### FIXED
 
-- `./libs/bash/ecs_service_port_proxy.sh` iterated to better handle port proxying for remote hosts, not only RDS
+- `./libs/bash/ecs_service_port_proxy.sh` iterated to better handle port proxy for remote hosts, not only RDS
 
 ## [0.37.1] - 2024-02-15
 
@@ -148,16 +161,16 @@ Action Keywords:
 
 ### ADDED
 
-- [containers/skopeo](https://github.com/containers/skopeo) to replace Worldline container-image-mirror be-spok solution in the near future
+- [containers/skopeo](https://github.com/containers/skopeo) to replace Worldline container-image-mirror bespoke solution in the near future
 - Ability to override the toolchain project branch from downstream projects via `./libs/bash/git/install.sh`
 
 ### FIXED
 
-- pre-commit and pre-push process to prevent race condition regardng sbom.xml generation and appending to commits
+- pre-commit and pre-push process to prevent race condition regarding sbom.xml generation and appending to commits
 
 ## [0.36.2] - 2024-02-13
 
-## FIXED
+### FIXED
 
 - Incorrect Container id extracted from task detail, leading failure of db port forwarding from ecs task
 
@@ -175,51 +188,51 @@ Action Keywords:
 
 ## [0.35.2] - 2024-01-31
 
-## FIXED
+### FIXED
 
 - Incorrect exit code when no changes to IAC code
 
 ## [0.35.1] - 2024-01-31
 
-## FIXED
+### FIXED
 
 - Git hooks should have the ability to be executed
 
 ## [0.35.0] - 2024-01-29
 
-## ADDED
+### ADDED
 
 - pre-push git hook to ensure feature branch compliance before review is created
 
-## FIXED
+### FIXED
 
 - pre-commit compliance checks now only diff against the previous commit
 
 ## [0.34.3] - 2024-01-29
 
-## Added
+### Added
 
 - `cat` the contents of an error file when IaC compliance tools fail in `pre_commit_function.sh`
 
 ## [0.34.2] - 2024-01-25
 
-## Added
+### Added
 
 - TLS cipher check helper script
 
 ## [0.34.1] - 2024-01-19
 
-## Addd
+### Added
 
 - check for KICS query library during pre-commit execution
 
-## Fixed
+### Fixed
 
 - spelling error
 
 ## [0.34.0] - 2024-01-18
 
-## Addd
+### Added
 
 - [tofuenv](https://github.com/tofuutils/tofuenv) to manage versions of [OpenTofu](https://opentofu.org/)
 
@@ -231,9 +244,9 @@ Action Keywords:
 
 ## [0.33.0] - 2024-01-17
 
-### Fixed
+### Fixe
 
-- `libs/bash/aws/ecs_update_service_task.sh` to ignore active* and hazelcast* named services
+- `libs/bash/aws/ecs_update_service_task.sh` to ignore activegate and hazelcast named services
 
 ### Removed
 
@@ -254,7 +267,7 @@ Action Keywords:
 
 ### Fixed
 
-- checkov now only scans the directly it is initilaized in, no more sub-directory recursive scanning
+- checkov now only scans the directly it is initialized in, no more sub-directory recursive scanning
 
 ## [0.32.20] - 2023-12-11
 
@@ -266,7 +279,7 @@ Action Keywords:
 
 ### Fixed
 
-- comment that should not be un-charactered
+- comment that should not be un-characterized
 
 ## [0.32.18] - 2023-12-11
 
@@ -290,18 +303,13 @@ Action Keywords:
 
 ### Fixed
 
-- the ability to select the container withini an ECS task using ./libs/bash/aws/ecs_task_shell_connection.sh
+- the ability to select the container within an ECS task using ./libs/bash/aws/ecs_task_shell_connection.sh
 
 ## [0.32.14] - 2023-11-20
 
 ### Fixed
 
 - missing process to install tfsec
-
-## [0.32.14] - 2023-11-20
-
-### Fixed
-
 - Mon-Fri daily scheduled execution to prevent conflict with IaC shared module daily executions
 
 ## [0.32.13] - 2023-11-17
@@ -341,7 +349,7 @@ Action Keywords:
 
 ### Fixed
 
-- increate pipeline timeout from 15 mins to 30 mins to account for when Python needs to be compiled
+- increase pipeline timeout from 15 mins to 30 mins to account for when Python needs to be compiled
 
 ## [0.32.7] - 2023-11-15
 
@@ -539,7 +547,7 @@ Action Keywords:
 
 ### Added
 
--  xeol system tool
+- xeol system tool
 
 ## [0.15.0] - 2023-07
 

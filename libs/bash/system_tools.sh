@@ -154,7 +154,11 @@ function yum_systems() {
 }
 
 function install_goenv() {
-    if [[ ! $(which goenv) || "$UPDATE" == "true" ]]
+    printf "INFO: install_goenv.\n"
+    # shellcheck disable=SC1090
+    source "$SHELL_PROFILE"
+
+    if [[ ! $(which goenv) ]]
     then
         printf "INFO: Installing goenv to %s to enable Go support\n" ~/.goenv
         rm -rf ~/.goenv || true
@@ -167,93 +171,49 @@ function install_goenv() {
             echo 'export PATH="$GOENV_ROOT/bin:$GOENV_ROOT/shims:$PATH"'
             echo 'eval "$(goenv init -)"'
         } >> "$SHELL_PROFILE"
-    else
-        printf "INFO: Updating goenv.\n"
-        declare OLD_PWD
+
+        # shellcheck disable=SC1090
+        source "$SHELL_PROFILE"
+
+        goenv install --force --quiet "$GO_VER"
+        goenv global "$GO_VER"
+    fi
+
+    if [[ "$UPDATE" == "true" ]]        
+    then
+        printf "INFO: Updating Golang via goenv to version %s\n" "$GO_VER"
+
         OLD_PWD="$(pwd)"
         cd ~/.goenv || exit 1
 
         git reset master --hard
         git fetch --all --tags
         git checkout "$GOENV_VER"
+
+        # shellcheck disable=SC1090
+        source "$SHELL_PROFILE"
+
+        goenv install --force --quiet "$GO_VER"
+        goenv global "$GO_VER"
+
         cd "$OLD_PWD" || exit 1
     fi
 
-    # shellcheck disable=SC1090
-    source "$SHELL_PROFILE"
+    # -----
 
-    goenv install --force --quiet "$GO_VER"
-    goenv global "$GO_VER"
-
+    which goenv
     goenv version
+    which go
     go version
-}
-
-# DEPRECATED 2024-03-11. Use install_pyenv()
-function install_python() {
-
-    printf "INFO: Processing Python system tools.\n"
-
-    if [[ ( ! $(which python) && "$PYTHON_VER" ) || "$UPDATE" == "true" ]]
-    then
-        printf "INFO: python runtime not detected or needs updated.\n"
-
-        # TODO Replace this all with pyenv
-        curl --location --silent --show-error "https://www.python.org/ftp/python/$PYTHON_VER/Python-$PYTHON_VER.tgz" -o "Python-$PYTHON_VER.tgz"
-        tar xzf "Python-$PYTHON_VER.tgz"
-        cd "Python-$PYTHON_VER" || exit 1
-        sed -i 's/PKG_CONFIG openssl /PKG_CONFIG openssl11 /g' configure
-        ./configure \
-            --bindir="$BIN_DIR" \
-            --enable-optimizations \
-            --prefix="$BIN_DIR"
-        sudo make clean || true
-        sudo make altinstall
-
-        # If the build was successful the following should exit without errors
-        python -m ssl
-
-        {
-            printf "INFO: Creating symlink from %s/python.8 binary to %s/python%s.\n" "$BIN_DIR" "$BIN_DIR" "$PYTHON_MAJOR_VER"
-            sudo ln -sfn "$BIN_DIR/python${PYTHON_MINOR_VER}" "$BIN_DIR/python${PYTHON_MAJOR_VER}"
-        } || {
-            printf "CRITICAL: Could NOT create symlink from %s/python%s to %s/python%s. Exiting with error" "$BIN_DIR" "$PYTHON_MAJOR_VER" "$BIN_DIR" "$PYTHON_MINOR_VER"
-            exit 1
-        }
-
-        cd "../" || exit 1
-        sudo rm -rf Python*
-    fi
-}
-
-# DEPRECATED 2024-03-11. Use install_pyenv()
-function install_pip() {
-
-    printf "INFO: Processing pip system tools.\n"
-
-    if [[ ( ! $(which pip) ) || "$UPDATE" == "true" ]]
-    then
-        printf "INFO: pip package manager not detected or update requested.\n"
-
-        printf "INFO: Download pip installer.\n"
-        curl --location --silent --show-error "https://bootstrap.pypa.io/get-pip.py" -o get-pip.py
-
-        printf "INFO: Install pip via python.\n"
-        python get-pip.py
-
-        printf "INFO: Update pip via itself.\n"
-
-        python -m pip install --upgrade --force-reinstall pip
-        sudo rm -rf get-pip.py
-
-        # Needed for some PIP packages the build correctly
-        pip install Cmake
-    fi
 }
 
 # https://github.com/pyenv/pyenv
 function install_pyenv() {
-    if [[ ! $(which pyenv) || "$UPDATE" == "true" ]]
+    printf "INFO: install_pyenv.\n"
+    # shellcheck disable=SC1090
+    source "$SHELL_PROFILE"
+
+    if [[ ! $(which pyenv) ]]
     then
         printf "INFO: Installing pyenv to %s to enable Python support\n" "~/.pyenv"
         rm -rf ~/.pyenv || true
@@ -268,8 +228,23 @@ function install_pyenv() {
             echo 'eval "$(pyenv init -)"'
             echo 'eval "$(pyenv virtualenv-init -)"'
         } >> "$SHELL_PROFILE"
-    else
-        printf "INFO: Seeting pyenv to version %s\n" "$PYENV_VER"
+
+        # shellcheck disable=SC1090
+        source "$SHELL_PROFILE"
+
+        printf "INFO: Installing Python via pyenv.\n"
+        pyenv install --force "$PYTHON_VER"
+
+        printf "INFO: Setting Python version globally.\n"
+        pyenv global "$PYTHON_VER"
+
+        # Ensure pip is installed and up to date
+        ~/.pyenv/shims/python -m ensurepip --upgrade
+    fi
+
+    if [[ "$UPDATE" == "true" ]]
+    then
+        printf "INFO: Updating Python via pyenv to version %s\n" "$PYENV_VER"
     
         declare OLD_PWD
         OLD_PWD="$(pwd)"
@@ -279,24 +254,27 @@ function install_pyenv() {
         git fetch --all --tags
         git checkout "v$PYENV_VER"
         cd "$OLD_PWD" || exit 1
+
+        # shellcheck disable=SC1090
+        source "$SHELL_PROFILE"
+
+        printf "INFO: Installing Python via pyenv.\n"
+        pyenv install --force "$PYTHON_VER"
+
+        printf "INFO: Setting Python version globally.\n"
+        pyenv global "$PYTHON_VER"
+
+        # Ensure pip is installed and up to date
+        ~/.pyenv/shims/python -m ensurepip --upgrade
     fi
-    
-    # shellcheck disable=SC1090
-    source "$SHELL_PROFILE"
-
-    printf "INFO: Installing Python via pyenv.\n"
-    pyenv install --force "$PYTHON_VER"
-
-    printf "INFO: Setting Python version globally.\n"
-    pyenv global "$PYTHON_VER"
-
-    # Ensure pip is installed and up to date
-    ~/.pyenv/shims/python -m ensurepip --upgrade
 
     # -----
 
+    which pip
     pip --version
+    which python
     python --version
+    which pyenv
     pyenv --version
 }
 
