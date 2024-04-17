@@ -15,9 +15,9 @@
 
 ```sh
 ./libs/bash/install.sh
+./libs/bash/install.sh --update true
 ./libs/bash/install.sh --skip_iac_tools true --skip_misc_tools true --skip_system_tools true
 ./libs/bash/install.sh --skip_cloud_tools true --skip_misc_tools true --skip_system_tools true
 ./libs/bash/install.sh --skip_cloud_tools true --skip_iac_tools true --skip_system_tools true
 ./libs/bash/install.sh --skip_cloud_tools true --skip_iac_tools true --skip_misc_tools true
-./libs/bash/install.sh --update true
 ```

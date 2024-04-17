@@ -199,7 +199,7 @@ then
     install_system_tools
 fi
 
-# Additional management sorted alphabetically
+# Additional tool management sorted alphabetically
 if [[ $SKIP_CLOUD_TOOLS == "" ]]
 then
     cd "$WL_GC_TM_WORKSPACE" || exit 1

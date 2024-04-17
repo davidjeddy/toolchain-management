@@ -4,7 +4,7 @@ set -e
 
 # shellcheck disable=SC1091
 # shellcheck source=/home/jenkins/
-source "$SHELL_PROFILE"
+source "$SHELL_PROFILE" || exit 1
 
 function install_cloud_tools() {
 
