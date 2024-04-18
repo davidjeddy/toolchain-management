@@ -29,11 +29,11 @@ function install_cloud_tools() {
     then
         echo "INFO: Installing AWS CLI session-manager-plugin via dnf system package manager.";
         # Fedora
-        if [[ $(uname -m) == "x86_64" ]]
+        if [[ $ARCH == "x86_64" ]]
         then
             ## arm64
             sudo dnf install -y "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm"
-        elif [[ $(uname -m) == "aarch64" ]]
+        elif [[ $ARCH == "aarch64" ]]
         then
             ## amd64
             sudo dnf install -y "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_$ALT_ARCH/session-manager-plugin.rpm"
@@ -59,15 +59,14 @@ function install_cloud_tools() {
     if [[ ( ! $(which iam-policy-json-to-terraform) && "$IPJTT_VER") || $UPDATE == "true" ]]
     then
         # Request submitted to support ARM https://github.com/flosell/iam-policy-json-to-terraform/issues/107
-        if [[ $ARCH == "amd64" ]]
+        if [[ $ARCH == "x86_64" ]]
         then
             printf "INFO: Installing iam-policy-json-to-terraform.\n"
-            curl --location --silent --show-error "https://github.com/flosell/iam-policy-json-to-terraform/releases/download/$IPJTT_VER/iam-policy-json-to-terraform_$ARCH" -o "iam-policy-json-to-terraform"
+            curl --location --silent --show-error "https://github.com/flosell/iam-policy-json-to-terraform/releases/download/$IPJTT_VER/iam-policy-json-to-terraform_$ALT_ARCH" -o "iam-policy-json-to-terraform"
             sudo install iam-policy-json-to-terraform "$BIN_DIR"
             rm -rf iam-policy-json-to-terraform*
         fi
     fi
-
     # https://pypi.org/project/onelogin-aws-cli/
     # `onelogin-aws-login` provided by package `onelogin-aws-cli`
     if [[ ! $(which onelogin-aws-login) && "${ONELOGIN_AWS_CLI_VER}" || "$UPDATE" == "true" ]]
