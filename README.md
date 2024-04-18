@@ -28,7 +28,7 @@ Collection of resources and tools used to manage IAC projects.
 
 ## Purpose
 
-Ensure compliance with community and securitybest practices via the shift-left pattern. This enables the presenting violations regarding organizational auditing, linting, security, and style guides as soon as an engineer attempts to save code. Additionally, toolchain has to ability to enforce the version of the tools installed. Ensure the engineering teams can stay up to date without messing around updating each to individually.
+Ensure compliance with community and security best practices via the shift-left pattern. This enables the presenting violations regarding organizational auditing, linting, security, and style guides as soon as an engineer attempts to save code. Additionally, toolchain has to ability to enforce the version of the tools installed. Ensure the engineering teams can stay up to date without messing around updating each to individually.
 
 Currently only localhost Fedora VM/QEMU and Jenkins RHEL pipeline tools are supported. 
 

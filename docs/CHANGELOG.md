@@ -12,6 +12,14 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.41.3] - 2024-04-18
+
+### Fix
+
+- Returned missing `./libs/bash/installers/pyenv.sh`
+- Pipeline stage order; before doing tool grouping re/installs a normal install or update much complete
+- Static define path to PIP due to ENV VAR pathing not working as expected
+
 ## [0.41.2] - 2024-05-16
 
 ### Fix
