@@ -12,6 +12,13 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.41.4] - 2024-04-18
+
+### Fix
+
+- Fix `iam-policy-json-to-terraform` not being installed properly
+- Replace $(uname -m) with $ARCH for consistency
+
 ## [0.41.3] - 2024-04-18
 
 ### Fix
