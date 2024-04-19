@@ -2,10 +2,6 @@
 
 set -e
 
-# shellcheck disable=SC1091
-# shellcheck source=/home/jenkins/
-source "$SHELL_PROFILE"
-
 # Debian (deprecated)
 function apt_systems() {
     printf "INFO: Updating and installing system tools via apt. \n"
@@ -17,7 +13,7 @@ function apt_systems() {
 
     echo "deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /" | sudo tee /etc/apt/sources.list.d/devel-kubic-libcontainers-stable.list
 
-    curl -Ls https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_$VERSION_ID/Release.key | sudo apt-key add -
+    curl -Ls "https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_$VERSION_ID/Release.key" | sudo apt-key add -
 
     sudo apt-get update -y
 
@@ -59,16 +55,6 @@ function apt_systems() {
             tk-dev \
             xz-utils \
             zlib1g-dev 
-}
-
-# NOTE: Use curl installs as a last resort as we can not always validate the security of the install.sh from the vendor.
-function curl_installers() {
-    if [[ ( ! $(which xeol) && $XEOL_VER) || "$UPDATE" == "true" ]]
-    then
-        printf "INFO: Installing xeol.\n"
-        # TODO migrate to ./installers
-        curl -sSfL https://raw.githubusercontent.com/xeol-io/xeol/main/install.sh | sudo sh -s -- -b "$BIN_DIR" "v$XEOL_VER"
-    fi
 }
 
 # CentOS/Fedora (prefered)
@@ -155,43 +141,45 @@ function yum_systems() {
 
 function install_goenv() {
     printf "INFO: install_goenv.\n"
-    # shellcheck disable=SC1090
-    source "$SHELL_PROFILE"
+    # shellcheck disable=SC1090,SC1091
+    source "${SESSION_SHELL}" || exit 1
 
     if [[ ! $(which goenv) ]]
     then
-        printf "INFO: Installing goenv to %s to enable Go support\n" ~/.goenv
-        rm -rf ~/.goenv || true
-        git clone --quiet "https://github.com/syndbg/goenv.git" ~/.goenv
+        printf "INFO: Installing goenv to %s to enable Go support\n" "$HOME/.goenv"
+        rm -rf "$HOME/.goenv" || true
+        git clone --quiet "https://github.com/syndbg/goenv.git" "$HOME/.goenv"
 
-        printf "INFO: Add goenv bin dir to PATH via %s.\n" "$SHELL_PROFILE"
-        # shellcheck disable=SC2016
-        {
-            echo 'export GOENV_ROOT="$HOME/.goenv"'
-            echo 'export PATH="$GOENV_ROOT/bin:$GOENV_ROOT/shims:$PATH"'
-            echo 'eval "$(goenv init -)"'
-        } >> "$SHELL_PROFILE"
+        # shellcheck disable=SC2143
+        if [[ -f ${SESSION_SHELL} && ! $(grep "export GOENV_ROOT" "${SESSION_SHELL}") ]]
+        then
+            printf "INFO: Add goenv bin dir to PATH via %s.\n" "${SESSION_SHELL}"
+            # shellcheck disable=SC2016
+            {
+                echo 'export GOENV_ROOT="$HOME/.goenv"'
+                echo 'export PATH="$GOENV_ROOT/bin:$GOENV_ROOT/shims:$PATH"'
+                echo 'eval "$(goenv init -)"'
+            } >> "${SESSION_SHELL}"
+        fi
 
         # shellcheck disable=SC1090
-        source "$SHELL_PROFILE"
+        source "${SESSION_SHELL}"
 
         goenv install --force --quiet "$GO_VER"
         goenv global "$GO_VER"
     fi
 
-    if [[ "$UPDATE" == "true" ]]        
+    # If installed version does not match desired version
+    if [[ $(go version) != *"$GO_VER"* ]]
     then
         printf "INFO: Updating Golang via goenv to version %s\n" "$GO_VER"
 
         OLD_PWD="$(pwd)"
-        cd ~/.goenv || exit 1
+        cd "$HOME/.goenv" || exit 1
 
         git reset master --hard
         git fetch --all --tags
         git checkout "$GOENV_VER"
-
-        # shellcheck disable=SC1090
-        source "$SHELL_PROFILE"
 
         goenv install --force --quiet "$GO_VER"
         goenv global "$GO_VER"
@@ -210,27 +198,33 @@ function install_goenv() {
 # https://github.com/pyenv/pyenv
 function install_pyenv() {
     printf "INFO: install_pyenv.\n"
-    # shellcheck disable=SC1090
-    source "$SHELL_PROFILE"
+    # shellcheck disable=SC1090,SC1091
+    source "${SESSION_SHELL}" || exit 1
 
     if [[ ! $(which pyenv) ]]
     then
-        printf "INFO: Installing pyenv to %s to enable Python support\n" "~/.pyenv"
-        rm -rf ~/.pyenv || true
+        printf "INFO: Installing pyenv to %s to enable Python support\n" "$HOME/.pyenv"
+        rm -rf "$HOME/.pyenv" || true
+
+        # because pyenv installer does not provider checksum validation
         ./libs/bash/installers/pyenv.sh || exit 1
 
-        printf "INFO: Add pyenv bin dir to PATH via %s.\n" "$SHELL_PROFILE"
-        # shellcheck disable=SC2016
-        {
-            echo 'export PYENV_ROOT="$HOME/.pyenv"'
-            echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
-            echo 'export PATH="$PYENV_ROOT/shims:$PATH"'
-            echo 'eval "$(pyenv init -)"'
-            echo 'eval "$(pyenv virtualenv-init -)"'
-        } >> "$SHELL_PROFILE"
+        # shellcheck disable=SC2143
+        if [[ -f ${SESSION_SHELL} && ! $(grep "export PYENV_ROOT" "${SESSION_SHELL}") ]]
+        then
+            printf "INFO: Add pyenv bin dir to PATH via %s.\n" "${SESSION_SHELL}"
+            # shellcheck disable=SC2016
+            {
+                echo 'export PYENV_ROOT="$HOME/.pyenv"'
+                echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
+                echo 'export PATH="$PYENV_ROOT/shims:$PATH"'
+                echo 'eval "$(pyenv init -)"'
+                echo 'eval "$(pyenv virtualenv-init -)"'
+            } >> "${SESSION_SHELL}"
+        fi
 
         # shellcheck disable=SC1090
-        source "$SHELL_PROFILE"
+        source "${SESSION_SHELL}"
 
         printf "INFO: Installing Python via pyenv.\n"
         pyenv install --force "$PYTHON_VER"
@@ -239,33 +233,28 @@ function install_pyenv() {
         pyenv global "$PYTHON_VER"
 
         # Ensure pip is installed and up to date
-        ~/.pyenv/shims/python -m ensurepip --upgrade
+        python -m ensurepip --upgrade
     fi
 
-    if [[ "$UPDATE" == "true" ]]
+    # If installed version does not match desired version
+    if [[ $(python --version) != "Python ${PYTHON_VER}" ]]
     then
         printf "INFO: Updating Python via pyenv to version %s\n" "$PYENV_VER"
     
         declare OLD_PWD
         OLD_PWD="$(pwd)"
-        cd ~/.pyenv || exit 1
+        cd "$HOME/.pyenv" || exit 1
 
         git reset master --hard
         git fetch --all --tags
         git checkout "v$PYENV_VER"
         cd "$OLD_PWD" || exit 1
 
-        # shellcheck disable=SC1090
-        source "$SHELL_PROFILE"
-
-        printf "INFO: Installing Python via pyenv.\n"
-        pyenv install --force "$PYTHON_VER"
-
-        printf "INFO: Setting Python version globally.\n"
-        pyenv global "$PYTHON_VER"
+        pyenv install --force
+        pyenv global
 
         # Ensure pip is installed and up to date
-        ~/.pyenv/shims/python -m ensurepip --upgrade
+        python -m ensurepip --upgrade
     fi
 
     # -----
@@ -299,7 +288,6 @@ function install_system_tools() {
     git lfs track "*.zip"
     git lfs track "*.gz"
 
-    curl_installers
     install_goenv
     install_pyenv
 }

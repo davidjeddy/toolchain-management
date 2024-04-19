@@ -15,9 +15,7 @@
     - [WARNING](#warning)
     - [Install](#install)
     - [Invoke](#invoke)
-    - [Update Toolchain](#update-toolchain)
-  - [Development](#development)
-  - [Testing on localhost](#testing-on-localhost)
+    - [Update](#update)
   - [Versioning](#versioning)
   - [Contributors](#contributors)
   - [Additional Information](#additional-information)
@@ -68,71 +66,26 @@ Engineer commits change to localhost git project -> toolchain triggered (pre-com
 
 ### WARNING
 
-- System packages managed by `apt` or `yum` will be installed / updated to the latest version on every execution.
-- Toolchain managed packages will be replaced with the version defined in `${PROJECT_ROOT}/libs/bash/versions.sh` when `--update true` argument is provided.
+- System packages managed by `apt`, `dnf`, or `yum` will be installed / updated to the latest version on every execution.
 
 ### Install
 
 ```sh
-git clone [project URL]
+cd /path/to/projects
+git clone ...
+cd toolchain-management
 ```
 
 ### Invoke
 
-Take from ./libs/bash/install.sh header section.
-
 ```sh
-# Example usage:
-
 ./libs/bash/install.sh
-./libs/bash/install.sh --arch amd64 --platform darwin
-./libs/bash/install.sh --arch amd64 --platform darwin --update true
-./libs/bash/install.sh --arch aarch64
-./libs/bash/install.sh --arch aarch64 --shell_profile "$HOME/.zshell_profile"
-./libs/bash/install.sh --arch aarch64 --platform linux --skip_misc_tools true
-./libs/bash/install.sh --bin_dir "/usr/bin" --skip_aws_tools true --update true
-./libs/bash/install.sh --skip_aws_tools true --update true
-./libs/bash/install.sh --skip_system_tools true --skip_terraform_tools true --skip_misc_tools true
+source ~/.bashrcaa
 ```
 
-### Update Toolchain
+### Update
 
-```sh
-./libs/bash/install.sh --update true
-```
-
-Note: `--skip_*_tools` and `--update` can be used together to update specific tool groups
-
-## Development
-
-Start a shell session at the root of the project. Then set the required default ENV VARs.
-
-```sh
-ARCH="aarch64"
-BIN_DIR="/usr/local/bin"
-PLATFORM="linux"
-PROJECT_ROOT=$(git rev-parse --show-toplevel)
-SHELL_PROFILE="$HOME/.worldline_pps_profile"
-UPDATE="false"
-WL_GC_TM_WORKSPACE=$(git rev-parse --show-toplevel)
-
-source "$PROJECT_ROOT/libs/bash/versions.sh"
-```
-
-Now you should be ready to run all the commands manually.
-
-## Testing on localhost
-
-These are the `stage` commands the Jenkinsfile will run, minus tagging.
-
-```sh
-./libs/bash/install.sh --skip_cloud_tools true --skip_misc_tools true --skip_iac_tools true --update true --skip_system_tools true
-./libs/bash/install.sh --skip_misc_tools true --update true
-./libs/bash/install.sh --skip_cloud_tools true --skip_misc_tools true --skip_iac_tools true --update true
-./libs/bash/install.sh --skip_misc_tools true --skip_iac_tools true --skip_system_tools true --update true
-./libs/bash/install.sh --skip_cloud_tools true --skip_misc_tools true --skip_system_tools true --update true
-./libs/bash/install.sh --skip_misc_tools true
-```
+Unlike the <= 1.x release of this project, it is no longer needed to pass CLI arguments to update the tools. Simply change the desired version number in `aqua.yaml`, `.*-version` or `VERSIONS.sh`. Then re-run the `./libs/bash/install.sh` to update a tool.
 
 ## Versioning
 

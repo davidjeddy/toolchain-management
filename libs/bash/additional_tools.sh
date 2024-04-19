@@ -2,25 +2,9 @@
 
 set -e
 
-# shellcheck disable=SC1091
-# shellcheck source=/home/jenkins/
-source "$SHELL_PROFILE" || exit 1
+# -----
 
-function install_cloud_tools() {
-
-    printf "INFO: Processing cloud tools.\n"
-
-    # aws cli
-    if [[ ( ! $(which aws) && "${AWSCLI_VER}") || "$UPDATE" == "true" ]]
-    then
-        curl --location --silent --show-error "https://awscli.amazonaws.com/awscli-exe-$PLATFORM-$ARCH.zip" -o "awscliv2.zip"
-        unzip -qq awscliv2.zip
-        sudo ./aws/install --bin-dir "$BIN_DIR" || sudo ./aws/install --bin-dir "$BIN_DIR" --update
-        rm -rf aws*
-
-        aws --version
-    fi
-
+function additional_tools() {
     # aws - ssm-session-manager plugin
     # https://stackoverflow.com/questions/12806176/checking-for-installed-packages-and-if-not-found-install
     printf "INFO: Processing AWS session-manager-plugin.\n"
@@ -29,14 +13,14 @@ function install_cloud_tools() {
     then
         echo "INFO: Installing AWS CLI session-manager-plugin via dnf system package manager.";
         # Fedora
-        if [[ $ARCH == "x86_64" ]]
+        if [[ $(uname -m) == "x86_64" ]]
         then
             ## arm64
             sudo dnf install -y "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm"
-        elif [[ $ARCH == "aarch64" ]]
+        elif [[ $(uname -m) == "aarch64" ]]
         then
             ## amd64
-            sudo dnf install -y "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_$ALT_ARCH/session-manager-plugin.rpm"
+            sudo dnf install -y "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_arm64/session-manager-plugin.rpm"
         else
             prinf "ALERT: Unable to determine CPU architecture for AWS session-manager-plugin.\n"
         fi
@@ -55,21 +39,9 @@ function install_cloud_tools() {
         exit 1
     fi
 
-    # assitant tools
-    if [[ ( ! $(which iam-policy-json-to-terraform) && "$IPJTT_VER") || $UPDATE == "true" ]]
-    then
-        # Request submitted to support ARM https://github.com/flosell/iam-policy-json-to-terraform/issues/107
-        if [[ $ARCH == "x86_64" ]]
-        then
-            printf "INFO: Installing iam-policy-json-to-terraform.\n"
-            curl --location --silent --show-error "https://github.com/flosell/iam-policy-json-to-terraform/releases/download/$IPJTT_VER/iam-policy-json-to-terraform_$ALT_ARCH" -o "iam-policy-json-to-terraform"
-            sudo install iam-policy-json-to-terraform "$BIN_DIR"
-            rm -rf iam-policy-json-to-terraform*
-        fi
-    fi
     # https://pypi.org/project/onelogin-aws-cli/
     # `onelogin-aws-login` provided by package `onelogin-aws-cli`
-    if [[ ! $(which onelogin-aws-login) && "${ONELOGIN_AWS_CLI_VER}" || "$UPDATE" == "true" ]]
+    if [[ ! $(which onelogin-aws-login) || $(onelogin-aws-login --version) != "${ONELOGIN_AWS_CLI_VER}" ]]
     then
         printf "INFO: Remove old onelogin-aws-cli if it exists.\n"
         pip uninstall -y onelogin-aws-cli || true
@@ -77,22 +49,49 @@ function install_cloud_tools() {
         # We always want the latest vesrsion of tools installed via pip
         printf "INFO: Installing onelogin-aws-cli compliance tool.\n"
         pip install -U onelogin-aws-cli=="$ONELOGIN_AWS_CLI_VER"
-
-        onelogin-aws-login --version
-        echo "onelogin-aws-cli $(pip show onelogin-aws-cli)"
     fi
+
+    onelogin-aws-login --version
+    echo "onelogin-aws-cli $(pip show onelogin-aws-cli)"
 
     # -----
 
-    which aws
-    aws --version
-    which onelogin-aws-login
-    onelogin-aws-login --version
-    if [[ ! $ARCH == "aarch64" ]]
+    if [[ ! $(which kics) || ! -d ".tmp/kics-${KICS_VER}" ]]
     then
-        # Request submitted to support ARM https://github.com/flosell/iam-policy-json-to-terraform/issues/107
-        which iam-policy-json-to-terraform
-        echo "iam-policy-json-to-terraform $(iam-policy-json-to-terraform --version)" 
+        printf "INFO: Downloading kics.\n"
+
+        mkdir -p ".tmp" || exit 1
+        cd ".tmp" || exit 1
+
+        # obtain source archive
+        curl --location --silent --show-error "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" -o "kics.tar.gz"
+        tar -xf kics.tar.gz
+        cd ../
     fi
 
+    # build executable if needed
+    if [[ ! $(which kics) ]]
+    then
+        printf "INFO: Build and Install kics.\n"
+
+        cd ".tmp/kics-${KICS_VER}" || exit 1
+        printf "INFO: Building kics. (If the process hangs, try disablig proxy/firewalls. Go needs the ability to download packages via ssh protocol.\n"
+        # Make sure GO >=1.11 modules are enabled
+        declare GO111MODULE
+        export GO111MODULE="on"
+        goenv exec go mod download -x
+        goenv exec go build -o bin/kics cmd/console/main.go
+
+        sudo install bin/kics /usr/local/bin/
+        cd "../../" || exit 1
+    fi
+
+    # Always update KICS query library during an install
+    rm -rf "libs/kics" || true
+    cp -rf ".tmp/kics-${KICS_VER}/assets" "libs/kics" || exit 1
+
+    which kics
+    kics version
+
+    # -----
 }
