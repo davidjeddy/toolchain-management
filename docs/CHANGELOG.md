@@ -12,6 +12,21 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.50.0] - 2024-04-18
+
+### ADD
+
+- [aqua](https://github.com/aquaproj/aqua) Declarative CLI Version Manager
+
+### FIX
+
+- `Jenkinsfile` to work with the new tool manager
+
+### REMOVED
+
+- Bespoke custom tool version management
+- Hashicorp Packer
+
 ## [0.41.4] - 2024-04-18
 
 ### Fix

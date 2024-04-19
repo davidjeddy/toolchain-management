@@ -130,48 +130,15 @@ pipeline {
                     branch: env.BRANCH_NAME
             }
         }
-        // Pre-flight reset
-        stage('Remove pre-existing UXT PPS shell profile') {
+        // Typical initial install process
+        stage('Execute Install') {
             steps {
                 sh '''
-                    $(rm -rf $HOME/.worldline_pps_profile || true)
-                    $(sed -i '/worldline_pps_profile/d' $HOME/.bashrc || true)
-                    $(sed -i '/worldline_pps_profile/d' $HOME/.bash_profile || true)
+                    ./libs/bash/install.sh
+                    source ~/.bashrc
                     source ~/.bash_profile
+                    printenv | sort
                 '''
-            }
-        }
-        // Typical initial install process
-        stage('./libs/bash/install.sh normal install without --update true') {
-            steps {
-                sh './libs/bash/install.sh'
-            }
-        }
-        // Typical >= second execution, wherein shell profile does exist
-        stage('./libs/bash/install.sh all tool sets and with --update true') {
-            steps {
-                sh './libs/bash/install.sh --update true'
-            }
-        }
-        // Negative runs - Sorted alphabetically by tool group
-        stage('./libs/bash/install.sh focus on cloud tools without --update true') {
-            steps {
-                sh './libs/bash/install.sh --skip_iac_tools true --skip_misc_tools true --skip_system_tools true'
-            }
-        }
-        stage('./libs/bash/install.sh focus on iac tools without --update true') {
-            steps {
-                sh './libs/bash/install.sh --skip_cloud_tools true --skip_misc_tools true --skip_system_tools true'
-            }
-        }
-        stage('./libs/bash/install.sh focus on misc tools without --update true') {
-            steps {
-                sh './libs/bash/install.sh --skip_cloud_tools true --skip_iac_tools true --skip_system_tools true'
-            }
-        }
-        stage('./libs/bash/install.sh focus on system tools without --update true') {
-            steps {
-                sh './libs/bash/install.sh --skip_cloud_tools true --skip_iac_tools true --skip_misc_tools true'
             }
         }
         // if pipeline is running the main branch, tag a new release using changes content of CHANGLOG.md

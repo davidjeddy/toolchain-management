@@ -2,21 +2,6 @@
 
 set -e
 
-# Example usage:
-# Note `--skip_*_tools` and `--update` can be used together to update specific tool groups
-# ./libs/bash/install.sh
-# ./libs/bash/install.sh --platform darwin
-# ./libs/bash/install.sh --platform darwin --update true
-# ./libs/bash/install.sh --platform linux
-# ./libs/bash/install.sh --platform linux --shell_profile ~/.zshell_profile
-# ./libs/bash/install.sh --platform linux --skip_misc_tools true
-# ./libs/bash/install.sh --bin_dir "/usr/bin" --skip_cloud_tools true --update true
-# ./libs/bash/install.sh --skip_cloud_tools true --update true
-# ./libs/bash/install.sh --skip_system_tools true --skip_iac_tools true --skip_misc_tools true
-
-# On Apple M1/M2/ARM
-# ./libs/bash/install.sh
-
 ## do NOT run script as root
 
 if [ "$EUID" -eq 0 ]
@@ -25,209 +10,80 @@ then
   exit 1
 fi
 
-# cli arg parsing
+## 
 
-## Internal VARs
-declare ARCH
-declare ALT_ARCH
-declare BIN_DIR
-declare ORIG_PWD
-declare PLATFORM
-declare SHELL_PROFILE
-declare SKIP_CLOUD_TOOLS
-declare SKIP_MISC_TOOLS
-declare SKIP_SYSTEM_TOOLS
-declare SKIP_IAC_TOOLS
-declare WL_GC_TM_WORKSPACE # Worldline - Global Collect - Toollchain Management - Workspace
-
-## parse positional cli args
-while [ $# -gt 0 ]; do
-    if [[ $1 == "--help" ]]
-    then
-        printf "INFO: Open the script, check the header section for."
-        exit 0
-    elif [[ $1 == "--"* ]]
-    then
-        if [[ "$2" == "" ]]
-        then
-            printf "ERR: Argument '%s' has no value. Exiting with error.\n" "${1}"
-            exit 1
-        fi
-
-        key="${1/--/}"
-        declare "${key^^}"="$2"
-        shift
-    fi
-    shift
-done
-
-# Argument Defaults
-
-ARCH=$(uname -m)
-if [[ $ARCH = *aarch64* && $ARCH = *x84_64* ]]
+# Non-login shell - https://serverfault.com/questions/146745/how-can-i-check-in-bash-if-a-shell-is-running-in-interactive-mode
+declare SESSION_SHELL
+SESSION_SHELL="${HOME}/.bashrc"
+if [[ $- == *i* ]]
 then
-    printf "ERR: Unsupport process architecture detected from %s. Please submit a change request with the additions for your machine type." $(uname -m)
-    # exit 1
+    SESSION_SHELL=~/.bashrc
+fi
+printf "INFO: SESSION_SHELL is %s\n" "${SESSION_SHELL}"
+
+# shellcheck disable=SC1090,SC1091
+source "${SESSION_SHELL}" || exit 1
+printf "INFO: PATH is %s\n" "$PATH"
+
+# shellcheck disable=SC2088,SC2143
+if [[ -f "${SESSION_SHELL}" && ! $(grep "export TF_PLUGIN_CACHE_DIR" "${SESSION_SHELL}")  ]]
+then
+    # source https://www.tailored.cloud/devops/cache-terraform-providers/
+    printf "INFO: Configuring Terraform provider shared cache.\n"
+    mkdir -p ~/.terraform.d/plugin-cache/ || true
+    echo "export TF_PLUGIN_CACHE_DIR=~/.terraform.d/plugin-cache/" >> "${SESSION_SHELL}"
 fi
 
-ALT_ARCH=""
-if [[ $ARCH == "x86_64" ]]
+# Now for tools not yet in aqua's standard registry
+# shellcheck disable=SC1090,SC1091
+source "versions.sh" || exit 1
+
+# shellcheck disable=SC1090,SC1091
+source "./libs/bash/system_tools.sh" || exit 1
+install_system_tools
+
+# shellcheck disable=SC1090,SC1091
+source "./libs/bash/additional_tools.sh" || exit 1
+additional_tools
+
+# shellcheck disable=SC1090,SC1091
+source "${SESSION_SHELL}" || exit 1
+printf "INFO: PATH is %s\n" "$PATH"
+
+if [[ ! $(which aqua) ||  $(aqua version) != *"aqua version $AQUA_VER"* ]]
 then
-    ALT_ARCH="amd64"
-elif [[ $ARCH == "aarch64" ]]
-then
-    ALT_ARCH="arm64"
+    printf "INFO: Install Aqua\n"
+    # https://aquaproj.github.io/docs/products/aqua-installer#shell-script
+    curl -sSfL -O https://raw.githubusercontent.com/aquaproj/aqua-installer/v3.0.0/aqua-installer
+    echo "8299de6c19a8ff6b2cc6ac69669cf9e12a96cece385658310aea4f4646a5496d  aqua-installer" | sha256sum -c
+    chmod +x aqua-installer
+    ./aqua-installer
 fi
 
-if [[ "${BIN_DIR}" == "" ]]
-then
-    # https://unix.stackexchange.com/questions/8656/usr-bin-vs-usr-local-bin-on-linux
-    # path for binaries NOT managed by a system packagemanager
-    BIN_DIR="/usr/local/bin"
-fi
-
-ORIG_PWD="$(pwd)"
-
-if [[ "$PLATFORM" == "" ]]
-then
-    PLATFORM="linux"
-fi
-
-if [[ "$(ps -o args= $PPID)" == *install.sh* ]]
-then
-    # If this script is called by another install.sh script; we expect this project to be inside the $(pwd)/.tmp dir
-    # https://stackoverflow.com/questions/20572934/get-the-name-of-the-caller-script-in-bash-script
-    WL_GC_TM_WORKSPACE="$(pwd)/.tmp/toolchain-management"
-else
-    WL_GC_TM_WORKSPACE="$(pwd)"
-fi
-
-if [[ "$SHELL_PROFILE" == "" ]]
-then
-    SHELL_PROFILE=~/.worldline_pps_profile
-fi
-
-if [[ "$UPDATE" = "" ]]
-then
-    UPDATE="false"
-fi
-
-# to prevent sub-shells from duplicating outputs into $SHELL_PROFILE export all the values
-export ALT_ARCH
-export ARCH
-export BIN_DIR
-export ORIG_PWD
-export PLATFORM
-export SHELL_PROFILE
-export SKIP_CLOUD_TOOLS
-export SKIP_IAC_TOOLS
-export SKIP_MISC_TOOLS
-export SKIP_SYSTEM_TOOLS
-export UPDATE
-export WL_GC_TM_WORKSPACE
-
-## output runtime configuration
-printf "INFO: Executing with the following argument configurations.\n"
-
-echo "ALT_ARCH: $ALT_ARCH"
-echo "ARCH: $ARCH"
-echo "BIN_DIR: $BIN_DIR"
-echo "ORIG_PWD: $ORIG_PWD"
-echo "PLATFORM: $PLATFORM"
-echo "SHELL_PROFILE: $SHELL_PROFILE"
-echo "SKIP_CLOUD_TOOLS: $SKIP_CLOUD_TOOLS"
-echo "SKIP_IAC_TOOLS: $SKIP_IAC_TOOLS"
-echo "SKIP_MISC_TOOLS: $SKIP_MISC_TOOLS"
-echo "SKIP_SYSTEM_TOOLS: $SKIP_SYSTEM_TOOLS"
-echo "UPDATE: $UPDATE"
-echo "WL_GC_TM_WORKSPACE: $WL_GC_TM_WORKSPACE"
-
-## Execution
-
-printf "INFO: Changing to Toolchain project root.\n"
-cd "$WL_GC_TM_WORKSPACE" || exit 1
-
-printf "INFO: Sourcing tool versions.sh in install.sh.\n"
-# shellcheck disable=SC1091
-source "$WL_GC_TM_WORKSPACE/libs/bash/versions.sh"
-
-# Does $SHELL_PROFILE exist?
-if [[ ! -f $SHELL_PROFILE || $UPDATE == "true" ]]
-then 
-    printf "INFO: Creating toolchain shell profile at %s\n" "$SHELL_PROFILE"
-    rm -rf "$SHELL_PROFILE" || true
-    touch "$SHELL_PROFILE" || exit 1
-
-    printf "INFO: Add BIN_DIR to PATH via in %s.\n" "$SHELL_PROFILE"
-    echo "export PATH=\$PATH:$BIN_DIR" >> "$SHELL_PROFILE"
-    echo "export PATH=\$PATH:$WL_GC_TM_WORKSPACE/libs/bash" >> "$SHELL_PROFILE"
-fi
-
-# https://linuxize.com/post/bashrc-vs-bash-profile/
-# Other tribes can add additional shell profiles as ~/[[business_unit]]_[[tribe]]_profile
-
-# Add tribe profile to ~/.bash_profile for interactive shells
 # shellcheck disable=SC2143
-if [[ -f ~/.bash_profile && ! $(grep "source $SHELL_PROFILE" ~/.bash_profile) ]]
+if [[ -f ${SESSION_SHELL} && ! $(grep "aquaproj-aqua" "${SESSION_SHELL}") ]]
 then
-    printf "INFO: Adding source %s to %s.\n" "$SHELL_PROFILE" ~/.bash_profile
-    echo "source $SHELL_PROFILE" >> ~/.bash_profile
-    # shellcheck source=/home/jenkins/
-    #shellcheck disable=SC1091
-    source ~/.bash_profile || exit 1
+    printf "INFO: Adding source %s to %s.\n" "$AQUA_ROOT_DIR" "${SESSION_SHELL}"
+    echo "export PATH=${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin::q$PATH" >> "${SESSION_SHELL}"
 fi
 
-# Add tribe profile to ~/.bashrc for non-interactive shells
-# shellcheck disable=SC2143
-if [[ -f ~/.bashrc && ! $(grep "source $SHELL_PROFILE" ~/.bashrc) ]]
-then
-    printf "INFO: Adding source %s to %s.\n" "$SHELL_PROFILE" ~/.bashrc
-    echo "source $SHELL_PROFILE" >> ~/.bashrc
-    # shellcheck source=/home/jenkins/
-    #shellcheck disable=SC1091
-    source ~/.bashrc || exit 1
-fi
+# shellcheck disable=SC1090,SC1091
+source "${SESSION_SHELL}" || exit 1
+printf "INFO: PATH is %s\n" "$PATH"
 
-printf "INFO: PATH value is: %s\n" "$PATH"
+which aqua
+aqua --version
+aqua info
 
-# System tools MUST be first
-if [[ $SKIP_SYSTEM_TOOLS == "" ]]
-then
-    cd "$WL_GC_TM_WORKSPACE" || exit 1
-    # shellcheck disable=SC1091
-    source "${WL_GC_TM_WORKSPACE}/libs/bash/system_tools.sh"
-    install_system_tools
-fi
+aqua init
+aqua install
 
-# Additional tool management sorted alphabetically
-if [[ $SKIP_CLOUD_TOOLS == "" ]]
-then
-    cd "$WL_GC_TM_WORKSPACE" || exit 1
-    # shellcheck disable=SC1091
-    source "${WL_GC_TM_WORKSPACE}/libs/bash/cloud_tools.sh"
-    install_cloud_tools
-fi
+printf "INFO: CLI env tools install.\n"
+tfenv install
+tgenv install
+tofuenv install
 
-if [[ $SKIP_MISC_TOOLS == "" ]]
-then
-    cd "$WL_GC_TM_WORKSPACE" || exit 1
-    # shellcheck disable=SC1091
-    source "${WL_GC_TM_WORKSPACE}/libs/bash/misc_tools.sh"
-    install_misc_tools
-fi
-
-if [[ $SKIP_IAC_TOOLS == "" ]]
-then
-    cd "$WL_GC_TM_WORKSPACE" || exit 1
-    # shellcheck disable=SC1091
-    source "${WL_GC_TM_WORKSPACE}/libs/bash/iac_tools.sh"
-    install_iac_tools
-fi
-
-# Post-processing checkups
-
-printf "INFO: Changing back to original working dir.\n"
-cd "$ORIG_PWD" || exit 1
+## Wrap up
 
 if [[ ! -f ~/.aws/credentials && $(whoami) != 'jenkins' ]]
 then
@@ -239,10 +95,4 @@ then
     printf "INFO: Looks like you do not yet have a ~/.terraformrc credentials configuration, pleaes follow https://confluence.techno.ingenico.com/display/PPS/Using+Shared+Modules+from+GitLab+Private+Registry#UsingSharedModulesfromGitLabPrivateRegistry-localhost before attempting to use Terraf.\n"
 fi
 
-# shellcheck disable=SC1091,SC1090
-source "$SHELL_PROFILE"
-
-# Done
-printf "INFO: Please start your shell session to ensure the PATH value is reloaded.\n"
-
-printf "INFO: ...Done.\n"
+printf "INFO: Done. Please reload your shell be running \"source ~/.bashrc\".\n"
