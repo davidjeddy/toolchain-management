@@ -88,7 +88,7 @@ function exec() {
             documentation
 
             # generate sbom for supply chain suditing
-            generateSBOM
+            # generateSBOM
         fi
 
         # Finally, if the invoking script name is pre-push, also run the full compliance tooling
@@ -162,85 +162,91 @@ function documentation() {
     # fi
 }
 
-function generateSBOM() {
-    printf "INFO: starting generateSBOM()\n"
+# TODO Replace checkov
+# Versions > 3.1.z require API key
+# Versions < 3.1.z are not available for ARM via aqua
+# function generateSBOM() {
+#     printf "INFO: starting generateSBOM()\n"
 
-    printf "INFO: Ignore warning about 'Failed to download module', this is due to a limitation of checkov\n"
-    # Do not generate SBOM is jenkins user, just ensure it exists
-    if [[ ! -f sbom.xml && $(whoami) == 'jenkins' ]]
-    then
-        printf "ERR: sbom.xml missing, failing."
-        exit 1
-    elif [[ -f sbom.xml && $(whoami) == 'jenkins' ]]
-    then
-        printf "INFO: Automation user detected, not generated sbom.xml"
-        return 0
-    fi
+#     printf "INFO: Ignore warning about 'Failed to download module', this is due to a limitation of checkov\n"
+#     # Do not generate SBOM is jenkins user, just ensure it exists
+#     if [[ ! -f sbom.xml && $(whoami) == 'jenkins' ]]
+#     then
+#         printf "ERR: sbom.xml missing, failing."
+#         exit 1
+#     elif [[ -f sbom.xml && $(whoami) == 'jenkins' ]]
+#     then
+#         printf "INFO: Automation user detected, not generated sbom.xml"
+#         return 0
+#     fi
 
-    {
-        if [[ -f "checkov.yml" ]]; then
-            # use configuration file if present. Created due to terraform/aws/worldline-gc-keycloak-dev/eu-west-1/keycloak/iohd being created BEFORE complaince was mandatory
-            checkov \
-                --config-file checkov.yml \
-                --directory . \
-                --output cyclonedx \
-                > "$(pwd)/sbom.xml"
-        else
-            checkov \
-                --directory . \
-                --output cyclonedx \
-                > "$(pwd)/sbom.xml"
-        fi
-        git add sbom.xml || true
-    } || {
-        echo "ERR: checkov SBOM failed to generate."
-        cat "sbom.xml"
-        exit 1
-    }
-}
+#     {
+#         if [[ -f "checkov.yml" ]]; then
+#             # use configuration file if present. Created due to terraform/aws/worldline-gc-keycloak-dev/eu-west-1/keycloak/iohd being created BEFORE complaince was mandatory
+#             checkov \
+#                 --config-file checkov.yml \
+#                 --directory . \
+#                 --output cyclonedx \
+#                 > "$(pwd)/sbom.xml"
+#         else
+#             checkov \
+#                 --directory . \
+#                 --output cyclonedx \
+#                 > "$(pwd)/sbom.xml"
+#         fi
+#         git add sbom.xml || true
+#     } || {
+#         echo "ERR: checkov SBOM failed to generate."
+#         cat "sbom.xml"
+#         exit 1
+#     }
+# }
 
 function iacCompliance() {
     printf "INFO: starting iacCompliance()\n"
 
-    printf "INFO: checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov)...\n"
-    {
-        rm -rf ".tmp/junit-checkov.xml" || exit 1
-        touch ".tmp/junit-checkov.xml" || exit 1
-        if [[ -f "checkov.yml" ]]; then
-            printf "INFO: checkov configuration file found, using it.\n"
-            checkov \
-                --config-file checkov.yml \
-                --file "*.tf" \
-                --file "*.hcl" \
-                --download-external-modules false \
-                --framework terraform \
-                --output junitxml \
-                --quiet \
-                --skip-path .terra*/ \
-                --skip-path .tmp/ \
-                --skip-path examples/ \
-                --skip-path libs/ \
-                > ".tmp/junit-checkov.xml"
-        else
-            printf "INFO: checkov configuration NOT file found.\n"
-            checkov \
-                --file "*.tf" \
-                --file "*.hcl" \
-                --download-external-modules false \
-                --framework terraform \
-                --quiet \
-                --skip-path .terra*/ \
-                --skip-path .tmp/ \
-                --skip-path examples/ \
-                --output junitxml \
-                --skip-path libs/ \
-                > ".tmp/junit-checkov.xml"
-        fi
-    } || {
-        echo "ERR: checkov failed. Check report saved to .tmp/junit-checkov.xml"
-        cat ".tmp/junit-checkov.xml"
-        exit 1
-    }
+    # TODO Replace checkov
+    # Versions > 3.1.z require API key
+    # Versions < 3.1.z are not available for ARM via aqua
+    # printf "INFO: checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov)...\n"
+    # {
+    #     rm -rf ".tmp/junit-checkov.xml" || exit 1
+    #     touch ".tmp/junit-checkov.xml" || exit 1
+    #     if [[ -f "checkov.yml" ]]; then
+    #         printf "INFO: checkov configuration file found, using it.\n"
+    #         checkov \
+    #             --config-file checkov.yml \
+    #             --file "*.tf" \
+    #             --file "*.hcl" \
+    #             --download-external-modules false \
+    #             --framework terraform \
+    #             --output junitxml \
+    #             --quiet \
+    #             --skip-path .terra*/ \
+    #             --skip-path .tmp/ \
+    #             --skip-path examples/ \
+    #             --skip-path libs/ \
+    #             > ".tmp/junit-checkov.xml"
+    #     else
+    #         printf "INFO: checkov configuration NOT file found.\n"
+    #         checkov \
+    #             --file "*.tf" \
+    #             --file "*.hcl" \
+    #             --download-external-modules false \
+    #             --framework terraform \
+    #             --quiet \
+    #             --skip-path .terra*/ \
+    #             --skip-path .tmp/ \
+    #             --skip-path examples/ \
+    #             --output junitxml \
+    #             --skip-path libs/ \
+    #             > ".tmp/junit-checkov.xml"
+    #     fi
+    # } || {
+    #     echo "ERR: checkov failed. Check report saved to .tmp/junit-checkov.xml"
+    #     cat ".tmp/junit-checkov.xml"
+    #     exit 1
+    # }
 
     printf "INFO: KICS executing...\n"
     {

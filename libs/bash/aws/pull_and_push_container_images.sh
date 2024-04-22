@@ -3,9 +3,9 @@
 set -e
 
 # usage: pull_and_push_container_images.sh $AWS_ACCT_ID $AWS_REGION $ENV $APP $RND_STR $IMAGE_SOURCES()
-# example: pull_and_push_container_images.sh 730335529266 eu-west-1 dev toolbox kmsd "docker.io/jenkins/jenkins:2.440.2-lts-jdk17"
-# example: pull_and_push_container_images.sh 730335529266 eu-west-1 dev toolbox kmsd "docker.io/jenkins/jenkins:2.440.2-lts-jdk17=jenkins-controller, docker.io/alpine:3.19.1=ops-tooling, docker.io/library/sonarqube:9.9.4-community=sonarqube docker.io/sonatype/nexus3:3.67.0=nexus"
-# example: pull_and_push_container_images.sh 730335529266 eu-west-1 dev toolbox kmsd "docker.io/sonatype/nexus3:3.67.0=nexus"
+# example: pull_and_push_container_images.sh 730335529266 eu-west-1 dev toolbox kmsd "podman.io/jenkins/jenkins:2.440.2-lts-jdk17"
+# example: pull_and_push_container_images.sh 730335529266 eu-west-1 dev toolbox kmsd "podman.io/jenkins/jenkins:2.440.2-lts-jdk17=jenkins-controller, podman.io/alpine:3.19.1=ops-tooling, podman.io/library/sonarqube:9.9.4-community=sonarqube podman.io/sonatype/nexus3:3.67.0=nexus"
+# example: pull_and_push_container_images.sh 730335529266 eu-west-1 dev toolbox kmsd "podman.io/sonatype/nexus3:3.67.0=nexus"
 
 # Version: 0.1.1 - 2014-03-28
 
@@ -74,8 +74,8 @@ done
 ## functions
 
 getSrvName() {
-  # docker.io/jenkins/jenkins:2.440.2-lts-jdk17 # split on :
-  # docker.io/jenkins/jenkins # split on /, keep last
+  # podman.io/jenkins/jenkins:2.440.2-lts-jdk17 # split on :
+  # podman.io/jenkins/jenkins # split on /, keep last
   # jenkins # is the service name
 
   local SRV_NAME_0

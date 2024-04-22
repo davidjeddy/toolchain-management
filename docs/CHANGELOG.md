@@ -12,6 +12,20 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.0] - 2024-04-22
+
+### FIX
+
+- `./libs/bash/aws/pull_and_push_container_images.sh` now used `podman` directly
+- `./libs/bash/install.sh` to work with downstream projects
+- Clean docs to include upgrade guide
+- Downstream example installer `./libs/bash/git/install.sh` no longer copies unused KICS query lib
+- Missing `./versions.sh`
+
+### REMOVE
+
+- Bash functions calls as not needed
+
 ## [0.50.0] - 2024-04-18
 
 ### ADD

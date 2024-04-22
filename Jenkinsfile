@@ -130,17 +130,26 @@ pipeline {
                     branch: env.BRANCH_NAME
             }
         }
-        // Typical initial install process
-        stage('Execute Install') {
+        // Typical direct re/install
+        stage('Execute Re/Install') {
             steps {
                 sh '''
                     ./libs/bash/install.sh
                     source ~/.bashrc
-                    source ~/.bash_profile
-                    printenv | sort
                 '''
             }
         }
+        // Typical dependent project install
+        // TODO The project install.sh needs to be a different location and maybe TM installer a different name?
+        // stage('Execute as a dependant project') {
+        //     steps {
+        //         sh '''
+
+        //             ./libs/bash/git/install.sh
+        //             source ~/.bashrc
+        //         '''
+        //     }
+        // }
         // if pipeline is running the main branch, tag a new release using changes content of CHANGLOG.md
         stage('Tagging') {
             steps {

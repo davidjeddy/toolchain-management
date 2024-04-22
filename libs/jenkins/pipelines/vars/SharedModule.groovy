@@ -176,7 +176,7 @@ def call(
                                 documentation
 
                                 # supply chain attastation generation and diff comparison
-                                generateSBOM
+                                # generateSBOM
 
                                 # best practices and security scanning
                                 iacCompliance

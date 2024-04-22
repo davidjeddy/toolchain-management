@@ -1,11 +1,9 @@
 # Aqua
 
-## AWS
+## CLI Tools Managed by Aqua
 
 - AWS CLI - https://github.com/aquaproj/aqua-registry/tree/main/pkgs/aws/aws-cli
 - iam-policy-json-to-terraform (x86) - https://github.com/aquaproj/aqua-registry/tree/main/pkgs/flosell/iam-policy-json-to-terraform
-
-## Terraform / OpenTofu
 
 - Checkov - https://github.com/aquaproj/aqua-registry/tree/8d3c5a11908493cc803e0f0e369877e77dc4427a/pkgs/bridgecrewio/checkov
 - Infracost - https://github.com/aquaproj/aqua-registry/tree/main/pkgs/infracost/infracost
@@ -17,11 +15,15 @@
 - tfsec - https://github.com/aquaproj/aqua-registry/tree/main/pkgs/aquasecurity/tfsec
 - tflint - https://github.com/aquaproj/aqua-registry/tree/main/pkgs/terraform-linters/tflint
 
+## CLI Tools NOTManaged by Aqua
+
+### ... via  ./libs/bash/additional_tools.sh
+
 - AWS CLI Session Manager plugin
 - OneLogin AWS CLI
 - KICS
-  
-## Language Run-times
+
+### ... via  ./libs/bash/language_runtimes.sh
 
 - Golang - via goenv
 - Python - via pyenv
