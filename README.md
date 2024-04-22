@@ -7,15 +7,15 @@
   - [Description](#description)
   - [Purpose](#purpose)
   - [Requirements / Supported Platforms](#requirements--supported-platforms)
-  - [Tools Includes (but are not limited to)](#tools-includes-but-are-not-limited-to)
+  - [Tools Includes (but is not limited to)](#tools-includes-but-is-not-limited-to)
     - [AWS](#aws)
     - [Terraform / OpenTofu](#terraform--opentofu)
     - [Language Run-times](#language-run-times)
   - [Usage](#usage)
     - [WARNING](#warning)
     - [Install](#install)
-    - [Invoke](#invoke)
     - [Update](#update)
+      - [From \< 0.50.0 to \>= 0.50.0](#from--0500-to--0500)
   - [Versioning](#versioning)
   - [Contributors](#contributors)
   - [Additional Information](#additional-information)
@@ -26,21 +26,21 @@ Collection of resources and tools used to manage IAC projects.
 
 ## Purpose
 
-Ensure compliance with community and security best practices via the shift-left pattern. This enables the presenting violations regarding organizational auditing, linting, security, and style guides as soon as an engineer attempts to save code. Additionally, toolchain has to ability to enforce the version of the tools installed. Ensure the engineering teams can stay up to date without messing around updating each to individually.
+To ensure compliance with community and security best practices via the shift-left pattern. This enables the presenting violations regarding organizational auditing, linting, security, and style guides as soon as an engineer attempts to save code. Additionally, toolchain has to ability to enforce the version of the tools installed. Ensure the engineering teams can stay up to date without messing around updating each to individually.
 
-Currently only localhost Fedora VM/QEMU and Jenkins RHEL pipeline tools are supported. 
+Currently only localhost Fedora VM/QEMU and Jenkins RHEL pipeline tools are supported.
 
 Engineer commits change to localhost git project -> toolchain triggered (pre-commit hook) -> scanning tools execute -> if violations are found, the save is aborted
 
 ## Requirements / Supported Platforms
 
-- [Fedora](https://fedoraproject.org/)(recommended) or [RHEL](https://en.wikipedia.org/wiki/Red_Hat_Enterprise_Linux)(second option) based are the only distributions currently supported
+- [Fedora](https://fedoraproject.org/)(recommended) or [RHEL](https://en.wikipedia.org/wiki/Red_Hat_Enterprise_Linux)(second option) based systems are the only distributions currently actively supported
   - UTM / [Installing Fedora Workstation 39 QEMU via UTM on DWS Apple M2 MacBook Pro](https://confluence.worldline-solutions.com/display/PPSTECHNO/Installing+Fedora+Workstation+38+on+DWS+Apple+M2+MacBook+Pro)
   - VirtualBox / [Installing Fedora Workstation 38 Virtual Machine on DWS Workstation](https://confluence.techno.ingenico.com/display/PPS/Installing+Fedora+Workstatio+38+Virtual+Machine+on+DWS+Workstation)
 - [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) >= 5.x
 - [Git](https://git-scm.com/) >= 2.x
 
-## Tools Includes (but are not limited to)
+## Tools Includes (but is not limited to)
 
 ### AWS
 
@@ -51,11 +51,13 @@ Engineer commits change to localhost git project -> toolchain triggered (pre-com
 
 - Checkov
 - Infracost
-- KICS
+- kics
+- OpenTofu version manager
 - Terraform version manager
 - Terragrunt version manager
 - tf-docs
 - tflint
+- trivy
 
 ### Language Run-times
 
@@ -74,18 +76,69 @@ Engineer commits change to localhost git project -> toolchain triggered (pre-com
 cd /path/to/projects
 git clone ...
 cd toolchain-management
-```
-
-### Invoke
-
-```sh
 ./libs/bash/install.sh
-source ~/.bashrcaa
+source ~/.bashrc
 ```
 
 ### Update
 
-Unlike the <= 1.x release of this project, it is no longer needed to pass CLI arguments to update the tools. Simply change the desired version number in `aqua.yaml`, `.*-version` or `VERSIONS.sh`. Then re-run the `./libs/bash/install.sh` to update a tool.
+#### From < 0.50.0 to >= 0.50.0
+
+**MAKE A BACKUP! This process involves deleting tooling binaries and language interpreters. MAKE A BACKUP!**
+
+Unlike the <= 0.50.0 release family of this project, it is no longer needed to pass CLI arguments to update the tools. Simply change the desired version number in `aqua.yaml`, `.*-version` or `VERSIONS.sh`. Then re-run the `./libs/bash/install.sh` to update a tool.
+
+If, like me, you want to keep you system as clean as possible execute the following before running the installer of >= 0.50.0
+
+First, remove all references to goenv, pyenv, aqua, and .worldline_pps_* files.
+
+```sh
+vi ~/.bashrc
+vi ~/.bash_profile
+# ... and any other shell profile configurations that may container references to toolchain configuration
+source ~/.bashrc
+```
+
+Next, remove group shell configuration and language runtimes
+
+```sh
+rm ~/.worldline_pps_*
+rm -rf ~/.goenv/
+rm -rf ~/.pyenv/
+```
+
+Finally, remove all pre-upgrade managed tools
+
+```sh
+sudo su
+rm /usr/local/bin/iam-policy-json-to-terraform
+rm /usr/local/bin/infracost
+rm /usr/local/bin/kics
+rm /usr/local/bin/packer
+rm /usr/local/bin/session-manager-plugin 
+rm /usr/local/bin/terraform
+rm /usr/local/bin/terragrunt 
+rm /usr/local/bin/tfenv
+rm /usr/local/bin/tflint
+rm /usr/local/bin/tfsec
+rm /usr/local/bin/tgenv
+rm /usr/local/bin/tofu
+rm /usr/local/bin/tofuenv
+rm /usr/local/bin/terraform-docs
+rm /usr/local/bin/xeol
+
+rm -rf /usr/local/bin/bin
+rm -rf /usr/local/bin/python3*
+rm -rf /usr/local/bin/pydoc3*
+```
+
+To verify we are now in good shape list the contains of `/user/local/bin`
+
+```sh
+ls -la /usr/local/bin
+```
+
+You know the situation is good when none of the IAC tools are listed.
 
 ## Versioning
 

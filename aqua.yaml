@@ -11,7 +11,10 @@ packages:
 - name: aquasecurity/tfsec@v1.28.5
 - name: aquasecurity/trivy@v0.50.1
 - name: aws/aws-cli@2.15.39
-- name: bridgecrewio/checkov@3.2.23
+# TODO Replace checkov
+# Versions > 3.1.z require API key
+# Versions < 3.1.z are not available for ARM via Aqua registry
+# - name: bridgecrewio/checkov@3.2.23 # checkov older needs added. This version required API ke
 - name: flosell/iam-policy-json-to-terraform@1.8.2
 - name: infracost/infracost@v0.10.35
 - name: terraform-docs/terraform-docs@v0.17.0

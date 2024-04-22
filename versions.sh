@@ -12,9 +12,10 @@ declare PYENV_VER
 # set var values
 
 ## https://github.com/aquaproj/aqua/tags
-export AQUA_VER="2.27.0"
+export AQUA_VER="2.27.1"
 ## https://github.com/syndbg/goenv/releases
-export GOENV_VER="2.1.4"
+export GOENV_VER="2.1.14"
+## TODO Move this to Aqua once supported
 ## https://github.com/Checkmarx/kics/releases
 export KICS_VER="1.7.5"
 ## https://pypi.org/project/onelogin-aws-cli/
@@ -28,3 +29,7 @@ echo "GOENV_VER: $GOENV_VER"
 echo "KICS_VER: $KICS_VER"
 echo "ONELOGIN_AWS_CLI_VER: $ONELOGIN_AWS_CLI_VER"
 echo "PYENV_VER: $PYENV_VER"
+
+# .*-version managed language runtimes
+echo "GO_VER: $(cat .go-version)"
+echo "PYTHON_VER: $(cat .python-version)"
