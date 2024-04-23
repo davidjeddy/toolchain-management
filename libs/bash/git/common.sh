@@ -88,7 +88,7 @@ function exec() {
             documentation
 
             # generate sbom for supply chain suditing
-            # generateSBOM
+            generateSBOM
         fi
 
         # Finally, if the invoking script name is pre-push, also run the full compliance tooling
@@ -165,8 +165,8 @@ function documentation() {
 # TODO Replace checkov
 # Versions > 3.1.z require API key
 # Versions < 3.1.z are not available for ARM via aqua
-# function generateSBOM() {
-#     printf "INFO: starting generateSBOM()\n"
+function generateSBOM() {
+    printf "INFO: starting generateSBOM()\n"
 
 #     printf "INFO: Ignore warning about 'Failed to download module', this is due to a limitation of checkov\n"
 #     # Do not generate SBOM is jenkins user, just ensure it exists
@@ -200,7 +200,7 @@ function documentation() {
 #         cat "sbom.xml"
 #         exit 1
 #     }
-# }
+}
 
 function iacCompliance() {
     printf "INFO: starting iacCompliance()\n"

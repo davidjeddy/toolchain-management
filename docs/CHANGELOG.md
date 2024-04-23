@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.1] - 2024-04-23
+
+### FIX
+
+- `./libs/bash/git/common.sh` `generateSBOM` definition and invocation to allow pipelines complete successfully
+
 ## [0.51.0] - 2024-04-22
 
 ### FIX
