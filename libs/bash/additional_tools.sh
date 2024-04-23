@@ -54,17 +54,21 @@ echo "onelogin-aws-cli $(pip show onelogin-aws-cli)"
 # -----
 
 printf "INFO: Installing kics. (If the process hangs, try disablig proxy/firewalls/vpn. Golang needs the ability to download packages via ssh protocol.\n"
-if [[ ! $(which kics) || ! -d ".tmp/kics-${KICS_VER}" ]]
+if [[ ! $(which kics) || ! -d ~/.kics-installer/kics-${KICS_VER} ]] # file based workaround to check kics version, "kics version" command is bugged
 then
     printf "INFO: Downloading kics.\n"
 
-    mkdir -p ".tmp" || exit 1
-    cd ".tmp" || exit 1
+    mkdir -p ~/.kics-installer || exit 1
+
+    declare OLD_PWD
+    OLD_PWD="$(pwd)"
+    cd ~/.kics-installer || exit 1
 
     # obtain source archive
     curl --location --silent --show-error "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" -o "kics.tar.gz"
     tar -xf kics.tar.gz
-    cd ../
+
+    cd "$OLD_PWD" || exit 1
 fi
 
 # build executable if needed
@@ -72,7 +76,9 @@ if [[ ! $(which kics) ]]
 then
     printf "INFO: Build and Install kics.\n"
 
-    cd ".tmp/kics-${KICS_VER}" || exit 1
+    declare OLD_PWD
+    OLD_PWD="$(pwd)"
+    cd ~/.kics-installer/kics-${KICS_VER} || exit 1
     # Make sure GO >=1.11 modules are enabled
     declare GO111MODULE
     export GO111MODULE="on"
@@ -80,13 +86,13 @@ then
     goenv exec go build -o bin/kics cmd/console/main.go
 
     sudo install bin/kics /usr/local/bin/
-    cd "../../" || exit 1
+    cd "$OLD_PWD" || exit 1
 fi
 
 # Always update KICS query library during an install
 rm -rf "libs/kics/assets" || true
 mkdir -p "libs/kics/assets" || exit 1
-cp -rf ".tmp/kics-${KICS_VER}/assets" "libs/kics/" || exit 1
+cp -rf ~/.kics-installer/kics-${KICS_VER}/assets "libs/kics/" || exit 1
 
 which kics
 kics version
