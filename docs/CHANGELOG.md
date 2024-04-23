@@ -12,6 +12,13 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.5] - 2024-04-23
+
+### FIX
+
+- Change kics download path from .tmp to ~/.kics-installer so it can be reused by downstream projects and it's not 
+wiping itself every time user executes .install.sh.
+
 ## [0.51.4] - 2024-04-23
 
 ### FIX
