@@ -84,8 +84,9 @@ then
 fi
 
 # Always update KICS query library during an install
-rm -rf "libs/kics" || true
-cp -rf ".tmp/kics-${KICS_VER}/assets" "libs/kics" || exit 1
+rm -rf "libs/kics/assets" || true
+mkdir -p "libs/kics/assets" || exit 1
+cp -rf ".tmp/kics-${KICS_VER}/assets" "libs/kics/" || exit 1
 
 which kics
 kics version
