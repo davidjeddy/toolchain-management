@@ -15,7 +15,7 @@
     - [WARNING](#warning)
     - [Install](#install)
     - [Update](#update)
-      - [From \< 0.50.0 to \>= 0.50.0](#from--0500-to--0500)
+    - [Upgrade From \< 0.50.0 to \>= 0.50.0](#upgrade-from--0500-to--0500)
   - [Versioning](#versioning)
   - [Contributors](#contributors)
   - [Additional Information](#additional-information)
@@ -82,11 +82,13 @@ source ~/.bashrc
 
 ### Update
 
-#### From < 0.50.0 to >= 0.50.0
+Unlike the <= 0.50.0 release family of this project, it is no longer needed to pass CLI arguments to update the tools. Simply change the desired version number in `aqua.yaml`, `.*-version` or `VERSIONS.sh`. Then re-run the `./libs/bash/install.sh` to update tooling.
 
-**MAKE A BACKUP! This process involves deleting tooling binaries and language interpreters. MAKE A BACKUP!**
+### Upgrade From < 0.50.0 to >= 0.50.0
 
-Unlike the <= 0.50.0 release family of this project, it is no longer needed to pass CLI arguments to update the tools. Simply change the desired version number in `aqua.yaml`, `.*-version` or `VERSIONS.sh`. Then re-run the `./libs/bash/install.sh` to update a tool.
+Note: This process only needs to be executed only once.
+
+**MAKE A BACKUP of your OS (VM/etc)! This process involves deleting configurations, binaries, and language interpreters.**
 
 If, like me, you want to keep you system as clean as possible execute the following before running the installer of >= 0.50.0
 
@@ -102,43 +104,55 @@ source ~/.bashrc
 Next, remove group shell configuration and language runtimes
 
 ```sh
-rm ~/.worldline_pps_*
-rm -rf ~/.goenv/
-rm -rf ~/.pyenv/
+rm -rf ~/.goenv/ || true
+rm -rf ~/.pyenv/ || true
+rm ~/.worldline_pps_* || true
 ```
 
-Finally, remove all pre-upgrade managed tools
+Third, remove all pre-upgrade managed tools
 
 ```sh
 sudo su
-rm /usr/local/bin/iam-policy-json-to-terraform
-rm /usr/local/bin/infracost
-rm /usr/local/bin/kics
-rm /usr/local/bin/packer
-rm /usr/local/bin/session-manager-plugin 
-rm /usr/local/bin/terraform
-rm /usr/local/bin/terragrunt 
-rm /usr/local/bin/tfenv
-rm /usr/local/bin/tflint
-rm /usr/local/bin/tfsec
-rm /usr/local/bin/tgenv
-rm /usr/local/bin/tofu
-rm /usr/local/bin/tofuenv
-rm /usr/local/bin/terraform-docs
-rm /usr/local/bin/xeol
+rm /usr/local/bin/iam-policy-json-to-terraform || true
+rm /usr/local/bin/infracost || true
+rm /usr/local/bin/kics || true
+rm /usr/local/bin/packer || true
+rm /usr/local/bin/session-manager-plugin  || true
+rm /usr/local/bin/terraform || true
+rm /usr/local/bin/terraform-docs || true
+rm /usr/local/bin/terragrunt  || true
+rm /usr/local/bin/terrascan || true
+rm /usr/local/bin/tfenv || true
+rm /usr/local/bin/tflint || true
+rm /usr/local/bin/tfsec || true
+rm /usr/local/bin/tgenv || true
+rm /usr/local/bin/tofu || true
+rm /usr/local/bin/tofuenv || true
+rm /usr/local/bin/xeol || true
 
-rm -rf /usr/local/bin/bin
-rm -rf /usr/local/bin/python3*
-rm -rf /usr/local/bin/pydoc3*
+rm -rf /usr/local/bin/pip3* || true
+rm -rf /usr/local/bin/pydoc3* || true
+rm -rf /usr/local/bin/python3* || true
+
+exit # return back to normal user
 ```
 
-To verify we are now in good shape list the contains of `/user/local/bin`
+To verify we are now in good shape, list the contains of `/usr/local/bin`
 
 ```sh
 ls -la /usr/local/bin
 ```
 
-You know the situation is good when none of the IAC tools are listed.
+No IAC, Golang, nor Python (3.x) binaries or directories should be listed.
+
+Finally, execute the installation process.
+
+```sh
+./libs/bash/install.sh
+source ~/.bashrc
+```
+
+With that the upgrade process is complete. Tools managed by Aqua should be available globally and at the version defined in `.aqua.yaml`.
 
 ## Versioning
 
