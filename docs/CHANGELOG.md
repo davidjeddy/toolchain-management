@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.3] - 2024-04-23
+
+### FIX
+
+- README.md Update/Upgrade instructions based on feedback
+
 ## [0.51.2] - 2024-04-23
 
 ### FIX
