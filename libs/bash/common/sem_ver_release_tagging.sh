@@ -57,6 +57,11 @@ then
     printf "ERR: Valid SEM_VER not found. Is %s properly formatted?.\n" "$CHANGELOG_PATH"
     exit 1
 fi
+
+# Return only the most recent SemVer string
+SEM_VER=$(echo "$SEM_VER" | head -n 1)
+
+# Output SEM_VER being worked with
 printf "INFO: SEM_VER: %s\n" "$SEM_VER"
 
 if [[ $DRY_RUN == "" ]]

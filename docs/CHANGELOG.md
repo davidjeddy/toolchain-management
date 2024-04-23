@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.4] - 2024-04-23
+
+### FIX
+
+- Longstanding bug where if CHANGELOG container two SEM_VER string changes publishing a new tag would fail. Now only pays attention to the first version found during evaluation of SEM_VER string
+
 ## [0.51.3] - 2024-04-23
 
 ### FIX
