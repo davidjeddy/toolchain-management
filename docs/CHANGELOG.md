@@ -12,12 +12,24 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.6] - 2024-04-24
+
+### ADD
+
+- KICS now managed by Aqua, no longer by bespoke shell scripts. However, we still need to install the query assets in the users `~/.kics-installer` to enable automation
+
+### FIX
+
+- `git-lfs`, `jq`, and `yq` now managed by Aqua
+- Golang moved up to version 1.21
+- KICS query library now available via `~/.kics-installer/target_query_libs` symlink to whatever version is installed
+- Pyenv installer moved from `./libs/bash/installers/` to `./libs/bash/assets/` to stop messing with [TAB] autocomplete when trying to get to install.sh
+
 ## [0.51.5] - 2024-04-23
 
 ### FIX
 
-- Change kics download path from .tmp to ~/.kics-installer so it can be reused by downstream projects and it's not 
-wiping itself every time user executes .install.sh.
+- Change kics download path from .tmp to ~/.kics-installer so it can be reused by downstream projects and it's not wiping itself every time user executes .install.sh.
 
 ## [0.51.4] - 2024-04-23
 

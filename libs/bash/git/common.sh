@@ -258,7 +258,7 @@ function iacCompliance() {
                 --output-name "junit-kics" \
                 --output-path ".tmp" \
                 --path "$filesToScan" \
-                --queries-path "${WORKSPACE}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
+                --queries-path ~/.kics-installer/target_query_libs/terraform/aws/ \
                 --report-formats "junit" \
                 --type "Terraform" \
                 --verbose \
@@ -272,7 +272,7 @@ function iacCompliance() {
                 --output-name "junit-kics" \
                 --output-path ".tmp" \
                 --path "$filesToScan" \
-                --queries-path "${WORKSPACE}/.tmp/toolchain-management/libs/kics/assets/queries/terraform/aws" \
+                --queries-path ~/.kics-installer/target_query_libs/terraform/aws/ \
                 --report-formats "junit" \
                 --type "Terraform" \
                 --verbose \
