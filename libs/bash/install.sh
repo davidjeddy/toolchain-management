@@ -40,22 +40,9 @@ then
     SESSION_SHELL=~/.bashrc
 fi
 export SESSION_SHELL
-printf "INFO: SESSION_SHELL is %s\n" "${SESSION_SHELL}"
-
-# Second, set IAC tool cache location
-
 # shellcheck disable=SC1090,SC1091
 source "${SESSION_SHELL}" || exit 1
 printf "INFO: PATH is %s\n" "$PATH"
-
-# shellcheck disable=SC2088,SC2143
-if [[ -f "${SESSION_SHELL}" && ! $(grep "export TF_PLUGIN_CACHE_DIR" "${SESSION_SHELL}")  ]]
-then
-    # source https://www.tailored.cloud/devops/cache-terraform-providers/
-    printf "INFO: Configuring Terraform provider shared cache.\n"
-    mkdir -p ~/.terraform.d/plugin-cache/ || true
-    echo "export TF_PLUGIN_CACHE_DIR=~/.terraform.d/plugin-cache/" >> "${SESSION_SHELL}"
-fi
 
 # Second, install tools and language interpreters not yet in aqua's standard registry
 
@@ -90,11 +77,6 @@ then
     echo "export PATH=${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-~/.local/share}/aquaproj-aqua}/bin:$PATH" >> "${SESSION_SHELL}"
 fi
 
-# shellcheck disable=SC1090,SC1091
-source "${SESSION_SHELL}" || exit 1
-
-printf "INFO: PATH is %s\n" "$PATH"
-
 # shellcheck disable=SC2143
 if [[ -f ${SESSION_SHELL} && ! $(grep "AQUA_GLOBAL_CONFIG" "${SESSION_SHELL}") ]]
 then
@@ -107,6 +89,7 @@ source "${SESSION_SHELL}" || exit 1
 
 # shellcheck disable=SC1090,SC1091
 printf "INFO: AQUA_GLOBAL_CONFIG is %s\n" "$AQUA_GLOBAL_CONFIG"
+printf "INFO: PATH is %s\n" "$PATH"
 
 # Global baseline tool versions - always reset on every run
 # https://aquaproj.github.io/docs/reference/config/#configuration-file-path
@@ -118,9 +101,11 @@ cp -rf "${WL_GC_TM_WORKSPACE}/aqua.yaml" ~/.aqua/aqua.yaml || exit 1
 which aqua
 aqua --version
 
-aqua info
-aqua init
+aqua update-checksum
+
 aqua install
+
+# Third, use *env tools to per-directory IAC tool default versions
 
 printf "INFO: Setting CLI *env tool versions.\n"
 # shellcheck disable=SC2046

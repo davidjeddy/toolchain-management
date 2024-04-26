@@ -81,7 +81,7 @@ function process_pyenv() {
         rm -rf "$HOME/.pyenv" || true
 
         # because pyenv installer does not provider checksum validation we use a locally stored and managed copy
-        ./libs/bash/installers/pyenv.sh || exit 1
+        ./libs/bash/assets/pyenv.sh || exit 1
 
         # shellcheck disable=SC2143
         if [[ -f ${SESSION_SHELL} && ! $(grep "export PYENV_ROOT" "${SESSION_SHELL}") ]]

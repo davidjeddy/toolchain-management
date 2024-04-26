@@ -25,10 +25,8 @@ function apt_systems() {
         gcc \
         gcc-c++ \
         git \
-        git-lfs \
         gnupg \
         gnupg2 \
-        jq \
         libbz2-dev \
         parallel \
         podman \
@@ -72,11 +70,9 @@ function dnf_systems() {
         gcc \
         gcc-c++ \
         git \
-        git-lfs \
         gnupg \
         gnupg2 \
         htop \
-        jq \
         libffi-devel \
         lzma \
         make \
@@ -113,11 +109,9 @@ function yum_systems() {
         gcc \
         gcc-c++ \
         git \
-        git-lfs \
         gnupg \
         gnupg2 \
         htop \
-        jq \
         libffi-devel \
         lzma \
         make \
@@ -154,4 +148,13 @@ then
 else
     printf "ERR: No supported system package manager found. Please consider submitting an update adding your distributions package manager.\n"
     exit 1
+fi
+
+# shellcheck disable=SC2088,SC2143
+if [[ -f "${SESSION_SHELL}" && ! $(grep "export TF_PLUGIN_CACHE_DIR" "${SESSION_SHELL}")  ]]
+then
+    # source https://www.tailored.cloud/devops/cache-terraform-providers/
+    printf "INFO: Configuring Terraform provider shared cache.\n"
+    mkdir -p ~/.terraform.d/plugin-cache/ || true
+    echo "export TF_PLUGIN_CACHE_DIR=~/.terraform.d/plugin-cache/" >> "${SESSION_SHELL}"
 fi

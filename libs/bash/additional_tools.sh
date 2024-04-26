@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 set -e
-    
+
+# TODO Add these tools to Aqua registry @ https://github.com/aquaproj/aqua-registry
+
 # aws - ssm-session-manager plugin
 # https://stackoverflow.com/questions/12806176/checking-for-installed-packages-and-if-not-found-install
 printf "INFO: Processing AWS session-manager-plugin.\n"
@@ -53,46 +55,38 @@ echo "onelogin-aws-cli $(pip show onelogin-aws-cli)"
 
 # -----
 
-printf "INFO: Installing kics. (If the process hangs, try disablig proxy/firewalls/vpn. Golang needs the ability to download packages via ssh protocol.\n"
-if [[ ! $(which kics) || ! -d ~/.kics-installer/kics-${KICS_VER} ]] # file based workaround to check kics version, "kics version" command is bugged
+# Even with KICS being installed via Aqua we still need the query libraries
+
+if [[ ! -d ~/.kics-installer/kics-${KICS_VER} ]]
 then
-    printf "INFO: Downloading kics.\n"
+    printf "INFO: Installing KICS query library into ~/.kics-installer.\n"
+    printf "WARN: If the process hangs, try disablig proxy/firewalls/vpn. Golang needs the ability to download packages via ssh protocol.\n"
 
-    mkdir -p ~/.kics-installer || exit 1
+    # Get version of KICS being used from aqua.yaml configuration
+    declare KICS_VER
+    KICS_VER=$(grep -w "Checkmarx/kics" aqua.yaml)
+    KICS_VER=$(echo "$KICS_VER" | awk -F '@' '{print $2}')
+    KICS_VER=$(echo "$KICS_VER" | sed ':a;N;$!ba;s/\n//g')
+    # shellcheck disable=SC2001
+    KICS_VER=$(echo "$KICS_VER" | sed 's/v//g')
+    printf "INFO: KICS version detected: %s\n" "$KICS_VER"
+    printf "INFO: Installing machintg query libarary into ~/.kics-installer/\n"
 
+    # Set PWD to var for returning later
     declare OLD_PWD
     OLD_PWD="$(pwd)"
+    
+    # Download archive, decompress, create symlink to query library.
+    # Automation can target `~/.kics-installer/target_query_libs`
+    # We keep the version in the archive/dir to easily validate the installed version of the libraries
+    mkdir -p ~/.kics-installer || exit 1
     cd ~/.kics-installer || exit 1
 
-    # obtain source archive
-    curl --location --silent --show-error "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" -o "kics.tar.gz"
-    tar -xf kics.tar.gz
+    curl --location --silent --show-error "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" -o "kics-v${KICS_VER}.tar.gz"
+    tar -xf kics-v"${KICS_VER}".tar.gz
+    mv kics-"${KICS_VER}" kics-v"${KICS_VER}" # we want the dir to have the `v`
+    ln -sfn ./kics-v"${KICS_VER}"/assets/queries/ target_query_libs
+    ls -lah
 
-    cd "$OLD_PWD" || exit 1
+    cd "${OLD_PWD}" || exit 1
 fi
-
-# build executable if needed
-if [[ ! $(which kics) ]]
-then
-    printf "INFO: Build and Install kics.\n"
-
-    declare OLD_PWD
-    OLD_PWD="$(pwd)"
-    cd ~/.kics-installer/kics-${KICS_VER} || exit 1
-    # Make sure GO >=1.11 modules are enabled
-    declare GO111MODULE
-    export GO111MODULE="on"
-    goenv exec go mod download -x
-    goenv exec go build -o bin/kics cmd/console/main.go
-
-    sudo install bin/kics /usr/local/bin/
-    cd "$OLD_PWD" || exit 1
-fi
-
-# Always update KICS query library during an install
-rm -rf "libs/kics/assets" || true
-mkdir -p "libs/kics/assets" || exit 1
-cp -rf ~/.kics-installer/kics-${KICS_VER}/assets "libs/kics/" || exit 1
-
-which kics
-kics version

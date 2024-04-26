@@ -11,6 +11,7 @@ Remove all references to aqua, goenv, and pyenv
 ```sh
 rm -rf ~/.aqua/
 rm -rf ~/.goenv/
+rm -rf ~/.kics-installer/
 rm -rf ~/.pyenv/
 rm -rf ~/.local/share/aquaproj-aqua/
 source ~/.bashrc
