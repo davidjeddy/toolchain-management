@@ -57,34 +57,32 @@ echo "onelogin-aws-cli $(pip show onelogin-aws-cli)"
 
 # Even with KICS being installed via Aqua we still need the query libraries
 
-if [[ ! -d ~/.kics-installer/kics-${KICS_VER} ]]
-then
-    printf "INFO: Installing KICS query library into ~/.kics-installer.\n"
-    printf "WARN: If the process hangs, try disablig proxy/firewalls/vpn. Golang needs the ability to download packages via ssh protocol.\n"
+# Get version of KICS being used from aqua.yaml configuration
+declare KICS_VER
+KICS_VER=$(grep -w "Checkmarx/kics" aqua.yaml)
+KICS_VER=$(echo "$KICS_VER" | awk -F '@' '{print $2}')
+KICS_VER=$(echo "$KICS_VER" | sed ':a;N;$!ba;s/\n//g')
+# shellcheck disable=SC2001
+KICS_VER=$(echo "$KICS_VER" | sed 's/v//g')
+printf "INFO: KICS version detected: %s\n" "$KICS_VER"
 
-    # Get version of KICS being used from aqua.yaml configuration
-    declare KICS_VER
-    KICS_VER=$(grep -w "Checkmarx/kics" aqua.yaml)
-    KICS_VER=$(echo "$KICS_VER" | awk -F '@' '{print $2}')
-    KICS_VER=$(echo "$KICS_VER" | sed ':a;N;$!ba;s/\n//g')
-    # shellcheck disable=SC2001
-    KICS_VER=$(echo "$KICS_VER" | sed 's/v//g')
-    printf "INFO: KICS version detected: %s\n" "$KICS_VER"
-    printf "INFO: Installing machintg query libarary into ~/.kics-installer/\n"
+if [[ ! -d ~/.kics-installer/kics-v"${KICS_VER}" ]]
+then
+    printf "INFO: Installing missing KICS query library into ~/.kics-installer.\n"
+    printf "WARN: If the process hangs, try disablig proxy/firewalls/vpn. Golang needs the ability to download packages via ssh protocol.\n"
 
     # Set PWD to var for returning later
     declare OLD_PWD
     OLD_PWD="$(pwd)"
-    
-    # Download archive, decompress, create symlink to query library.
-    # Automation can target `~/.kics-installer/target_query_libs`
-    # We keep the version in the archive/dir to easily validate the installed version of the libraries
+
     mkdir -p ~/.kics-installer || exit 1
     cd ~/.kics-installer || exit 1
 
     curl --location --silent --show-error "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" -o "kics-v${KICS_VER}.tar.gz"
     tar -xf kics-v"${KICS_VER}".tar.gz
-    mv kics-"${KICS_VER}" kics-v"${KICS_VER}" # we want the dir to have the `v`
+    # we want the dir to have the `v`
+    mv kics-"${KICS_VER}" kics-v"${KICS_VER}"
+    # Automation can target `~/.kics-installer/target_query_libs`
     ln -sfn ./kics-v"${KICS_VER}"/assets/queries/ target_query_libs
     ls -lah
 
