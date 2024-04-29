@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.7] - 2024-04-29
+
+### FIX
+
+- Correctly detect KICS version before evaluating if the query library is missing or present
+
 ## [0.51.6] - 2024-04-24
 
 ### ADD
