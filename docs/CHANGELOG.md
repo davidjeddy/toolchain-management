@@ -12,6 +12,13 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.8] - 2024-05-01
+
+### ADD
+
+- `./docs/RUNBOOKS.md` with solution to `ERR: Failed to install Golang via goenv.` when running on Debian/Ubuntu based distributions
+- `AWS CLI session-manager-plugin` install on Debian/Ubuntu based distributions
+
 ## [0.51.7] - 2024-04-29
 
 ### FIX

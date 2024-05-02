@@ -66,3 +66,50 @@ checkov --version
 **Fix**
 
 Remove the checkov binary. It is the wrong one. Re-install checkov via ./libs/bash/install.sh. Be sure `~/.worldline_pps_profile` is being sourced.
+
+-----
+
+**Error**
+
+```sh
+./libs/bash/language_runtimes.sh: line 53: goenv: command not found
+./libs/bash/language_runtimes.sh: line 54: goenv: command not found
+ERR: Failed to install Golang via goenv.
+```
+
+**When**
+
+When executing `./libs/bash/install.sh` on Debian/Ubuntu based hosts.
+
+**Fix**
+
+Debian/Ubuntu adds a short-cuircity check in the users `~/.bashrc` that prevents sourcing it when accessed via a non-interactive process. This prevents the install script from reloading the $PATH value.
+
+To correct this behavior edit your users `~/.bashrc` commenting out the check.
+
+Before:
+
+```sh
+...
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+...
+```
+
+After
+
+```sh
+...
+# Commented out to enable Worldline GlobalCollect toolchain-management
+# If not running interactively, don't do anything
+# case $- in
+#    *i*) ;;
+#      *) return;;
+# esac
+...
+```
+
+Start a new shell session and the issue should not present itself any longer.
