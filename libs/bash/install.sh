@@ -135,7 +135,7 @@ fi
 
 if [[ ! -f ~/.terraformrc && $(whoami) != 'jenkins' ]]
 then
-    printf "INFO: Looks like you do not yet have a ~/.terraformrc credentials configuration, pleaes follow https://confluence.techno.ingenico.com/display/PPS/Using+Shared+Modules+from+GitLab+Private+Registry#UsingSharedModulesfromGitLabPrivateRegistry-localhost before attempting to use Terraf.\n"
+    printf "INFO: Looks like you do not yet have a ~/.terraformrc credentials configuration, pleaes follow https://confluence.worldline-solutions.com/display/PPSTECHNO/Using+Shared+Modules+from+GitLab+Private+Registry before attempting to use Terraf.\n"
 fi
 
 printf "INFO: Done. Please reload your shell by running the following command: \"source ~/.bashrc\".\n"

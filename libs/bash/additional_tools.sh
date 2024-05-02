@@ -21,7 +21,7 @@ then
         ## amd64
         sudo dnf install -y "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_arm64/session-manager-plugin.rpm"
     else
-        prinf "ALERT: Unable to determine CPU architecture for AWS session-manager-plugin.\n"
+        prinf "ALERT: Unable to determine CPU architecture for Fedora distro of AWS session-manager-plugin.\n"
     fi
 elif [[ $(which yum) && $(yum list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) -eq 0 ]]
 then
@@ -32,10 +32,19 @@ then
     sudo rpm -iUvh --replacepkgs "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm"
 elif [[ $(which apt) && $(apt list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) -eq 0 ]]
 then
-    # Debian
     echo "INFO: Installing AWS CLI session-manager-plugin via apt system package manager.";
-    echo "WARN: Actually, no. Please submit MR to support Debian based systems.";
-    exit 1
+    if [[ $(uname -m) == "x86_64" ]]
+    then
+        ## arm64
+        curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
+    elif [[ $(uname -m) == "aarch64" ]]
+    then
+        ## amd64
+        curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_arm64/session-manager-plugin.deb" -o "session-manager-plugin.deb"
+    else
+        prinf "ALERT: Unable to determine CPU architecture for Debian distro of AWS session-manager-plugin.\n"
+    fi
+    sudo dpkg -i session-manager-plugin.deb
 fi
 
 # https://pypi.org/project/onelogin-aws-cli/
