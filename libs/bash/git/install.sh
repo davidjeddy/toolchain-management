@@ -5,6 +5,7 @@ set -e
 # usage ./libs/bash/install.sh (optional) branch_name
 # example ./libs/bash/install.sh fix/ICON-39280/connect_preprod_module_revert_to_0_36_7_due_to_kms_permissions
 
+# Version: 0.5.11 - 2024-05-06 - ADD Git feature checks - David J Eddy
 # Version: 0.5.10 - 2024-04-22
 # Version: 0.5.8  - 2024-03-19
 
@@ -61,12 +62,22 @@ printf "INFO: Installing Git pre-push hooks.\n"
 rm -rf "$WORKSPACE/.git/hooks/pre-push" || true
 ln -sfn "$WORKSPACE/.tmp/toolchain-management/libs/bash/git/pre-push.sh" "$WORKSPACE/.git/hooks/pre-push"
 
-printf "INFO: Configure git LFS.\n"
-git lfs track "*.iso"
-git lfs track "*.zip"
-git lfs track "*.gz"
+# Git features
+if [[ -f .gitattributes ]]
+then
+    printf "INFO: Configure git LFS.\n"
+    git lfs track "*.iso"
+    git lfs track "*.zip"
+    git lfs track "*.gz"
+fi
 
-# Post-landing reset
+if [[ -f .gitsubmodules ]]
+then
+    printf "INFO: Sync Git submodules.\n"
+    git submodule update --init --recursive
+fi
+
+# Post-flight resets
 cd "$WORKSPACE" || exit 1
 
 printf "INFO: Done. Please reload your shell by running the following command: \"source ~/.bashrc\".\n"

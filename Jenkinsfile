@@ -131,7 +131,7 @@ pipeline {
             }
         }
         // Typical direct re/install
-        stage('Execute Re/Install') {
+        stage('Execute toolchain re/install') {
             steps {
                 sh '''
                     ./libs/bash/install.sh
@@ -139,17 +139,14 @@ pipeline {
                 '''
             }
         }
-        // Typical dependent project install
-        // TODO The project install.sh needs to be a different location and maybe TM installer a different name?
-        // stage('Execute as a dependant project') {
-        //     steps {
-        //         sh '''
-
-        //             ./libs/bash/git/install.sh
-        //             source ~/.bashrc
-        //         '''
-        //     }
-        // }
+        stage('Execute Aqua install/update') {
+            steps {
+                sh '''
+                    aqua install
+                    aqua update
+                '''
+            }
+        }
         // if pipeline is running the main branch, tag a new release using changes content of CHANGLOG.md
         stage('Tagging') {
             steps {

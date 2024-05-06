@@ -12,6 +12,14 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.9] - 2024-05-06
+
+### UPDATE
+
+- Pyenv, Opentofu, and Terragrunt version updated
+- `./libs/bash/git/install.sh` to handle projects with Git submodules
+- Jenkinsfile step to trigger aqua install/update directly
+
 ## [0.51.8] - 2024-05-01
 
 ### ADD
