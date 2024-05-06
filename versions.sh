@@ -18,7 +18,7 @@ export GOENV_VER="2.1.14"
 ## https://pypi.org/project/onelogin-aws-cli/
 export ONELOGIN_AWS_CLI_VER="0.1.19"
 ## https://github.com/pyenv/pyenv/tags
-export PYENV_VER="2.3.36"
+export PYENV_VER="2.4.0"
 
 # System Tools
 echo "AQUA_VER: $AQUA_VER"
