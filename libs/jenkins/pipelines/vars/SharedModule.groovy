@@ -198,8 +198,8 @@ def call(
                     archive includes: '${WORKSPACE}/.tmp/junit*.xml'
                 }
             }
-            // if on the main branch and CHANGELOG diff
-            // extract version number and message from CHANGELOG
+            // if on the main branch and docs/CHANGELOG.md diff
+            // extract version number and message from docs/CHANGELOG.md
             // create tag with message, push to origin
             // push tag to commit in GL
             stage('Tagging') {
@@ -213,7 +213,7 @@ def call(
                             )]) {
                                 sh '''#!/usr/bin/env bash
                                     set -e
-                                    ${WORKSPACE}/libs/common/sem_ver_release_tagging.sh
+                                    ${WORKSPACE}/.tmp/toolchain-management/libs/common/sem_ver_release_tagging.sh
                                 '''
                             }
                         }

@@ -12,6 +12,17 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.11] - 2024-05-08
+
+### ADD
+
+- IAC compliance scanning tool `checkov` at version 3.2.23 via aqua
+- End-of-Life compliance too xeol enabled at version 0.9.15
+
+### FIX
+
+- Incorrect path to `sem_ver_release_tagging.sh` in Jenkinsfile.groovy of the shared pipeline
+
 ## [0.51.10] - 2024-05-08
 
 ### FIX

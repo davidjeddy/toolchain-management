@@ -160,85 +160,81 @@ function documentation() {
 function generateSBOM() {
     printf "INFO: starting generateSBOM()\n"
 
-#     printf "INFO: Ignore warning about 'Failed to download module', this is due to a limitation of checkov\n"
-#     # Do not generate SBOM is jenkins user, just ensure it exists
-#     if [[ ! -f sbom.xml && $(whoami) == 'jenkins' ]]
-#     then
-#         printf "ERR: sbom.xml missing, failing."
-#         exit 1
-#     elif [[ -f sbom.xml && $(whoami) == 'jenkins' ]]
-#     then
-#         printf "INFO: Automation user detected, not generated sbom.xml"
-#         return 0
-#     fi
+    printf "INFO: Ignore warning about 'Failed to download module', this is due to a limitation of checkov\n"
+    # Do not generate SBOM is jenkins user, just ensure it exists
+    if [[ ! -f sbom.xml && $(whoami) == 'jenkins' ]]
+    then
+        printf "ERR: sbom.xml missing, failing."
+        exit 1
+    elif [[ -f sbom.xml && $(whoami) == 'jenkins' ]]
+    then
+        printf "INFO: Automation user detected, not generated sbom.xml"
+        return 0
+    fi
 
-#     {
-#         if [[ -f "checkov.yml" ]]; then
-#             # use configuration file if present. Created due to terraform/aws/worldline-gc-keycloak-dev/eu-west-1/keycloak/iohd being created BEFORE complaince was mandatory
-#             checkov \
-#                 --config-file checkov.yml \
-#                 --directory . \
-#                 --output cyclonedx \
-#                 > "$(pwd)/sbom.xml"
-#         else
-#             checkov \
-#                 --directory . \
-#                 --output cyclonedx \
-#                 > "$(pwd)/sbom.xml"
-#         fi
-#         git add sbom.xml || true
-#     } || {
-#         echo "ERR: checkov SBOM failed to generate."
-#         cat "sbom.xml"
-#         exit 1
-#     }
+    {
+        if [[ -f "checkov.yml" ]]; then
+            # use configuration file if present. Created due to terraform/aws/worldline-gc-keycloak-dev/eu-west-1/keycloak/iohd being created BEFORE complaince was mandatory
+            checkov \
+                --config-file checkov.yml \
+                --directory . \
+                --skip-path .terraform \
+                --skip-results-upload \
+                -o cyclonedx \
+                > "$(pwd)/sbom.xml"
+
+        else
+            checkov \
+                --directory . \
+                --skip-path .terraform \
+                --skip-results-upload \
+                -o cyclonedx \
+                > "$(pwd)/sbom.xml"
+        fi
+        git add sbom.xml || true
+    } || {
+        echo "ERR: checkov SBOM failed to generate."
+        cat "sbom.xml"
+        exit 1
+    }
 }
 
 function iacCompliance() {
     printf "INFO: starting iacCompliance()\n"
 
-    # TODO Replace checkov
-    # Versions > 3.1.z require API key
-    # Versions < 3.1.z are not available for ARM via aqua
-    # printf "INFO: checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov)...\n"
-    # {
-    #     rm -rf ".tmp/junit-checkov.xml" || exit 1
-    #     touch ".tmp/junit-checkov.xml" || exit 1
-    #     if [[ -f "checkov.yml" ]]; then
-    #         printf "INFO: checkov configuration file found, using it.\n"
-    #         checkov \
-    #             --config-file checkov.yml \
-    #             --file "*.tf" \
-    #             --file "*.hcl" \
-    #             --download-external-modules false \
-    #             --framework terraform \
-    #             --output junitxml \
-    #             --quiet \
-    #             --skip-path .terra*/ \
-    #             --skip-path .tmp/ \
-    #             --skip-path examples/ \
-    #             --skip-path libs/ \
-    #             > ".tmp/junit-checkov.xml"
-    #     else
-    #         printf "INFO: checkov configuration NOT file found.\n"
-    #         checkov \
-    #             --file "*.tf" \
-    #             --file "*.hcl" \
-    #             --download-external-modules false \
-    #             --framework terraform \
-    #             --quiet \
-    #             --skip-path .terra*/ \
-    #             --skip-path .tmp/ \
-    #             --skip-path examples/ \
-    #             --output junitxml \
-    #             --skip-path libs/ \
-    #             > ".tmp/junit-checkov.xml"
-    #     fi
-    # } || {
-    #     echo "ERR: checkov failed. Check report saved to .tmp/junit-checkov.xml"
-    #     cat ".tmp/junit-checkov.xml"
-    #     exit 1
-    # }
+    printf "INFO: checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov)...\n"
+    {
+        rm -rf ".tmp/junit-checkov.xml" || exit 1
+        touch ".tmp/junit-checkov.xml" || exit 1
+        if [[ -f "checkov.yml" ]]; then
+            printf "INFO: checkov configuration file found, using it.\n"
+            checkov \
+                --config-file checkov.yml \
+                --directory . \
+                --download-external-modules false \
+                --framework terraform \
+                --quiet \
+                --skip-download \
+                --skip-path .terraform \
+                -o junitxml \
+                > ".tmp/junit-checkov.xml"
+        else
+            printf "INFO: checkov configuration NOT file found.\n"
+            checkov \
+                --directory . \
+                --download-external-modules false \
+                --framework terraform \
+                --quiet \
+                --skip-download \
+                --skip-path .terraform \
+                -o junitxml \
+                > ".tmp/junit-checkov.xml"
+        fi
+    } || {
+        echo "ERR: checkov failed. Check report saved to .tmp/junit-checkov.xml"
+        cat ".tmp/junit-checkov.xml"
+        exit 1
+    }
 
     printf "INFO: KICS executing...\n"
     {
@@ -328,20 +324,20 @@ function iacCompliance() {
     #         then
     #             # use configuration file if present.
     #             printf "INFO: trivy configuration file found, using it.\n"
-    #             trivy scan \
+    #             trivy sbom \
     #                 --config trivy.yml \
-    #                 --log-level error \
-    #                 --non-recursive \
+    #                 --offline-scan \
+    #                 --skip-dirs .terra* \
     #                 --output junit-xml \
-    #                 --use-colors f \
+    #                 sbom.xml \
     #                 > ".tmp/junit-trivy.xml"
     #         else
     #             printf "INFO: trivy configuration NOT file found.\n"
-    #             trivy scan \
-    #                 --log-level error \
-    #                 --non-recursive \
+    #             trivy sbom \
+    #                 --offline-scan \
+    #                 --skip-dirs .terra* \
     #                 --output junit-xml \
-    #                 --use-colors f \
+    #                 sbom.xml \
     #                 > ".tmp/junit-trivy.xml"
     #         fi
     #     } || {
@@ -352,36 +348,31 @@ function iacCompliance() {
     # fi
 
     # EOL scanning tool
-    # printf "INFO: xeol executing...\n"
-    # {
-    #     rm -rf ".tmp/junit-xeol.xml" || exit 1
-    #     touch ".tmp/junit-xeol.xml" || exit 1
-    #     if [[ -f "trivy.yml" ]]
-    #     then
-    #         # use configuration file if present.
-    #         printf "INFO: xeol configuration file found, using it.\n"
-    #         xeol \
-    #             --config xeol.yml \
-    #             --fail-on-eol-found \
-    #             --file ".tmp/junit-xeol.xml"\
-    #             --lookahead 1y \
-    #             --name "$(basename "${WORKSPACE}")" \
-    #             --project-name "$(basename "${WORKSPACE}")"
-    #     else
-    #         printf "INFO: xeol configuration NOT file found.\n"
-    #         xeol \
-    #             --fail-on-eol-found \
-    #             --file ".tmp/junit-xeol.xml"\
-    #             --lookahead 1y \
-    #             --name "$(basename "${WORKSPACE}")" \
-    #             --project-name "$(basename "${WORKSPACE}")"
-
-    #     fi
-    # } || {
-    #     echo "ERR: xeol failed. Check Junit reports in .tmp"
-    #     cat ".tmp/junit-xeol.xml"
-    #     exit 1
-    # }
+    printf "INFO: xeol executing...\n"
+    {
+        rm -rf ".tmp/junit-xeol.xml" || exit 1
+        touch ".tmp/junit-xeol.xml" || exit 1
+        if [[ -f "trivy.yml" ]]
+        then
+            # use configuration file if present.
+            printf "INFO: xeol configuration file found, using it.\n"
+            xeol \
+                --config xeol.yml \
+                --fail-on-eol-found \
+                --lookahead 1m \
+                sbom.xml
+        else
+            printf "INFO: xeol configuration NOT file found.\n"
+            xeol \
+                --fail-on-eol-found \
+                --lookahead 1m \
+                sbom.xml
+        fi
+    } || {
+        echo "ERR: xeol failed. Check Junit reports in .tmp"
+        cat ".tmp/junit-xeol.xml"
+        exit 1
+    }
 }
 
 function iacLinting() {
