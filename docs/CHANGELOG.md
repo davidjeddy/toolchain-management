@@ -12,9 +12,16 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.10] - 2024-05-08
+
+### FIX
+
+- Detect changes to docs/CHANGELOG.md only when looking for SEM_VER to publish. Due to terraform-aws-ecr having a sub-module two CHANGELOG files were being detected
+- ./libs/jenkins/pipelines/vars/SharedModule.groovy now triggers SEM_VER publishing and tagging via helper script
+
 ## [0.51.9] - 2024-05-06
 
-### UPDATE
+### FIX
 
 - Pyenv, Opentofu, and Terragrunt version updated
 - `./libs/bash/git/install.sh` to handle projects with Git submodules

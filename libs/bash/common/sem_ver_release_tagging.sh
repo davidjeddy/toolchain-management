@@ -11,7 +11,7 @@ declare PREV_TARGET
 PREV_TARGET="HEAD~1"
 
 {
-    CHANGELOG_PATH=$(git diff $PREV_TARGET --name-only | grep CHANGELOG.md)
+    CHANGELOG_PATH=$(git diff $PREV_TARGET --name-only | grep docs/CHANGELOG.md)
     printf "INFO: CHANGELOG_PATH is %s.\n" "$CHANGELOG_PATH"
 } || {
     printf "WARN: No changes to '**/CHANGELOG.md' found between commit and HEAD~1.\n"
