@@ -6,11 +6,12 @@ checksum:
   - all
 registries:
 - type: standard
-  ref: v4.165.0
+  ref: v4.174.0
 packages:
 - name: aquasecurity/tfsec@v1.28.5
-- name: aquasecurity/trivy@v0.50.4
+- name: aquasecurity/trivy@v0.51.1
 - name: aws/aws-cli@2.15.40
+- name: bridgecrewio/checkov@3.2.23
 - name: Checkmarx/kics@v1.7.13
 - name: flosell/iam-policy-json-to-terraform@1.8.2
 - name: git-lfs/git-lfs@v3.5.1
@@ -22,8 +23,4 @@ packages:
 - name: tfutils/tfenv@v3.0.0
 - name: tgenv/tgenv@v1.2.0
 - name: tofuutils/tofuenv@v1.0.6
-- name: xeol-io/xeol@v0.9.14
-# TODO Replace checkov
-# Versions > 3.1.z require API key
-# Versions < 3.1.z are not available for ARM via Aqua registry
-# - name: bridgecrewio/checkov@3.2.23 # checkov older needs added. This version required API key
+- name: xeol-io/xeol@v0.9.15

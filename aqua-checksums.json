@@ -166,6 +166,21 @@
       "algorithm": "sha256"
     },
     {
+      "id": "github_release/github.com/bridgecrewio/checkov/2.5.15/checkov_darwin_X86_64_2.5.15.zip",
+      "checksum": "448FFE2CA082282756AD2D2596874ADDC2DA663D6597946798376D1177766A56",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/bridgecrewio/checkov/2.5.15/checkov_linux_X86_64_2.5.15.zip",
+      "checksum": "B096047F0360813496F54E9ED4908DF65DDAFD4ED95D0E0E16376EFAFF694986",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/bridgecrewio/checkov/2.5.15/checkov_windows_X86_64_2.5.15.zip",
+      "checksum": "27A446EF2B3ABFAD340EF85E8AC344304E368800FA9625873FE95BDC9EBC2FE5",
+      "algorithm": "sha256"
+    },
+    {
       "id": "github_release/github.com/bridgecrewio/checkov/3.2.23/checkov_darwin_X86_64_3.2.23.zip",
       "checksum": "2F19E2511C2497E9C00BD7A38C684FE9E26F17D8F686ABFB0F1654727FEC63B8",
       "algorithm": "sha256"
@@ -513,6 +528,11 @@
     {
       "id": "registries/github_content/github.com/aquaproj/aqua-registry/v4.172.0/registry.yaml",
       "checksum": "8F3624D7013C943F561D17EB517103A183090DC96841FF9A4ACBE4583C44EC9416C9AE59CC62DD548AC4635A9BDDD3B48F4035C88E8B4ED48C6F72CEC68D56B7",
+      "algorithm": "sha512"
+    },
+    {
+      "id": "registries/github_content/github.com/aquaproj/aqua-registry/v4.174.0/registry.yaml",
+      "checksum": "87915F6D4E44FFE6C0B6ED9F71625CEEAB45B85C6C3596579A768CABEAB70E55741121C5C225E3AD7174F328195D90952CA67572DF012CED300BFC7C9EAFBC5A",
       "algorithm": "sha512"
     }
   ]
