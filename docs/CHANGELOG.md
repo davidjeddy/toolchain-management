@@ -12,6 +12,13 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.12] - 2024-05-10
+
+### FIX
+
+- xeol tool now fails gracefully due to it's problem with parsing some valid sbom.xml that miss <components><component> tags (for example ops-tooling ecs-service of deployments project)
+- xeol "if statement" now properly checks for xeol.yml file instead of trivy.yml
+
 ## [0.51.11] - 2024-05-08
 
 ### ADD
