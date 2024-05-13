@@ -154,14 +154,19 @@ function documentation() {
     git add README.md || true
 }
 
-# TODO Replace checkov
-# Versions > 3.1.z require API key
-# Versions < 3.1.z are not available for ARM via aqua
 function generateSBOM() {
     printf "INFO: starting generateSBOM()\n"
 
+    # Because RHEL 7 + Pythin 3.8 have different minimal versions requirements of GLIBC
+    # https://jira.techno.ingenico.com/browse/PROS-2411
+    if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
+    then
+        echo "WARN: Running on an EOL release of Red Hat. Skipping checkov related invokations."
+        return 0
+    fi
+
     printf "INFO: Ignore warning about 'Failed to download module', this is due to a limitation of checkov\n"
-    # Do not generate SBOM is jenkins user, just ensure it exists
+    # Do not generate SBOM if user is jenkins, onlyjust ensure it exists
     if [[ ! -f sbom.xml && $(whoami) == 'jenkins' ]]
     then
         printf "ERR: sbom.xml missing, failing."
@@ -206,7 +211,15 @@ function iacCompliance() {
     {
         rm -rf ".tmp/junit-checkov.xml" || exit 1
         touch ".tmp/junit-checkov.xml" || exit 1
-        if [[ -f "checkov.yml" ]]; then
+        
+        # Because RHEL 7 + Pythin 3.8 have different minimal versions requirements of GLIBC
+        # https://jira.techno.ingenico.com/browse/PROS-2411
+        if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
+        then
+            echo "WARN: Running on an EOL release of Red Hat. Skipping checkov related invokations."
+            echo "0"
+        elif [[ -f "checkov.yml" ]]
+        then
             printf "INFO: checkov configuration file found, using it.\n"
             checkov \
                 --config-file checkov.yml \

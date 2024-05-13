@@ -35,7 +35,7 @@ function process_goenv() {
     fi
 
     # If installed version does not match desired version
-    if [[ $(go version) != *"$(cat .go-version)"* ]]
+    if [[ $(which goenv) && $(go version) != *"$(cat .go-version)"* ]]
     then
         printf "INFO: Updating Golang via goenv to version %s\n" "$(cat .go-version)"
 
@@ -54,7 +54,7 @@ function process_goenv() {
         goenv global "$(cat .go-version)"
     fi
 
-    # If no *env IR runtime interpreter is not found
+    # If no *env AND runtime interpreter is not found
     if [[ ! $(which goenv) || ! $(which go) ]]
     then
         printf "ERR: Failed to install Golang via goenv.\n"
@@ -106,7 +106,7 @@ function process_pyenv() {
     fi
 
     # If installed version does not match desired version
-    if [[ $(python --version) != *"$(cat .python-version)"* ]]
+    if [[ $(which pyenv) && $(python --version) != *"$(cat .python-version)"* ]]
     then
         printf "INFO: Updating Python via pyenv to version %s\n" "$(cat .python-version)"
     
@@ -125,7 +125,7 @@ function process_pyenv() {
         python -m ensurepip --upgrade
     fi
 
-    # If no *env IR runtime interpreter is not found
+    # If no *env AND runtime interpreter is not found
     if [[ ! $(which pyenv) && ! $(which python) ]]
     then
         printf "ERR: Failed to install Python via pyenv.\n"
