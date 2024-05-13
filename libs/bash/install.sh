@@ -15,7 +15,7 @@ fi
 
 declare OLD_PWD
 OLD_PWD="$(pwd)"
-printf "INFO:OLD_PWD: %s\n" "%{OLD_PWD}"
+printf "INFO: OLD_PWD: %s\n" "${OLD_PWD}"
 
 ## 
 

@@ -113,26 +113,26 @@ Third, remove all pre-upgrade managed tools
 
 ```sh
 sudo su
-rm /usr/local/bin/iam-policy-json-to-terraform || true
-rm /usr/local/bin/infracost || true
-rm /usr/local/bin/kics || true
-rm /usr/local/bin/packer || true
-rm /usr/local/bin/session-manager-plugin  || true
-rm /usr/local/bin/terraform || true
-rm /usr/local/bin/terraform-docs || true
-rm /usr/local/bin/terragrunt  || true
-rm /usr/local/bin/terrascan || true
-rm /usr/local/bin/tfenv || true
-rm /usr/local/bin/tflint || true
-rm /usr/local/bin/tfsec || true
-rm /usr/local/bin/tgenv || true
-rm /usr/local/bin/tofu || true
-rm /usr/local/bin/tofuenv || true
-rm /usr/local/bin/xeol || true
 
-rm -rf /usr/local/bin/pip3* || true
-rm -rf /usr/local/bin/pydoc3* || true
-rm -rf /usr/local/bin/python3* || true
+yes | rm /usr/local/bin/iam-policy-json-to-terraform || true
+yes | rm /usr/local/bin/infracost || true
+yes | rm /usr/local/bin/kics || true
+yes | rm /usr/local/bin/packer || true
+yes | rm /usr/local/bin/session-manager-plugin  || true
+yes | rm /usr/local/bin/terraform || true
+yes | rm /usr/local/bin/terraform-docs || true
+yes | rm /usr/local/bin/terragrunt  || true
+yes | rm /usr/local/bin/terrascan || true
+yes | rm /usr/local/bin/tfenv || true
+yes | rm /usr/local/bin/tflint || true
+yes | rm /usr/local/bin/tfsec || true
+yes | rm /usr/local/bin/tgenv || true
+yes | rm /usr/local/bin/tofu || true
+yes | rm /usr/local/bin/tofuenv || true
+yes | rm /usr/local/bin/xeol || true
+yes | rm -rf /usr/local/bin/pip3* || true
+yes | rm -rf /usr/local/bin/pydoc3* || true
+yes | rm -rf /usr/local/bin/python3* || true
 
 exit # return back to normal user
 ```
@@ -140,7 +140,7 @@ exit # return back to normal user
 To verify we are now in good shape, list the contains of `/usr/local/bin`
 
 ```sh
-ls -la /usr/local/bin
+ls -lah /usr/local/bin
 ```
 
 No IAC, Golang, nor Python (3.x) binaries or directories should be listed.
