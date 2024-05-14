@@ -12,7 +12,15 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.14] - 2024-05-14
+
+### FIX
+
+- Path to `sem_ver_release_tagging` in shared `SharedModule.groovy` in hopes of fixing failing builds
+  
 ## [0.51.13] - 2024-05-13
+
+### FIX
 
 - Disable `checkov` on RHEL 7 hosts due to GLIBC 2.35 not being available
 
