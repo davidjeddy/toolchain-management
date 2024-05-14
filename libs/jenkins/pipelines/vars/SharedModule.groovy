@@ -213,7 +213,7 @@ def call(
                             )]) {
                                 sh '''#!/usr/bin/env bash
                                     set -e
-                                    ${WORKSPACE}/.tmp/toolchain-management/libs/common/sem_ver_release_tagging.sh
+                                    ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/sem_ver_release_tagging.sh
                                 '''
                             }
                         }
