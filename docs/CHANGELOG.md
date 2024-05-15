@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.15] - 2024-05-14
+
+### FIX
+
+- Do not fail if SemVer is found in CHANGELOG message but already exists in remote
+
 ## [0.51.14] - 2024-05-14
 
 ### FIX

@@ -68,11 +68,17 @@ if [[ $DRY_RUN == "" ]]
 then
     printf "INFO: Creating and pushing tag with value %s.\n" "$SEM_VER"
     # https://stackoverflow.com/questions/4457009/special-character-in-git-possible
-    git tag \
-        --annotate "$SEM_VER" \
-        --cleanup="verbatim" \
-        --message="$(printf "%s" "$MSG")"
-    git config --global push.default matching
-    git push origin "$SEM_VER"
+    {
+        git tag \
+            --annotate "$SEM_VER" \
+            --cleanup="verbatim" \
+            --message="$(printf "%s" "$MSG")"
+        git config --global push.default matching
+        git push origin "$SEM_VER"
+    } || {
+        printf "WARN: Tag %s already exists in project, skipping." "$SEM_VER"
+        exit 0
+    }
 fi
-printf "INFO: Done.\n"
+
+printf "INFO: ...done.\n"
