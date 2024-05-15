@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.16] - 2024-05-15
+
+### FIX
+
+- updated `aqua-installer` script version from `v3.0.0` to `v3.0.1` as previous version does not work correctly anymore
+
 ## [0.51.15] - 2024-05-14
 
 ### FIX
