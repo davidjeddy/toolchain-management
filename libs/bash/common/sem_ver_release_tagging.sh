@@ -14,7 +14,7 @@ PREV_TARGET="HEAD~1"
     CHANGELOG_PATH=$(git diff $PREV_TARGET --name-only | grep docs/CHANGELOG.md)
     printf "INFO: CHANGELOG_PATH is %s.\n" "$CHANGELOG_PATH"
 } || {
-    printf "WARN: No changes to '**/CHANGELOG.md' found between commit and HEAD~1.\n"
+    printf "WARN: No changes to '**/CHANGELOG.md' found between commit and %s.\n" "$PREV_TARGET"
     exit 0
 }
 
@@ -28,7 +28,10 @@ MSG=$(git diff $PREV_TARGET --unified=0 "$CHANGELOG_PATH" | \
     sed 's/+//' | \
     sed 1d
 )
-printf "INFO: MSG is %s\n" "$MSG"
+printf "INFO: MSG is:\n%s\n" "$MSG"
+
+# ignore changes to the header section. Look for changes only after the first pattern of ## [N.N.N]
+
 
 # output git diff, include --unified=2 to ensure unchanged text (up to 2 lines) in the middle of a diff is included. Specifically this ensures ### Added || ### Fixed || ### Deleted are included in the output
 # remove Git header
@@ -47,22 +50,21 @@ MSG=$(git diff $PREV_TARGET --unified="$LINES_FOR_CONTEXT" "$CHANGELOG_PATH" | \
     sed '/^-/d' | \
     sed 's/+//'
 )
-printf "INFO: MSG: %s\n" "$MSG"
+printf "INFO: MSG is:\n%s\n" "$MSG"
 
 # grep extract SemVer from string
 # https://stackoverflow.com/questions/16817646/extract-version-number-from-a-string
-SEM_VER=$( echo "$MSG" | head -n 1 | grep -Po "([0-9]+([.][0-9]+)+)" )
+SEM_VER=$(echo "$MSG" | grep -Po "([0-9]+([.][0-9]+)+)")
 if [[ ! "$SEM_VER" ]]
 then
     printf "ERR: Valid SEM_VER not found. Is %s properly formatted?.\n" "$CHANGELOG_PATH"
     exit 1
 fi
-
-# Return only the most recent SemVer string
+# Return only the most recent SemVer string if multiple are found
 SEM_VER=$(echo "$SEM_VER" | head -n 1)
 
 # Output SEM_VER being worked with
-printf "INFO: SEM_VER: %s\n" "$SEM_VER"
+printf "INFO: SEM_VER is:\n%s\n" "$SEM_VER"
 
 if [[ $DRY_RUN == "" ]]
 then
