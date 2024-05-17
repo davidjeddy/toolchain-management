@@ -12,6 +12,13 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.17] - 2024-05-14
+
+## FIX
+
+- Error with extraction of SEM_VER from docs/CHANGELOG.md in downstream projects
+- IAC module publishing logic moved into shell script, invoked from pipeline
+
 ## [0.51.16] - 2024-05-15
 
 ### FIX

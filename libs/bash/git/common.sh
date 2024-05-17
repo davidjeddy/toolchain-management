@@ -178,6 +178,14 @@ function generateSBOM() {
     fi
 
     {
+        # Because RHEL 7 + Pythin 3.8 have different minimal versions requirements of GLIBC
+        # https://jira.techno.ingenico.com/browse/PROS-2411
+        if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
+        then
+            echo "WARN: Running on an EOL release of Red Hat. Exiting to prevent error with checkov."
+            return "0"
+        fi
+
         if [[ -f "checkov.yml" ]]; then
             # use configuration file if present. Created due to terraform/aws/worldline-gc-keycloak-dev/eu-west-1/keycloak/iohd being created BEFORE complaince was mandatory
             checkov \
@@ -209,6 +217,14 @@ function iacCompliance() {
 
     printf "INFO: checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov)...\n"
     {
+        # Because RHEL 7 + Pythin 3.8 have different minimal versions requirements of GLIBC
+        # https://jira.techno.ingenico.com/browse/PROS-2411
+        if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
+        then
+            echo "WARN: Running on an EOL release of Red Hat. Exiting to prevent error with checkov."
+            return "0"
+        fi
+
         rm -rf ".tmp/junit-checkov.xml" || exit 1
         touch ".tmp/junit-checkov.xml" || exit 1
         
