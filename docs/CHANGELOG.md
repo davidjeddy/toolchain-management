@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.51.18] - 2024-05-17
+
+## FIX
+
+- Missing execution permission on `libs/bash/common/publish_iac_module_version.sh`
+
 ## [0.51.17] - 2024-05-14
 
 ## FIX
