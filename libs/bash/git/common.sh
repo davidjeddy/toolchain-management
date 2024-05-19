@@ -81,9 +81,10 @@ function exec() {
         # linting and syntax formatting
         iacLinting
 
-        # Generate sbom.xml only if the invoking scripts is pre-commit. No other time should generate sbom
-        if [[ "${0?}" == *pre-commit ]]; then
-
+        # Generate sbom.xml only if the invoking scripts is the Git pre-commit hook invoker
+        #No other time should generate sbom
+        if [[ "${0?}" == *pre-commit ]]
+        then
             # generate docs and meta-data
             documentation
 
@@ -91,8 +92,9 @@ function exec() {
             generateSBOM
         fi
 
-        # Finally, if the invoking script name is pre-push, also run the full compliance tooling
-        if [[ "${0?}" == *pre-push ]]; then
+        # Finally, if the invoking script name is pre-push or iac_publish.sh: run iac ompliance tooling
+        if [[ "${0?}" == *pre-push  || "${0?}" == *iac_publish.sh ]]
+        then
             # Do not allow in-project shared modules
             doNotAllowSharedModulesInsideDeploymentProjects
 

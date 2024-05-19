@@ -12,6 +12,17 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.52.0] - 2024-05-19
+
+## ADD
+
+- TOOLCHAIN_BRANCH parameter to SharedModule.groovy
+- libs/bash/common/iac_publish.sh
+
+## FIX
+
+- Reworked SharedModule.groovy to better match execution of pre-commit and pre-push processes
+
 ## [0.51.18] - 2024-05-17
 
 ## FIX
