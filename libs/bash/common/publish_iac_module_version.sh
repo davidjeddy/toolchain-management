@@ -2,21 +2,34 @@
 
 set -e
 
-declare TAG
+if [[ ! "${1}" ]]
+then
+    printf "ERR: Gitlab project id must provide Gitlab project ID.\n"
+    exit 1
+fi
+
+if [[ ! $GITLAB_CREDENTIALSID ]]
+then
+    printf "ERR: Required ENV VAR GITLAB_CREDENTIALSID not set.\n"
+    exit 1
+fi
+
+declare GITLAB_PROJECT_ID="${1}"
 declare LOV
+declare TAG
 
 TAG="$(git describe --tags "$(git rev-list --tags --max-count=1)")"
-echo "TAG: $TAG"
+printf "INFO: TAG: %s\n" "$TAG"
 
 # List Of Versions
 # https://forum.gitlab.com/t/listing-all-terraform-modules-published-under-group-via-api/75045
 LOV=$(
     curl \
-        --header "Authorization: Bearer ''' +  env.gitlabPAT + '''" \
+        --header "Authorization: Bearer ${GITLAB_CREDENTIALSID}" \
         --insecure \
         --location \
         --silent \
-        "https://'''+gitlabHost+'''/api/v4/projects/''' + gitlabProjectId + '''/packages?package_type=terraform_module" \
+        "https://${GITLAB_HOST}/api/v4/projects/${GITLAB_PROJECT_ID}/packages?package_type=terraform_module" \
         | jq -r .[].version
 )
 
@@ -24,21 +37,23 @@ LOV=$(
 # https://linuxize.com/post/how-to-check-if-string-contains-substring-in-bash/
 if [[ "$LOV" != *"$TAG"* ]]
 then
-    rm "${WORKSPACE}/.tmp/'''+gitlabProjectName+'''-$TAG.tgz" || true
+    rm "${WORKSPACE}/.tmp/${PWD##*/}-$TAG.tgz" || true
     tar \
         --create \
         --directory . \
         --exclude=.git \
         --exclude=.tmp \
         --exclude=.tgz \
-        --file "${WORKSPACE}/.tmp/'''+gitlabProjectName+'''-$TAG.tgz" \
+        --file "${WORKSPACE}/.tmp/${PWD##*/}-$TAG.tgz" \
         --gzip \
         .
 
     curl \
-        --header "PRIVATE-TOKEN: ''' +  env.gitlabPAT + '''" \
+        --header "PRIVATE-TOKEN: ${GITLAB_CREDENTIALSID}" \
         --insecure \
         --location \
-        --upload-file "${WORKSPACE}/.tmp/'''+gitlabProjectName+'''-$TAG.tgz" \
-        --url "https://'''+gitlabHost+'''/api/v4/projects/''' + gitlabProjectId + '''/packages/terraform/modules/'''+gitlabProjectName+'''/aws/$TAG/file"
+        --upload-file "${WORKSPACE}/.tmp/${PWD##*/}-$TAG.tgz" \
+        --url "https://${GITLAB_HOST}/api/v4/projects/${GITLAB_PROJECT_ID}/packages/terraform/modules/${PWD##*/}/aws/$TAG/file"
 fi
+
+printf "INFO: ...done.\n"

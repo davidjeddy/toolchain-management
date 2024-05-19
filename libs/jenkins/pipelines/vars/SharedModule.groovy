@@ -1,4 +1,4 @@
-#!groovy
+"${0?}"#!groovy
 
 // https://stackoverflow.com/questions/61106044/condition-in-jenkins-pipeline-on-the-triggers-directive
 def runCron(cronSchedule) {
@@ -39,6 +39,10 @@ def call(
             skipStagesAfterUnstable()
             timeout(time: jobTimeout, unit: 'MINUTES') // https://stackoverflow.com/questions/38096004/how-to-add-a-timeout-step-to-jenkins-pipeline
             timestamps()
+        }
+        // https://www.jenkins.io/doc/book/pipeline/syntax/#parameters
+        parameters {
+            string(name: 'TOOLCHAIN_BRANCH', defaultValue: 'main')
         }
         // source https://stackoverflow.com/questions/36651432/how-to-implement-post-build-stage-using-jenkins-pipeline-plug-in
         // source https://plugins.jenkins.io/gitlab-plugin/
@@ -96,31 +100,27 @@ def call(
             stage('Notification') {
                 steps {
                     script {
-                        withCredentials([string(
-                            credentialsId:  gitlabApiToken,
-                            variable:       'gitlabPAT'
-                        )]) {
-                            sh '''#!/bin/bash
-                                curl \
-                                    --form "note=# Build Pipeline\n\nNumber: ${BUILD_NUMBER}\n\nUrl: ${BUILD_URL}console" \
-                                    --header "PRIVATE-TOKEN: ''' +  env.gitlabPAT + '''" \
-                                    --request POST \
-                                    "https://${GITLAB_HOST}/api/v4/projects/''' + gitlabProjectId + '''/repository/commits/${GIT_COMMIT}/comments"
-                            '''
-                        }
+                        sh '''#!/usr/bin/env bash
+                            set -e
+                            curl \
+                                --form "note=# Build Pipeline\n\nNumber: ${BUILD_NUMBER}\n\nUrl: ${BUILD_URL}console" \
+                                --header "PRIVATE-TOKEN: $GITLAB_CREDENTIALSID" \
+                                --request POST \
+                                "https://${GITLAB_HOST}/api/v4/projects/''' + gitlabProjectId + '''/repository/commits/${GIT_COMMIT}/comments"
+                        '''
                     }
                 }
             }
             stage('Clean Workspace') {
                 steps {
-                    echo "INFO: Clean workspace"
                     cleanWs()
                 }
             }
             stage('Print ENV VARs') {
                 steps {
                     script {
-                        sh '''
+                        sh '''#!/usr/bin/env bash
+                            set -e
                             echo "INFO: Printing ENV VARs"
                             # We do not want the default AWS credentials from Jenkins
                             unset JENKINS_AWS_CREDENTIALSID
@@ -150,49 +150,25 @@ def call(
                     script {
                         sh '''#!/usr/bin/env bash
                             set -e
-                            ${WORKSPACE}/libs/bash/install.sh
+                            ${WORKSPACE}/libs/bash/install.sh ${params.TOOLCHAIN_BRANCH}
                         '''
                     }
                 }
             }
             stage('Compliance & SAST') {
                 steps {
-                    script {
-                        withCredentials([string(
-                            credentialsId:  gitlabApiToken,
-                            variable:       'gitlabPAT'
-                        )]) {
-                            sh '''#!/usr/bin/env bash
-                                set -e
+                        sh '''#!/usr/bin/env bash
+                            set -e
+                            ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/iac_publish.sh
 
-                                # shellcheck disable=1091
-                                ## New location
-                                source "${WORKSPACE}/.tmp/toolchain-management/libs/bash/git/common.sh" || true
-
-                                # Do not allow in-project shared modules
-                                doNotAllowSharedModulesInsideDeploymentProjects
-
-                                # generate docs and meta-data only if checks do not fail
-                                documentation
-
-                                # supply chain attastation generation and diff comparison
-                                # generateSBOM
-
-                                # best practices and security scanning
-                                iacCompliance
-
-                                # linting and syntax formatting
-                                iacLinting
-
-                                # urlencoding using CURL https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736
-                                # Send payload via GitLab API https://docs.gitlab.com/ee/api/commits.html#post-comment-to-commit
-                                curl \
-                                    --form "note=# Compliance Scanning Results:\n- ${BUILD_URL}testReport/" \
-                                    --header "PRIVATE-TOKEN: ''' +  env.gitlabPAT + '''" \
-                                    --request POST \
-                                    "https://${GITLAB_HOST}/api/v4/projects/''' + gitlabProjectId + '''/repository/commits/${GIT_COMMIT}/comments"
-                            '''
-                        }
+                            # urlencoding using CURL https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736
+                            # Send payload via GitLab API https://docs.gitlab.com/ee/api/commits.html#post-comment-to-commit
+                            curl \
+                                --form "note=# Compliance Scanning Results:\n- ${BUILD_URL}testReport/" \
+                                --header "PRIVATE-TOKEN: $GITLAB_CREDENTIALSID" \
+                                --request POST \
+                                "https://${GITLAB_HOST}/api/v4/projects/''' + gitlabProjectId + '''/repository/commits/${GIT_COMMIT}/comments"
+                        '''
                     }
 
                     archive includes: '${WORKSPACE}/.tmp/junit*.xml'
@@ -231,9 +207,8 @@ def call(
                                 credentialsId:  gitlabApiToken,
                                 variable:       'gitlabPAT'
                             )]) {
-                                sh '''#!/usr/bin/env bash
-                                    set -e
-                                    ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/publish_iac_module_version.sh
+                                sh '''
+                                    ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/publish_iac_module_version.sh ''' + gitlabProjectId + '''
                                 '''
                             }
                         }
