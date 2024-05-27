@@ -6,19 +6,28 @@
 import com.ingenico.epayments.ci.common.PipelineCommon
 import com.ingenico.epayments.ci.common.Slack
 
-// String var config
+// configuration vars
+
+Number jobTimeout           = 30
+String githubPAT            = "GH_PAT"
 String gitlabApiToken       = 'jenkins-user-gitlab-test-api-token'
 String gitlabConnectionName = 'gitlab-test-igdcs'
 String gitlabProjectId      = 3440
-
 String gitSSHCreds          = 'jenkins-gitlab-test-igdcs'
+String gitTargetBranch      = 'main'
 String slackChannel         = 'nl-pros-centaurus-squad-releases'
 String slackMsgSourceAcct   = ':jenkins:'
 String workerNode           = 'bambora-aws-slave-terraform'
 
-String gitTargetBranch      = 'main'
+// global scope container vars
+
+
 
 // No need to edit below this line
+
+// helper functions
+
+// execution
 
 pipeline {
     agent {
@@ -26,12 +35,14 @@ pipeline {
     }
     environment {
         GITLAB_CREDENTIALSID = credentials('GL_PAT_TF_MODULE_MIRRORING')
+        GITHUB_TOKEN = credentials("${githubPAT}")
     }
     options {
+        ansiColor('xterm') // https://plugins.jenkins.io/ansicolor/
         gitLabConnection(gitlabConnectionName)
+        skipStagesAfterUnstable()
+        timeout(time: jobTimeout, unit: 'MINUTES') // https://stackoverflow.com/questions/38096004/how-to-add-a-timeout-step-to-jenkins-pipeline
         timestamps()
-        // https://stackoverflow.com/questions/38096004/how-to-add-a-timeout-step-to-jenkins-pipeline
-        timeout(time: 30, unit: 'MINUTES')
     }
     // https://stackoverflow.com/questions/36651432/how-to-implement-post-build-stage-using-jenkins-pipeline-plug-in
     // https://plugins.jenkins.io/gitlab-plugin/
@@ -164,8 +175,7 @@ pipeline {
         }
     }
     triggers {
-        // https://www.jenkins.io/doc/book/pipeline/syntax/
-        cron(env.BRANCH_NAME == gitTargetBranch ?  'H 0 * * 1-5' : '') // Run during the midnight hour Mon-Fri
-        pollSCM('H 23 * * 1-5')                                        // Check branch status during the 2300 hour Mon-Fri daily
+        cron(env.BRANCH_NAME == gitTargetBranch ?  'H 0 * * 1-5' : '')      // Run during the midnight hour Mon-Fri
+        pollSCM(env.BRANCH_NAME == gitTargetBranch ? 'H 23 * * 1-5' : '')   // Check branch status during the 2300 hour Mon-Fri daily
     }
 }

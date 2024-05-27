@@ -2,104 +2,62 @@
 
 set -e
 
+if [[ $WL_IAC_LOGGING == "TRACE" ]]
+then 
+    set -x
+fi
+
+if [[ ! $WORKSPACE ]]
+then
+    declare WORKSPACE
+    WORKSPACE=$(git rev-parse --show-toplevel)
+    export WORKSPACE
+    printf "INFO: WORKSPACE %s\n" "${WORKSPACE}"
+fi
+
 ## fn()
 
 function exec() {
     printf "INFO: starting exec()\n"
 
-    # args
-
-    # Use the value of $1 as source for $WORKSPACE
-    # Either WORKSPACE must be set or $1 needs to be a path
-    if [[ ${1} != "" ]]
+    if [[ ! ${1} ]]
     then
-        WORKSPACE="${1}"
-        # We DO want to export the value for other fn() to use
-        export WORKSPACE
-    elif [[ $WORKSPACE && ! ${1} ]]
-    then
-        printf "INFO: Use ENV VAR value WORKSPACE: %s\n" "$WORKSPACE"
-        export WORKSPACE
-    elif [[ ! $WORKSPACE && ! ${1} ]]
-    then
-        printf "ERR: Argument 1 or WORKSPACE must be path to root of project.\n"
+        printf "ERR: Argument 1 must be list of IAC modules.\n"
         exit 1
     fi
 
-    local CHANGE_LIST
-    if [[ ! $2 ]]; then
-        printf "ERR: Argument 2 must be change file list.\n"
-        exit 1
-    fi
-    CHANGE_LIST="${2}"
-
-    # Non loop related fn() calls
+    # Before anything else, is the branch name valid
     validateBranchName
 
-    # get a list of changed files when using only the git staged list against previouse commit
-    local TF_FILES_CHANGED
-    # shellcheck disable=SC2002
-    TF_FILES_CHANGED=$(
-        printf "%s" "${CHANGE_LIST}" |
-            grep tf\$ |
-            grep -v .tmp/ |
-            grep -v docs/ |
-            grep -v examples/ |
-            grep -v libs/ |
-            grep -v README.md |
-            grep -v sbom.xml |
-            grep -v terraform.tf ||
-            true
-    )
-    export TF_FILES_CHANGED
-    printf "INFO: TF_FILES_CHANGED value is \n%s\n" "$TF_FILES_CHANGED"
+    for THIS_DIR in ${1}
+    do
+        printf "INFO: Changing into module directory if it still exists: %s/%s\n" "${WORKSPACE}" "${THIS_DIR}"
+        cd "${WORKSPACE}"/"${THIS_DIR}" || continue
 
-    if [[ $TF_FILES_CHANGED == "" ]]; then
-        printf "INFO: TF_FILES_CHANGED is empty; no iac changes detected, exiting.\n"
-        exit 0
-    fi
-
-    local MODULES_DIR
-    if [[ $TF_FILES_CHANGED != "" ]]; then
-        MODULES_DIR=$(echo "$TF_FILES_CHANGED" | xargs -L1 dirname | sort | uniq)
-        printf "INFO: MODULES_DIR value is \n%s\n" "$MODULES_DIR"
-    fi
-
-    for DIR in $MODULES_DIR; do
-        printf "INFO: Changing into %s dir if it still exists.\n" "${WORKSPACE}/${DIR}"
-        cd "$WORKSPACE/$DIR" || continue
-
-        # If a lock file exists, AND the cache directory does not, the module needs to be initilized.
-        if [[ -f "terraform.lock.hcl" && ! -d "terraform" ]]; then
-            terraform init -no-color
-            terraform providers lock -platform=linux_amd64
-        fi
-
-        # Create tmp dir to hold artifacts and reports
+        # Create tmp dir
         createTmpDir
+        # Module init logic
+        iacInit
 
-        # linting and syntax formatting
-        iacLinting
-
-        # Generate sbom.xml only if the invoking scripts is the Git pre-commit hook invoker
-        #No other time should generate sbom
+        # This process should only be exected during feature branch change committing
         if [[ "${0?}" == *pre-commit ]]
         then
+            printf "INFO: Git pre-commit invokation detected.\n"
+
             # generate docs and meta-data
             documentation
-
-            # generate sbom for supply chain suditing
+            # generate sbom for supply chain auditing
             generateSBOM
+            # format, lint, and syntax
+            iacLinting
+            # jump to the next item in THIS_DIR_CHANGE_LIST list
+            continue 
         fi
 
-        # Finally, if the invoking script name is pre-push or iac_publish.sh: run iac ompliance tooling
-        if [[ "${0?}" == *pre-push  || "${0?}" == *iac_publish.sh ]]
-        then
-            # Do not allow in-project shared modules
-            doNotAllowSharedModulesInsideDeploymentProjects
-
-            iacCompliance
-        fi
+        # Any other invokation executes the full battery of checks
+        doNotAllowSharedModulesInsideDeploymentProjects
+        # SAST
+        iacCompliance
     done
 }
 
@@ -112,23 +70,30 @@ function createTmpDir() {
     fi
 }
 
+# Uses relative path, location based from exec() loop dir
 function doNotAllowSharedModulesInsideDeploymentProjects() {
     printf "INFO: starting doNotAllowSharedModulesInsideDeploymentProjects()\n"
 
     #shellcheck disable=SC2002 # We do want to cat the file contents and pipeline into jq
-    if [[ ! -f "$(pwd)/.terraform/modules/modules.json" ]]; then
-        return 0
+    if [[ ! -f ".terraform/modules/modules.json" ]]
+    then
+        printf "INFO: No .terraform detected, exiting."
+        exit 1
     fi
 
     # shellcheck disable=SC2002
-    MODULE_SOURCES=$(cat "$(pwd)/.terraform/modules/modules.json" | jq '.Modules[] | .Source')
+    declare THIS_MODULE_SOURCES
+    # shellcheck disable=SC2002
+    THIS_MODULE_SOURCES=$(cat ".terraform/modules/modules.json" | jq '.Modules[] | .Source')
 
-    for MODULE_SOURCE in $MODULE_SOURCES; do
-        echo "INFO: Checking module source $MODULE_SOURCE"
+    for THIS_MODULE_SOURCE in ${THIS_MODULE_SOURCES}
+    do
+        printf "INFO: Checking module source %s\n" "${THIS_MODULE_SOURCE}"
 
         # https://linuxize.com/post/how-to-check-if-string-contains-substring-in-bash/
-        if [[ "$MODULE_SOURCE" =~ "file://"* ]]; then
-            echo "ERROR: It is not allowed to use shared modules placed inside a deployment project. Please use published modules from a registry."
+        if [[ "${THIS_MODULE_SOURCE}" =~ "file://"* ]]
+        then
+            printf "ERR: It is not allowed to use in-tree shared modules. Please use published shared modules from a supported registry.\n"
             exit 1
         fi
     done
@@ -139,14 +104,16 @@ function documentation() {
 
     if [[ ! -f "README.md" ]]; then
         printf "ALERT: README.md not found in module, creating from template.\n"
+        
         # Get module name and uppercase it
-        MODULE_NAME=$(basename "${WORKSPACE}")
-        MODULE_NAME=${MODULE_NAME^^}
+        declare THIS_MODULE_NAME
+        THIS_MODULE_NAME=$(basename "${WORKSPACE}")
+        THIS_MODULE_NAME=${THIS_MODULE_NAME^^}
 
         # Add markers for tf_docs to insert API documentation
-        echo "# ${MODULE_NAME}
+        print "# %s
         <\!-- BEGIN_TF_DOCS -->
-        <\!-- END_TF_DOCS -->" | awk '{$1=$1;print}' >README.md
+        <\!-- END_TF_DOCS -->" "${THIS_MODULE_NAME}" | awk '{$1=$1;print}' >README.md
         sed -i 's/\\//' README.md
     fi
 
@@ -163,8 +130,8 @@ function generateSBOM() {
     # https://jira.techno.ingenico.com/browse/PROS-2411
     if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
     then
-        echo "WARN: Running on an EOL release of Red Hat. Skipping checkov related invokations."
-        return 0
+        printf "WARN: Running on an EOL release of Red Hat. Skipping checkov related invokations.\n"
+        exit 0
     fi
 
     printf "INFO: Ignore warning about 'Failed to download module', this is due to a limitation of checkov\n"
@@ -176,7 +143,7 @@ function generateSBOM() {
     elif [[ -f sbom.xml && $(whoami) == 'jenkins' ]]
     then
         printf "INFO: Automation user detected, not generated sbom.xml"
-        return 0
+        exit 0
     fi
 
     {
@@ -184,8 +151,8 @@ function generateSBOM() {
         # https://jira.techno.ingenico.com/browse/PROS-2411
         if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
         then
-            echo "WARN: Running on an EOL release of Red Hat. Exiting to prevent error with checkov."
-            return "0"
+            printf "WARN: Running on an EOL release of Red Hat. Skipping checkov.\n"
+            exit 0
         fi
 
         if [[ -f "checkov.yml" ]]; then
@@ -208,7 +175,7 @@ function generateSBOM() {
         fi
         git add sbom.xml || true
     } || {
-        echo "ERR: checkov SBOM failed to generate."
+        printf "ERR: checkov SBOM failed to generate.\n"
         cat "sbom.xml"
         exit 1
     }
@@ -217,14 +184,15 @@ function generateSBOM() {
 function iacCompliance() {
     printf "INFO: starting iacCompliance()\n"
 
-    printf "INFO: checkov (Ignore warning about 'Failed to download module', this is due to a limitation of checkov)...\n"
+    printf "INFO: checkov executing...\n"
+    printf "WARN: Ignore warning about 'Failed to download module', this is due to a limitation of checkov)\n"
     {
         # Because RHEL 7 + Pythin 3.8 have different minimal versions requirements of GLIBC
         # https://jira.techno.ingenico.com/browse/PROS-2411
         if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
         then
-            echo "WARN: Running on an EOL release of Red Hat. Exiting to prevent error with checkov."
-            return "0"
+            printf "WARN: Running on an EOL release of Red Hat. Exiting to prevent ERR with checkov.\n"
+            exit 0
         fi
 
         rm -rf ".tmp/junit-checkov.xml" || exit 1
@@ -234,8 +202,8 @@ function iacCompliance() {
         # https://jira.techno.ingenico.com/browse/PROS-2411
         if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
         then
-            echo "WARN: Running on an EOL release of Red Hat. Skipping checkov related invokations."
-            echo "0"
+            printf "WARN: Running on an EOL release of Red Hat. Skipping checkov related invokations.\n"
+            exit 0
         elif [[ -f "checkov.yml" ]]
         then
             printf "INFO: checkov configuration file found, using it.\n"
@@ -262,8 +230,7 @@ function iacCompliance() {
                 > ".tmp/junit-checkov.xml"
         fi
     } || {
-        echo "ERR: checkov failed. Check report saved to .tmp/junit-checkov.xml"
-        cat ".tmp/junit-checkov.xml"
+        printf ".tmp/junit-checkov.xml\n"
         exit 1
     }
 
@@ -306,7 +273,7 @@ function iacCompliance() {
                 --log-level info
         fi
     } || {
-        echo "ERR: kics failed. Check report saved to .tmp/junit-kics.xml"
+        printf "ERR: kics failed. Check report saved to .tmp/junit-kics.xml\n"
         cat ".tmp/junit-kics.xml"
         exit 1
     }
@@ -338,13 +305,13 @@ function iacCompliance() {
                 > ".tmp/junit-tfsec.xml"
         fi
     } || {
-        echo "ERR: tfsec failed. Check report saved to .tmp/junit-tfsec.xml"
+        printf "ERR: tfsec failed. Check report saved to .tmp/junit-tfsec.xml\n"
         cat ".tmp/junit-tfsec.xml"
         exit 1
     }
 
     # trivy only scans deployment modules
-    # FATAL	sbom scan error: scan error: scan failed: failed analysis: SBOM decode error: cyclonedx-xml scanning is not yet supported
+    # FATAL	sbom scan ERR: scan ERR: scan failed: failed analysis: SBOM decode ERR: cyclonedx-xml scanning is not yet supported
     # if [[ -f "${WORKSPACE}/.terraform.lock.hcl" ]]
     # then
     #     printf "INFO: trivy executing...\n"
@@ -372,7 +339,7 @@ function iacCompliance() {
     #                 > ".tmp/junit-trivy.xml"
     #         fi
     #     } || {
-    #         echo "ERR: trivy failed. Check Junit reports in .tmp"
+    #         printf "ERR: trivy failed. Check Junit reports in .tmp\n"
     #         cat ".tmp/junit-trivy.xml"
     #         exit 1
     #     }
@@ -400,20 +367,40 @@ function iacCompliance() {
                 sbom.xml
         fi
     } || {
-        echo "WARN: xeol failed. Check Junit reports in .tmp"
-        echo "WARN: failing gracefully, due to xeol problem with parsing some valid sbom.xml that miss <components><component> tags (for example ops-tooling ecs-service of deployments project)"
+        printf "WARN: xeol failed. Check Junit reports in .tmp\n"
+        printf "WARN: failing gracefully, due to xeol problem with parsing some valid sbom.xml that miss <components><component> tags (for example ops-tooling ecs-service of deployments project)\n"
         cat ".tmp/junit-xeol.xml"
         # exit 1  # TODO: restore after this issue is fixed: https://github.com/xeol-io/xeol/issues/344
     }
 }
 
+function iacInit() {
+    printf "INFO: starting iacInit()\n"
+
+    if [[ ! -d ".terraform" ]]
+    then
+        printf "INFO: IAC lock file found, initializing.\n"
+        terraform init -no-color
+        terraform providers lock -platform=linux_amd64
+    fi
+}
+
 function iacLinting() {
     printf "INFO: starting iacLinting()\n"
 
-    terraform fmt -no-color -recursive .
-    terragrunt hclfmt .
+    printf "INFO: IAC formatting.\n"
+    {
+        git add "$(terraform fmt -no-color -recursive .)"
+    } || {
+        printf "INFO: No Terraform formatting issues found, Good job!\n"
+    }
+    {
+        git add "$(terragrunt hclfmt .)"
+    } || {
+        printf "INFO: No Terragrunt formatting issues found, Good job!\n"
+    }
 
-    printf "INFO: tflint executing...\n"
+    printf "INFO: IAC linting.\n"
     {
         if [[ -f "tflint.hcl" ]]; then
             tflint \
@@ -432,7 +419,7 @@ function iacLinting() {
                 > ".tmp/junit-tflint.xml"
         fi
     } || {
-        echo "ERR: tflint failed. Check Junit reports in .tmp"
+        printf "ERR: tflint failed. Check Junit reports in .tmp\n"
         cat ".tmp/junit-tflint.xml"
         exit 1
     }
@@ -441,17 +428,21 @@ function iacLinting() {
 function validateBranchName() {
     printf "INFO: starting validateBranchName()\n"
 
-    local BRANCH_NAME
-    BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
+    local THIS_BRANCH_NAME
+    THIS_BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
+    if [[ $THIS_BRANCH_NAME == 'main' ]]
+    then
+        exit 0
+    fi
 
     # {action}/{ticket}/{description}
-    local REGEX
-    REGEX="^(add|fix|remove)\/([A-Z]{1,10})(\-)?([X0-9]{1,10})\/([a-z0-9_]){8,256}"
+    local THIS_REGEX
+    THIS_REGEX="^(add|fix|remove)\/([A-Z]{1,10})(\-)?([X0-9]{1,10})\/([a-z0-9_]){8,256}"
 
-    if [[ ! $BRANCH_NAME =~ $REGEX && $BRANCH_NAME != 'main' && $BRANCH_NAME != 'master' ]]
+    if [[ ! $THIS_BRANCH_NAME =~ $THIS_REGEX ]]
     then
         printf "ERR: Branch names must align with the pattern: {action}/{ticket-id}/{description}.\n"
-        printf "ERR: The RegEx pattern is as follows: %s\n" "$REGEX"
+        printf "ERR: The RegEx pattern is as follows: %s\n" "$THIS_REGEX"
         printf "Examples:\n"
         printf "* add/ICON-37949/ecs_service_connect_updating_connect_msc7_services\n"
         printf "* remove/ICON-XXXXX/connect_msc7_internal_security_testing_resources\n"
@@ -461,4 +452,36 @@ function validateBranchName() {
         printf "* fix/INC0784730/stag_config_center_website_monitor_downga.\n"
         exit 1
     fi
+}
+
+# Non-interactive functions
+
+function generateDiffList() {
+    if [[ ! ${1} ]]
+    then
+        printf "ERR: Argument 1 must be command for generating a diff list.\n"
+        exit 1
+    fi
+
+    local THIS_FILE_CHANGE_LIST
+    THIS_FILE_CHANGE_LIST=$(
+        eval "${1}" |
+        grep tf\$ |
+        grep -v .tmp/ |
+        grep -v docs/ |
+        grep -v examples/ |
+        grep -v libs/ |
+        grep -v README.md |
+        grep -v sbom.xml |
+        grep -v terraform.tf
+    )
+    if [[ ! $THIS_FILE_CHANGE_LIST ]]
+    then
+        printf "WARN: No IAC changed detected, exiting.\n"
+        exit 0
+    fi
+
+    local THIS_DIR_CHANGE_LIST
+    THIS_DIR_CHANGE_LIST=$(printf "%s" "$THIS_FILE_CHANGE_LIST" | xargs -L1 dirname | sort | uniq)
+    printf "%s" "$THIS_DIR_CHANGE_LIST"
 }

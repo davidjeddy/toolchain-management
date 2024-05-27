@@ -12,6 +12,19 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.53.0] - 2024-05-24
+
+## ADD
+
+- WORKSPACE ENV VAR check to git scripts
+- Exctracted IAC module diff list creation into `generateDiffList()`
+
+## UPDATED
+
+- git hook symlink creation
+- git hook logic in `common.sh` to be easier to use by automation
+- echo replaced with printf
+
 ## [0.52.0] - 2024-05-19
 
 ## ADD
