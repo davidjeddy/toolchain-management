@@ -3,7 +3,7 @@
 # example /path/to/project/libs/bash/tls/ciphers_available.sh admintool.preprod.connect.worldline-solutions.com 443
 # source https://stackoverflow.com/questions/24457408/openssl-command-to-check-if-a-server-is-presenting-a-certificate
 # source https://superuser.com/questions/109213/how-do-i-list-the-ssl-tls-cipher-suites-a-particular-website-offers
-# usage /path/to/project/libs/bash/tls/ciphers_available.sh IP PORT
+# usage /path/to/project/libs/bash/tls/ciphers_available.sh SERVER PORT
 
 ## Constants
 
@@ -28,7 +28,7 @@ fi
 
 if [[ $SERVER =~ https* ]]
 then
-  printf "INFO: ERR: Do not include protocol (HTTPS/HTTP/etc) in address."
+  printf "INFO: ERR: Do not include protocol (HTTPS/HTTP/etc) in as part of SERVER argument."
   exit 1
 fi
 

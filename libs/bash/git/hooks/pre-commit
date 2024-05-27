@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [[ $WL_IAC_LOGGING == "TRACE" ]]
+then 
+    set -x
+fi
+
+if [[ ! $WORKSPACE ]]
+then
+    declare WORKSPACE
+    WORKSPACE=$(git rev-parse --show-toplevel)
+    export WORKSPACE
+    printf "INFO: WORKSPACE %s\n" "${WORKSPACE}"
+fi
+
+# shellcheck disable=SC1091
+source "${WORKSPACE}/.tmp/toolchain-management/libs/bash/git/common.sh"
+
+declare DIFF_LOGIC
+DIFF_LOGIC="git diff HEAD~1 --name-only"
+printf "INFO: DIFF_LOGIC %s\n" "${DIFF_LOGIC}"
+
+declare DIFF_LIST
+DIFF_LIST=$(generateDiffList "${DIFF_LOGIC}")
+printf "INFO: DIFF_LIST \n%s\n" "${DIFF_LIST}"
+
+if [[ $DIFF_LIST ]]
+then
+    exec ${DIFF_LIST}
+fi
+
+printf "INFO: Git pre-commit hook completed successfully.\n"
