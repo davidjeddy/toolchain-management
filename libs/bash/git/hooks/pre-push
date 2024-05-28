@@ -24,11 +24,13 @@ printf "INFO: DIFF_LOGIC %s\n" "${DIFF_LOGIC}"
 
 declare DIFF_LIST
 DIFF_LIST=$(generateDiffList "${DIFF_LOGIC}")
-printf "INFO: DIFF_LIST \n%s\n" "${DIFF_LIST}"
-
-if [[ $DIFF_LIST ]]
+if [[ ! ${DIFF_LIST} ]]
 then
-    exec ${DIFF_LIST}
+    printf "WARN: IAC DIFF_LIST is empty, exiting without error.\n"
+    exit 0
 fi
+printf "INFO: DIFF_LIST: %s" "${DIFF_LIST}"
+
+exec ${DIFF_LIST}
 
 printf "INFO: Git pre-push hook completed successfully.\n"

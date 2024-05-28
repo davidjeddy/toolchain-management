@@ -12,14 +12,25 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
-## [0.53.0] - 2024-05-24
+## [0.53.1] - 2024-05-28
 
-## ADD
+### FIX
+
+- `libs/bash/git/common.sh` generateDiffList() no longer returns exit codes
+- `libs/bash/git/hooks/*.sh` return `WARN` and zero exit code if no IAC changes detected
+
+### REMOVE
+
+- IAC init from `./libs/bash/git/common.sh` as this should be done by a person or the pipeline, not a helper
+
+## [0.53.0] - 2024-05-27
+
+### ADD
 
 - WORKSPACE ENV VAR check to git scripts
 - Exctracted IAC module diff list creation into `generateDiffList()`
 
-## UPDATED
+### FIX
 
 - git hook symlink creation
 - git hook logic in `common.sh` to be easier to use by automation
@@ -27,24 +38,24 @@ Action Keywords:
 
 ## [0.52.0] - 2024-05-19
 
-## ADD
+### ADD
 
 - TOOLCHAIN_BRANCH parameter to SharedModule.groovy
 - libs/bash/common/iac_publish.sh
 
-## FIX
+### FIX
 
 - Reworked SharedModule.groovy to better match execution of pre-commit and pre-push processes
 
 ## [0.51.18] - 2024-05-17
 
-## FIX
+### FIX
 
 - Missing execution permission on `libs/bash/common/publish_iac_module_version.sh`
 
 ## [0.51.17] - 2024-05-14
 
-## FIX
+### FIX
 
 - Error with extraction of SEM_VER from docs/CHANGELOG.md in downstream projects
 - IAC module publishing logic moved into shell script, invoked from pipeline
