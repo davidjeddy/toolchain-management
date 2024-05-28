@@ -36,8 +36,6 @@ function exec() {
 
         # Create tmp dir
         createTmpDir
-        # Module init logic
-        iacInit
 
         # This process should only be exected during feature branch change committing
         if [[ "${0?}" == *pre-commit ]]
@@ -77,7 +75,7 @@ function doNotAllowSharedModulesInsideDeploymentProjects() {
     #shellcheck disable=SC2002 # We do want to cat the file contents and pipeline into jq
     if [[ ! -f ".terraform/modules/modules.json" ]]
     then
-        printf "INFO: No .terraform detected, exiting."
+        printf "INFO: No .terraform directory detected. Did you initilize the module? Exiting with error."
         exit 1
     fi
 
@@ -374,17 +372,6 @@ function iacCompliance() {
     }
 }
 
-function iacInit() {
-    printf "INFO: starting iacInit()\n"
-
-    if [[ ! -d ".terraform" ]]
-    then
-        printf "INFO: IAC lock file found, initializing.\n"
-        terraform init -no-color
-        terraform providers lock -platform=linux_amd64
-    fi
-}
-
 function iacLinting() {
     printf "INFO: starting iacLinting()\n"
 
@@ -456,6 +443,7 @@ function validateBranchName() {
 
 # Non-interactive functions
 
+# This fn() will return EITHER an empty string (non-found) OR a string list of sorted uniq strings
 function generateDiffList() {
     if [[ ! ${1} ]]
     then
@@ -477,11 +465,10 @@ function generateDiffList() {
     )
     if [[ ! $THIS_FILE_CHANGE_LIST ]]
     then
-        printf "WARN: No IAC changed detected, exiting.\n"
-        exit 0
+        printf "%s" "${THIS_FILE_CHANGE_LIST}"
     fi
 
     local THIS_DIR_CHANGE_LIST
     THIS_DIR_CHANGE_LIST=$(printf "%s" "$THIS_FILE_CHANGE_LIST" | xargs -L1 dirname | sort | uniq)
-    printf "%s" "$THIS_DIR_CHANGE_LIST"
+    printf "%s" "${THIS_DIR_CHANGE_LIST}"
 }
