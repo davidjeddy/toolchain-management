@@ -12,6 +12,13 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.53.2] - 2024-05-28
+
+### FIX
+
+- `libs/bash/git/common.sh` functions `return` instead of `exit 0` on success
+- `libs/bash/git/common.sh` iacCompliance() now properly skips checkov on EOL RHEL hosts but not other checks
+
 ## [0.53.1] - 2024-05-28
 
 ### FIX

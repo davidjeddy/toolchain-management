@@ -128,8 +128,8 @@ function generateSBOM() {
     # https://jira.techno.ingenico.com/browse/PROS-2411
     if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
     then
-        printf "WARN: Running on an EOL release of Red Hat. Skipping checkov related invokations.\n"
-        exit 0
+        printf "WARN: Running on an EOL release of Red Hat. Skipping checkov generateSBOM related invokations.\n"
+        return
     fi
 
     printf "INFO: Ignore warning about 'Failed to download module', this is due to a limitation of checkov\n"
@@ -141,7 +141,7 @@ function generateSBOM() {
     elif [[ -f sbom.xml && $(whoami) == 'jenkins' ]]
     then
         printf "INFO: Automation user detected, not generated sbom.xml"
-        exit 0
+        return
     fi
 
     {
@@ -150,7 +150,7 @@ function generateSBOM() {
         if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
         then
             printf "WARN: Running on an EOL release of Red Hat. Skipping checkov.\n"
-            exit 0
+            return
         fi
 
         if [[ -f "checkov.yml" ]]; then
@@ -185,14 +185,6 @@ function iacCompliance() {
     printf "INFO: checkov executing...\n"
     printf "WARN: Ignore warning about 'Failed to download module', this is due to a limitation of checkov)\n"
     {
-        # Because RHEL 7 + Pythin 3.8 have different minimal versions requirements of GLIBC
-        # https://jira.techno.ingenico.com/browse/PROS-2411
-        if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
-        then
-            printf "WARN: Running on an EOL release of Red Hat. Exiting to prevent ERR with checkov.\n"
-            exit 0
-        fi
-
         rm -rf ".tmp/junit-checkov.xml" || exit 1
         touch ".tmp/junit-checkov.xml" || exit 1
         
@@ -200,8 +192,7 @@ function iacCompliance() {
         # https://jira.techno.ingenico.com/browse/PROS-2411
         if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
         then
-            printf "WARN: Running on an EOL release of Red Hat. Skipping checkov related invokations.\n"
-            exit 0
+            printf "WARN: Running on an EOL release of Red Hat. Skipping checkov iacCompliance related invokations.\n"
         elif [[ -f "checkov.yml" ]]
         then
             printf "INFO: checkov configuration file found, using it.\n"
@@ -419,7 +410,7 @@ function validateBranchName() {
     THIS_BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
     if [[ $THIS_BRANCH_NAME == 'main' ]]
     then
-        exit 0
+        return
     fi
 
     # {action}/{ticket}/{description}
