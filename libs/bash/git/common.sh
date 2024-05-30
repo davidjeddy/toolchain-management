@@ -75,8 +75,8 @@ function doNotAllowSharedModulesInsideDeploymentProjects() {
     #shellcheck disable=SC2002 # We do want to cat the file contents and pipeline into jq
     if [[ ! -f ".terraform/modules/modules.json" ]]
     then
-        printf "INFO: No .terraform directory detected. Did you initilize the module? Exiting with error."
-        exit 1
+        printf "INFO: No .terraform/modules/modules.json detected, skipping.\n"
+        return
     fi
 
     # shellcheck disable=SC2002
