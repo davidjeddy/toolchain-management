@@ -29,7 +29,7 @@ then
     printf "WARN: IAC DIFF_LIST is empty, exiting without error.\n"
     exit 0
 fi
-printf "INFO: DIFF_LIST: %s" "${DIFF_LIST}"
+printf "INFO: DIFF_LIST: %s\n" "${DIFF_LIST}"
 
 exec ${DIFF_LIST}
 

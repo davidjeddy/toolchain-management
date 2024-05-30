@@ -12,6 +12,13 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.53.3] - 2024-05-28
+
+### FIX
+
+- Missing new line in some BASH printf
+- No longer `exit 1` if `.terraform/modules/modules.json` is not found. Not all deployment modules have upstream modules
+
 ## [0.53.2] - 2024-05-28
 
 ### FIX
