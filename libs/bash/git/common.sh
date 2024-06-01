@@ -203,6 +203,7 @@ function iacCompliance() {
                 --framework terraform \
                 --quiet \
                 --skip-download \
+                --skip-path ../ \
                 --skip-path .terraform \
                 -o junitxml \
                 > ".tmp/junit-checkov.xml"
@@ -214,6 +215,7 @@ function iacCompliance() {
                 --framework terraform \
                 --quiet \
                 --skip-download \
+                --skip-path ../ \
                 --skip-path .terraform \
                 -o junitxml \
                 > ".tmp/junit-checkov.xml"
