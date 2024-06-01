@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.53.4] - 2024-06-01
+
+### FIX
+
+- `checkov` now does not execute recursivly when running complaince scans
+
 ## [0.53.3] - 2024-05-28
 
 ### FIX
