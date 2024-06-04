@@ -12,6 +12,14 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.53.5] - 2024-06-03
+
+### FIX
+
+- `xeol` database should update on every run to be more idempotent
+- `xeol` does not output junit XML, now uses supported JSON output
+- Directory changing when dealing with deployment projects and published module projects
+
 ## [0.53.4] - 2024-06-01
 
 ### FIX

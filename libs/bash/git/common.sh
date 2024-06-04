@@ -31,8 +31,15 @@ function exec() {
 
     for THIS_DIR in ${1}
     do
-        printf "INFO: Changing into module directory if it still exists: %s/%s\n" "${WORKSPACE}" "${THIS_DIR}"
-        cd "${WORKSPACE}"/"${THIS_DIR}" || continue
+        # Path to shared modules root is the same as WORKSPACE; in depoloyment project there is additional dirs to traverse
+        if [[ ${WORKSPACE} == ${THIS_DIR}* ]]
+        then
+            printf "INFO: Changing into WORKSPACE directory if it still exists: %s\n" "${WORKSPACE}"
+            cd "${WORKSPACE}"
+        else
+            printf "INFO: Changing into WORKSPACE/THIS_DIR directory if it still exists: %s/%s\n" "${WORKSPACE}" "${THIS_DIR}"
+            cd "${WORKSPACE}"/"${THIS_DIR}" || continue
+        fi
 
         # Create tmp dir
         createTmpDir
@@ -341,26 +348,30 @@ function iacCompliance() {
     {
         rm -rf ".tmp/junit-xeol.xml" || exit 1
         touch ".tmp/junit-xeol.xml" || exit 1
+        
+        printf "INFO: xeol database update.\n"
+        xeol db update
         if [[ -f "xeol.yml" ]]
         then
-            # use configuration file if present.
             printf "INFO: xeol configuration file found, using it.\n"
             xeol \
                 --config xeol.yml \
                 --fail-on-eol-found \
-                --lookahead 1m \
-                sbom.xml
+                --lookahead 6m \
+                --file ".tmp/xeol.json" \
+                .
         else
             printf "INFO: xeol configuration NOT file found.\n"
             xeol \
                 --fail-on-eol-found \
-                --lookahead 1m \
-                sbom.xml
+                --lookahead 6m \
+                --file ".tmp/xeol.json" \
+                .
         fi
     } || {
         printf "WARN: xeol failed. Check Junit reports in .tmp\n"
+        cat ".tmp/xeol.json"
         printf "WARN: failing gracefully, due to xeol problem with parsing some valid sbom.xml that miss <components><component> tags (for example ops-tooling ecs-service of deployments project)\n"
-        cat ".tmp/junit-xeol.xml"
         # exit 1  # TODO: restore after this issue is fixed: https://github.com/xeol-io/xeol/issues/344
     }
 }
