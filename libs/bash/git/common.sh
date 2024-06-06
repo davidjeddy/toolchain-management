@@ -456,9 +456,13 @@ function generateDiffList() {
     fi
 
     local THIS_FILE_CHANGE_LIST
+    # String starts with "terraform/aws/"
+    # String ends with hcl OR tf
+    # Checks w/ -v are ignored/removed as being valid strings
     THIS_FILE_CHANGE_LIST=$(
         eval "${1}" |
-        grep tf\$ |
+        grep "terraform/aws/" |
+        grep "hcl\$\|tf\$" |
         grep -v .tmp/ |
         grep -v docs/ |
         grep -v examples/ |

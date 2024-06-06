@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.53.6] - 2024-06-06
+
+### FIX
+
+- `./libs/basg/git/common.sh` generateDiffList() now scoped to only allow paths starting with `terraform/aws/`
+
 ## [0.53.5] - 2024-06-03
 
 ### FIX
