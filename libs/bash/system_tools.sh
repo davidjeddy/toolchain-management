@@ -99,6 +99,14 @@ function dnf_systems() {
 function yum_systems() {
     printf "INFO: Updating and installing system tools via yum.\n"
 
+    # https://computingforgeeks.com/install-git-2-on-centos-7/
+    if [[ $(cat /etc/redhat-release) == "Red Hat Enterprise Linux Server release 7."* && $(git --version) != "git version 2"*  ]]
+    then
+        printf "WARN: Installing additional repo to enable Git 2 on RHEL 7 hosts.\n"
+        sudo yum -y remove git*
+        sudo yum -y install https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm
+    fi
+
     # RHEL (Jenkins worker)
     sudo yum update -y
     sudo yum install -y \

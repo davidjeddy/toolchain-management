@@ -11,7 +11,7 @@ declare PYENV_VER
 # set var values
 
 ## https://github.com/aquaproj/aqua/tags
-export AQUA_VER="2.27.3"
+export AQUA_VER="2.29.0"
 ## https://github.com/syndbg/goenv/releases
 export GOENV_VER="2.1.14"
 ## TODO Move this to Aqua once supported

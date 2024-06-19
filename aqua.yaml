@@ -6,21 +6,21 @@ checksum:
   - all
 registries:
 - type: standard
-  ref: v4.174.0
+  ref: v4.195.0
 packages:
-- name: aquasecurity/tfsec@v1.28.5
-- name: aquasecurity/trivy@v0.51.1
-- name: aws/aws-cli@2.15.40
+- name: aquasecurity/tfsec@v1.28.6
+- name: aquasecurity/trivy@v0.52.2
+- name: aws/aws-cli@2.16.11
 - name: bridgecrewio/checkov@3.2.23
-- name: Checkmarx/kics@v1.7.13
+- name: Checkmarx/kics@v2.1.0
 - name: flosell/iam-policy-json-to-terraform@1.8.2
 - name: git-lfs/git-lfs@v3.5.1
-- name: infracost/infracost@v0.10.35
+- name: infracost/infracost@v0.10.37
 - name: jqlang/jq@jq-1.7.1
-- name: mikefarah/yq@v4.43.1
-- name: terraform-docs/terraform-docs@v0.17.0
-- name: terraform-linters/tflint@v0.50.3
+- name: mikefarah/yq@v4.44.2
+- name: terraform-docs/terraform-docs@v0.18.0
+- name: terraform-linters/tflint@v0.51.1
 - name: tfutils/tfenv@v3.0.0
-- name: tgenv/tgenv@v1.2.0
+- name: tgenv/tgenv@v1.2.1
 - name: tofuutils/tofuenv@v1.0.6
 - name: xeol-io/xeol@v0.9.15

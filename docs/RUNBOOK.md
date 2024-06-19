@@ -113,3 +113,17 @@ After
 ```
 
 Start a new shell session and the issue should not present itself any longer.
+
+-----
+
+**Error**
+
+... doc="https://aquaproj.github.io/docs/reference/codes/001" env=linux/amd64 error="checksum is required" package_name=tgenv/tgenv package_version=v1.2.1 program=aqua registry=standard
+
+**When**
+
+aqua install
+
+**Fix**
+
+
