@@ -5,6 +5,7 @@ set -e
 # usage ./libs/bash/install.sh (optional) branch_name
 # example ./libs/bash/install.sh fix/ICON-39280/connect_preprod_module_revert_to_0_36_7_due_to_kms_permissions
 
+# Version: 0.7.0  - 2024-06-19 - UPDATED Toolchain source URL post migration to https://gitlab.kazan.myworldline.com/ SCM hosting
 # Version: 0.6.0  - 2024-05-24 - UPDATED Git hook symlink creation - David J Eddy
 # Version: 0.5.11 - 2024-05-06 - ADD Git feature checks - David J Eddy
 # Version: 0.5.10 - 2024-04-22
@@ -46,7 +47,7 @@ printf "INFO: Toolchain branch is %s\n" "$WL_GC_TOOLCHAIN_BRANCH"
 printf "INFO: Removing existing .tmp if exists.\n"
 rm -rf "$WORKSPACE/.tmp" || exit 1
 printf "INFO: Clone toolchain-management project locally into %s/.tmp\n" "$(pwd)"
-git clone --quiet git@gitlab.test.igdcs.com:cicd/terraform/tools/toolchain-management.git "$WORKSPACE/.tmp/toolchain-management"
+git clone --quiet https://gitlab.kazan.myworldline.com/cicd/terraform/tools/toolchain-management.git "$WORKSPACE/.tmp/toolchain-management"
 
 # Even if main, checkout anyways
 cd "$WORKSPACE/.tmp/toolchain-management"
@@ -70,6 +71,10 @@ done
 if [[ -f .gitattributes ]]
 then
     printf "INFO: Configure Git LFS.\n"
+    which git
+    git --version
+    which git-lfs
+    git-lfs --version
     git lfs track "*.iso"
     git lfs track "*.zip"
     git lfs track "*.gz"

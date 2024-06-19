@@ -12,6 +12,13 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.53.7] - 2024-06-19
+
+### ADD
+
+- `libs/bash/system_tools.sh` to ability to install git 2.x in RHEL 7 based hosts via additional repository from https://packages.endpointdev.com/
+
+
 ## [0.53.6] - 2024-06-06
 
 ### FIX

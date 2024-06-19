@@ -2,26 +2,24 @@
 /* groovylint-disable CompileStatic, GStringExpressionWithinString, LineLength, NestedBlockDepth, UnusedImport */
 
 //- Library Imports
-@Library('jenkins-pipeline')
+@Library('jenkins-pipeline-lib')
 import com.ingenico.epayments.ci.common.PipelineCommon
 import com.ingenico.epayments.ci.common.Slack
 
 // configuration vars
 
 Number jobTimeout           = 30
-String githubPAT            = "GH_PAT"
-String gitlabApiToken       = 'jenkins-user-gitlab-test-api-token'
-String gitlabConnectionName = 'gitlab-test-igdcs'
-String gitlabProjectId      = 3440
-String gitSSHCreds          = 'jenkins-gitlab-test-igdcs'
+String githubPat            = 'GH_PAT'
+String gitlabApiPat         = 'gitlab-kazan-technical-api-token'
+String gitlabConnectionName = 'gitlab.kazan.myworldline.com'
+String gitlabGitSa          = 'cicd-technical-user'
+String gitlabProjectId      = 78445
 String gitTargetBranch      = 'main'
 String slackChannel         = 'nl-pros-centaurus-squad-releases'
 String slackMsgSourceAcct   = ':jenkins:'
 String workerNode           = 'bambora-aws-slave-terraform'
 
 // global scope container vars
-
-
 
 // No need to edit below this line
 
@@ -34,8 +32,8 @@ pipeline {
         node workerNode
     }
     environment {
-        GITLAB_CREDENTIALSID = credentials('GL_PAT_TF_MODULE_MIRRORING')
-        GITHUB_TOKEN = credentials("${githubPAT}")
+        GITLAB_CREDENTIALSID = credentials("${gitlabApiPat}")
+        GITHUB_TOKEN = credentials("${githubPat}")
     }
     options {
         ansiColor('xterm') // https://plugins.jenkins.io/ansicolor/
@@ -56,7 +54,7 @@ pipeline {
                     slack.slackNotification(
                         slackChannel,
                         env.JOB_NAME,
-                        ":alert: Build failed.\n Build URL: ${env.BUILD_URL}console",
+                        ':alert: Build failed.\n Build URL: ${env.BUILD_URL}console',
                         slackMsgSourceAcct
                     )
                 }
@@ -71,7 +69,7 @@ pipeline {
                     slack.slackNotification(
                         slackChannel,
                         env.JOB_NAME,
-                        ":green_check_mark: ${env.BRANCH_NAME} branch build fixed.",
+                        ':green_check_mark: ${env.BRANCH_NAME} branch build fixed.',
                         slackMsgSourceAcct
                     )
                 }
@@ -93,81 +91,87 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(
-                        credentialsId:  gitlabApiToken,
+                        credentialsId:  gitlabApiPat,
                         variable:       'gitlabPAT'
                     )]) {
-                        sh '''#!/bin/bash -e
+                        sh('''#!/usr/bin/env bash
+                            set -e
+
                             curl \
                                 --form "note=# Build Pipeline\n\nNumber: ${BUILD_NUMBER}\n\nUrl: ${BUILD_URL}console" \
                                 --header "PRIVATE-TOKEN: ''' +  env.gitlabPAT + '''" \
                                 --request POST \
                                 "https://${GITLAB_HOST}/api/v4/projects/''' + gitlabProjectId + '''/repository/commits/${GIT_COMMIT}/comments"
-                        '''
+                        ''')
                     }
                 }
             }
         }
         stage('Clean Workspace') {
             steps {
-                echo 'INFO: Clean workspace'
                 cleanWs()
             }
         }
-        stage('Print ENV VARs') {
+        stage('System ENV VARs') {
             steps {
-                script {
-                    sh '''#!/bin/bash -e
-                        echo "INFO: Printing ENV VARs"
-                        # We do not want the default AWS credentials from Jenkins
-                        unset JENKINS_AWS_CREDENTIALSID
-                        # Prevent colors in BASH for tfenv and tgenv
-                        # https://github.com/tfutils/tfenv#bashlog_colours
-                        export BASHLOG_COLOURS=0
-                        printenv | sort
-                    '''
-                }
+                sh('''#!/usr/bin/env bash
+                    set -e
+
+                    echo "INFO: Printing ENV VARs"
+                    printenv | sort
+                ''')
             }
         }
         stage('Git Checkout') {
             steps {
-                echo 'Checkout main branch'
-                // Needed for compliance, sast, tagging
-                git credentialsId: gitSSHCreds,
-                    url: env.GIT_URL,
-                    branch: gitTargetBranch
-                echo 'Checkout feature branch'
-                git credentialsId: gitSSHCreds,
-                    url: env.GIT_URL,
-                    branch: env.BRANCH_NAME
+                echo "Checkout main branch for compliance, sast, tagging operations"
+                git branch: 'main',
+                    credentialsId: gitlabGitSa,
+                    url: env.GIT_URL
+                echo "Checkout feature branch for pipeline execution"
+                git branch: env.BRANCH_NAME,
+                    credentialsId: gitlabGitSa,
+                    url: env.GIT_URL
             }
         }
         // Typical direct re/install
         stage('Execute toolchain re/install') {
             steps {
-                sh '''
+                sh('''#!/usr/bin/env bash
+                    set -e
+
                     ./libs/bash/install.sh
                     source ~/.bashrc
-                '''
+                ''')
             }
         }
         stage('Execute Aqua install/update') {
             steps {
-                sh '''
+                sh('''#!/usr/bin/env bash
+                    set -e
+                    
+                    # pipeline runs non-interactive, but we still want the tools from an interactive session
+                    source ~/.bashrc 
+
                     aqua install
                     aqua update
-                '''
+                ''')
             }
         }
         // if pipeline is running the main branch, tag a new release using changes content of CHANGLOG.md
         stage('Tagging') {
             steps {
                 script {
-                    if (env.BRANCH_NAME == gitTargetBranch) {
-                        withCredentials([sshUserPrivateKey(
-                            credentialsId: gitSSHCreds,
-                            keyFileVariable: 'key'
-                        )]) {
-                            sh './libs/bash/common/sem_ver_release_tagging.sh'
+                    withCredentials([string(
+                        credentialsId:  gitlabApiPat,
+                        variable:       'gitlabPAT'
+                    )]) {
+                        if (env.BRANCH_NAME == gitTargetBranch) {
+                            sh('''#!/usr/bin/env bash
+                                set -e
+
+                                ./libs/bash/common/sem_ver_release_tagging.sh
+                            ''')
                         }
                     }
                 }

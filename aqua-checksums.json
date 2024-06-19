@@ -16,6 +16,11 @@
       "algorithm": "sha256"
     },
     {
+      "id": "github_archive/github.com/Checkmarx/kics/v2.1.0",
+      "checksum": "097072C07616AB4DBCAEDB91E8B1591DA20FA599323C1B56657CF4E677D6DFA3",
+      "algorithm": "sha256"
+    },
+    {
       "id": "github_archive/github.com/tfutils/tfenv/v3.0.0",
       "checksum": "463132E45A211FA3FAF85E62FDFAA9BB746343FF1954CCBAD91CAE743DF3B648",
       "algorithm": "sha256"
@@ -23,6 +28,11 @@
     {
       "id": "github_archive/github.com/tgenv/tgenv/v1.2.0",
       "checksum": "A941427EED2BB3C1ED7087066AD908BC6994ABDC1573EEDA5183A85BC886333B",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_archive/github.com/tgenv/tgenv/v1.2.1",
+      "checksum": "241B18EE59BD993256C9DC0847E23824C9EBF42B4D121DB11FBDFF9DDB6432B2",
       "algorithm": "sha256"
     },
     {
@@ -83,6 +93,36 @@
     {
       "id": "github_release/github.com/aquasecurity/tfsec/v1.28.5/tfsec_1.28.5_windows_arm64.tar.gz",
       "checksum": "AB631B03BAD2C6837CACBEF79DC0D7EE072D148D56095C4940F4E7B711AC0530",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/aquasecurity/tfsec/v1.28.6/tfsec_1.28.6_darwin_amd64.tar.gz",
+      "checksum": "3B31E954819FAA7D6151B999548CEFB782F2F4DC64B355C8747E44D4B0B2FACA",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/aquasecurity/tfsec/v1.28.6/tfsec_1.28.6_darwin_arm64.tar.gz",
+      "checksum": "AA132B7E0E69E16F1C9320257841751E52C42D9791B7F900DE72CF0B06FFE74C",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/aquasecurity/tfsec/v1.28.6/tfsec_1.28.6_linux_amd64.tar.gz",
+      "checksum": "8CBD8D64CBD1F25B38F33FA04DB602466DADE79E99C99DC9DA053B5962D34014",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/aquasecurity/tfsec/v1.28.6/tfsec_1.28.6_linux_arm64.tar.gz",
+      "checksum": "4BC7B0F0592BE4FA384CFF52AF5B1CDD2066BA7A06001BEA98690340851C0BCE",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/aquasecurity/tfsec/v1.28.6/tfsec_1.28.6_windows_amd64.tar.gz",
+      "checksum": "EDD9B52787AF42EE11100AFBA085F3DCAB4A77D39CEC7C85226BEBF2B8A0ECCE",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/aquasecurity/tfsec/v1.28.6/tfsec_1.28.6_windows_arm64.tar.gz",
+      "checksum": "711CFA15422F16C4D520627B2620367D1665578AE7E9567742D04BF9412B9AE7",
       "algorithm": "sha256"
     },
     {
@@ -163,6 +203,26 @@
     {
       "id": "github_release/github.com/aquasecurity/trivy/v0.51.1/trivy_0.51.1_macOS-ARM64.tar.gz",
       "checksum": "F478EF82567479280792EDC74085B29F2AE9DC195D6B00C43C467807CB8C7159",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/aquasecurity/trivy/v0.52.2/trivy_0.52.2_Linux-64bit.tar.gz",
+      "checksum": "FF51EE9957F13B150ECFBFDDFD32B4DD54AD48BEFAD5948BD69BC4E48BC9237C",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/aquasecurity/trivy/v0.52.2/trivy_0.52.2_Linux-ARM64.tar.gz",
+      "checksum": "F611217E338DC2D8A25097196CC68F3FD21433AB23D6E5441354150068959FC3",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/aquasecurity/trivy/v0.52.2/trivy_0.52.2_macOS-64bit.tar.gz",
+      "checksum": "F9CBB96C736579155BB668E7305EBCD7CE8D6E464589E41B27DCE6D0728E1C9F",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/aquasecurity/trivy/v0.52.2/trivy_0.52.2_macOS-ARM64.tar.gz",
+      "checksum": "F99BF7FAC56243E85BFCBBA8F23BB4A5DFCAA97633D1C83221C722025FC075B2",
       "algorithm": "sha256"
     },
     {
@@ -281,6 +341,36 @@
       "algorithm": "sha256"
     },
     {
+      "id": "github_release/github.com/infracost/infracost/v0.10.37/infracost-darwin-amd64.tar.gz",
+      "checksum": "CF62CDC0E357108687167E2339015C6C11FB1C47C9776E7C672B3320D44EAE8B",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/infracost/infracost/v0.10.37/infracost-darwin-arm64.tar.gz",
+      "checksum": "9EFFDC2A3AA5A5AFD3C1AF50E55D4A299EE0CEE570D7A1361DC5B28162BC155A",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/infracost/infracost/v0.10.37/infracost-linux-amd64.tar.gz",
+      "checksum": "D834FC911782B38C92735DB6E6C62BC74088E8BDD1AB1727AE4C278923C3B16D",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/infracost/infracost/v0.10.37/infracost-linux-arm64.tar.gz",
+      "checksum": "0F3CC3A8B0DF602973CF5DAA5253B2D5B0FD5D3393152CB2C9D92D01FC1385CA",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/infracost/infracost/v0.10.37/infracost-windows-amd64.tar.gz",
+      "checksum": "B1D9AE92CFB9FB1377D8EB621D887ECEB6F79006383FE89DEAEC1D18AD04692C",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/infracost/infracost/v0.10.37/infracost-windows-arm64.tar.gz",
+      "checksum": "98E0012ACFCD663D48C84F101DE879E041ED1DA32FAFCCD3A567E56478FE3084",
+      "algorithm": "sha256"
+    },
+    {
       "id": "github_release/github.com/jqlang/jq/jq-1.7.1/jq-linux-amd64",
       "checksum": "5942C9B0934E510EE61EB3E30273F1B3FE2590DF93933A93D7C58B81D19C8FF5",
       "algorithm": "sha256"
@@ -331,6 +421,31 @@
       "algorithm": "sha256"
     },
     {
+      "id": "github_release/github.com/mikefarah/yq/v4.44.2/yq_darwin_amd64",
+      "checksum": "6D3360C8C11CAE7854069C832349ACC50253D89B9D00B06700C7F99C8702D6AD",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/mikefarah/yq/v4.44.2/yq_darwin_arm64",
+      "checksum": "6CFA3C2C3A44356D0DA42D8204FC85730CEA999A779058D94D3A5B96D83F1030",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/mikefarah/yq/v4.44.2/yq_linux_amd64",
+      "checksum": "246B781828353A59FB04FFAADA241F78A8F3F25C623047B40306DEF1F6806E71",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/mikefarah/yq/v4.44.2/yq_linux_arm64",
+      "checksum": "D05D9DAE44503433E668D097143BFEB102EE7E2D486773AE23AAF81256ED54FD",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/mikefarah/yq/v4.44.2/yq_windows_amd64.exe",
+      "checksum": "6AD543C4754377F1A490CD3CB9F6212171CA0CACD3361179659CA4BFDFECBF33",
+      "algorithm": "sha256"
+    },
+    {
       "id": "github_release/github.com/terraform-docs/terraform-docs/v0.17.0/terraform-docs-v0.17.0-darwin-amd64.tar.gz",
       "checksum": "846C0A40116F748AA900BB9ABB704B34E40657D9F9ACC807AB94B66355C0EB2E",
       "algorithm": "sha256"
@@ -358,6 +473,36 @@
     {
       "id": "github_release/github.com/terraform-docs/terraform-docs/v0.17.0/terraform-docs-v0.17.0-windows-arm64.zip",
       "checksum": "C74DAC5FE0359C75213A902EBB49D65EA6FC632C1F614FD4B39642B3FC2BE91D",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/terraform-docs/terraform-docs/v0.18.0/terraform-docs-v0.18.0-darwin-amd64.tar.gz",
+      "checksum": "2B4717E979941BFAF9225C66463FE8962C33713D5F15C2AA764C55D7D6A0B689",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/terraform-docs/terraform-docs/v0.18.0/terraform-docs-v0.18.0-darwin-arm64.tar.gz",
+      "checksum": "90654F8436EE28F9A245D9B6AF88BA305B09C6CD773588B9362C29F76DAD1732",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/terraform-docs/terraform-docs/v0.18.0/terraform-docs-v0.18.0-linux-amd64.tar.gz",
+      "checksum": "7CCF78CA447E155EBF8FF0A390826283EDED651D55B8E68CC534998F8F5FAC2C",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/terraform-docs/terraform-docs/v0.18.0/terraform-docs-v0.18.0-linux-arm64.tar.gz",
+      "checksum": "C131BBE493CD97EE67A9B523264CC6BB4BB25AA506D65249CFB5913C5F64E772",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/terraform-docs/terraform-docs/v0.18.0/terraform-docs-v0.18.0-windows-amd64.zip",
+      "checksum": "37DE7C80D96C43095CFA40322CA9CFEDCD3E7A8AED084190CACD850C7D8217AB",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/terraform-docs/terraform-docs/v0.18.0/terraform-docs-v0.18.0-windows-arm64.zip",
+      "checksum": "514A5844929EB6167DC9323BD4DBE8A4A57CF9F921F5389E99834EA438359479",
       "algorithm": "sha256"
     },
     {
@@ -408,6 +553,31 @@
     {
       "id": "github_release/github.com/terraform-linters/tflint/v0.51.0/tflint_windows_amd64.zip",
       "checksum": "760AFE663A13F3C1216EC2BC12FDDA0DFD3E38D67C131ACCC94F79DB137FDD00",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/terraform-linters/tflint/v0.51.1/tflint_darwin_amd64.zip",
+      "checksum": "271CE18E05429F9D324D73F946AEBE8D00583BD1F48486012314EACD4B60B57A",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/terraform-linters/tflint/v0.51.1/tflint_darwin_arm64.zip",
+      "checksum": "4E139B572723ADA5E7CFBF214183C413E633F17D44D9FE649F1A8D8C4312AE3F",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/terraform-linters/tflint/v0.51.1/tflint_linux_amd64.zip",
+      "checksum": "F45CF2868B6606744D72C41473906546C5738DDBA41A222221DA9572ADE92336",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/terraform-linters/tflint/v0.51.1/tflint_linux_arm64.zip",
+      "checksum": "918AE33A55B28252CDCB9ACC47F75A2A0DADB26B6B4F11600BEA05685EDD557F",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/terraform-linters/tflint/v0.51.1/tflint_windows_amd64.zip",
+      "checksum": "4C46BBEF6181145B451249EB5161FFAE49CCAA4B59054E9943911B4D9B7C38C7",
       "algorithm": "sha256"
     },
     {
@@ -486,6 +656,11 @@
       "algorithm": "sha256"
     },
     {
+      "id": "http/awscli.amazonaws.com/AWSCLIV2-2.16.11.pkg",
+      "checksum": "5681BE093D4F6ECC028419596C74CD15D5F2FF7605298B38E08A5C880EFCE67F",
+      "algorithm": "sha256"
+    },
+    {
       "id": "http/awscli.amazonaws.com/awscli-exe-linux-aarch64-2.15.39.zip",
       "checksum": "F3B804187AA73DB80429F044CAD7C97A3D2588892EE83794523B2CD348329FD6",
       "algorithm": "sha256"
@@ -501,6 +676,11 @@
       "algorithm": "sha256"
     },
     {
+      "id": "http/awscli.amazonaws.com/awscli-exe-linux-aarch64-2.16.11.zip",
+      "checksum": "0224A9F2DFA2F6CF5A46FF12D94CCB31294A6CA41261D4155BE08A31EEF3C484",
+      "algorithm": "sha256"
+    },
+    {
       "id": "http/awscli.amazonaws.com/awscli-exe-linux-x86_64-2.15.39.zip",
       "checksum": "B829461F1750E7355DCDAD9D388C296BE5FD7633B4C36CED28EC0E18879778C6",
       "algorithm": "sha256"
@@ -513,6 +693,11 @@
     {
       "id": "http/awscli.amazonaws.com/awscli-exe-linux-x86_64-2.15.44.zip",
       "checksum": "A825BEC454B46CB1203A98092A95504C94872973E132A1C22BEFD8C0B11C859F",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "http/awscli.amazonaws.com/awscli-exe-linux-x86_64-2.16.11.zip",
+      "checksum": "CC24E7FB3BC9EAB9F9EABFA4C3A65E2B5B63EECD9DDB2FD5BB47B8F77AE2419C",
       "algorithm": "sha256"
     },
     {
@@ -533,6 +718,11 @@
     {
       "id": "registries/github_content/github.com/aquaproj/aqua-registry/v4.174.0/registry.yaml",
       "checksum": "87915F6D4E44FFE6C0B6ED9F71625CEEAB45B85C6C3596579A768CABEAB70E55741121C5C225E3AD7174F328195D90952CA67572DF012CED300BFC7C9EAFBC5A",
+      "algorithm": "sha512"
+    },
+    {
+      "id": "registries/github_content/github.com/aquaproj/aqua-registry/v4.195.0/registry.yaml",
+      "checksum": "BAE78291BE21D477CCA211878FD3292B315D408F25D4D991103F4A594348006278EB92F688104A1F7594FC0B839274A227C4728CFDD3F483C73C49F52CE1AAE8",
       "algorithm": "sha512"
     }
   ]
