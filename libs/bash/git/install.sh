@@ -75,9 +75,9 @@ then
     git --version
     which git-lfs
     git-lfs --version
-    git lfs track "*.iso"
-    git lfs track "*.zip"
-    git lfs track "*.gz"
+    git-lfs track "*.iso"
+    git-lfs track "*.zip"
+    git-lfs track "*.gz"
 fi
 
 if [[ -f .gitsubmodules ]]

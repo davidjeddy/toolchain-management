@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.53.8] - 2024-06-19
+
+### FIX
+
+- `libs/bash/git/install.sh` references to `git lfs` changed to `git-lfs` to prevent command splitting
+
 ## [0.53.7] - 2024-06-19
 
 ### ADD
@@ -23,7 +29,13 @@ Action Keywords:
 
 ### FIX
 
-- `./libs/basg/git/common.sh` generateDiffList() now scoped to only allow paths starting with `terraform/aws/`
+- `./libs/bash/git/install.sh` invocation of `git lfs` are now `git-lfs` to avoid problems interpreting the space between `git` and `lfs` and a command separator
+
+## [0.53.6] - 2024-06-06
+
+### FIX
+
+- `./libs/bash/git/common.sh` generateDiffList() now scoped to only allow paths starting with `terraform/aws/`
 
 ## [0.53.5] - 2024-06-03
 

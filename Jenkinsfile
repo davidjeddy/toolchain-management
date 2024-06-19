@@ -140,7 +140,7 @@ pipeline {
                 sh('''#!/usr/bin/env bash
                     set -e
 
-                    ./libs/bash/install.sh
+                    ${WORKSPACE}/libs/bash/install.sh
                     source ~/.bashrc
                 ''')
             }
