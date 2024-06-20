@@ -1,4 +1,7 @@
 #!groovy
+/* groovylint-disable CompileStatic, GStringExpressionWithinString, LineLength, NestedBlockDepth, UnusedImport */
+
+//- Library Imports
 
 // https://stackoverflow.com/questions/61106044/condition-in-jenkins-pipeline-on-the-triggers-directive
 def runCron(cronSchedule) {
@@ -192,11 +195,10 @@ def call(
                 steps {
                     script {
                         if (env.BRANCH_NAME == 'main') {
-                            // credentials to git push via ssh
-                            withCredentials([
-                                credentialsId: gitlabGitSa,
-                                keyFileVariable: 'key'
-                            ]) {
+                            withCredentials([string(
+                                credentialsId:  gitlabApiPat,
+                                variable:       'gitlabPAT'
+                            )]) {
                                 sh '''#!/usr/bin/env bash
                                     set -e
                                     source "$HOME/.bashrc"
