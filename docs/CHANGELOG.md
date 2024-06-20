@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.9] - 2024-06-20
+
+### FIX
+
+- `libs/jenkins/pipeline/vars/SharedModules.groovy` tagging stage was using incorrect credential type
+
 ## [0.54.8] - 2024-06-20
 
 ### FIX
