@@ -142,7 +142,7 @@ function yum_systems() {
         zlib-devel
 }
 
-printf "INFO: Installing system tool using Os package manager.\n"
+printf "INFO: Installing system tool using OS package manager.\n"
 
 if [[ $(which dnf) ]]
 then

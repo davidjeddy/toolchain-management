@@ -18,21 +18,18 @@ def call(
     String slackChannel
 ) {
     // Static pipeline configuration
-    String githubPAT            = "GH_PAT"
-    String gitlabApiToken       = "jenkins-user-gitlab-test-api-token"
-    String gitlabConnectionName = "gitlab-test-igdcs"
-    String gitlabHost           = "gitlab.test.igdcs.com"
-    String gitlabPAT            = "GL_PAT_TF_MODULE_MIRRORING"
-    String gitSSHCreds          = "jenkins-gitlab-test-igdcs"
-    String tfModuleHost         = "gitlab_test_igdcs_com"
-    String workerNode           = "bambora-aws-slave-terraform"
+    String githubPAT            = 'GH_PAT'
+    String gitlabApiPat         = 'gitlab-kazan-technical-api-token'
+    String gitlabConnectionName = 'gitlab.kazan.myworldline.com'
+    String gitlabGitSa          = 'cicd-technical-user'
+    String workerNode           = 'bambora-aws-slave-terraform'
 
     pipeline {
         agent {
             node workerNode
         }
         environment {
-            GITLAB_CREDENTIALSID = credentials("${gitlabPAT}")
+            GITLAB_CREDENTIALSID = credentials("${gitlabApiPat}")
             GITHUB_TOKEN = credentials("${githubPAT}")
         }
         options {
@@ -102,14 +99,21 @@ def call(
             stage('Notification') {
                 steps {
                     script {
-                        sh '''#!/usr/bin/env bash
+                        withCredentials([string(
+                            credentialsId:  gitlabApiPat,
+                            variable:       'gitlabPAT'
+                        )]) {
+                        sh('''#!/usr/bin/env bash
                             set -e
+                            source "$HOME/.bashrc"
+
                             curl \
                                 --form "note=# Build Pipeline\n\nNumber: ${BUILD_NUMBER}\n\nUrl: ${BUILD_URL}console" \
                                 --header "PRIVATE-TOKEN: $GITLAB_CREDENTIALSID" \
                                 --request POST \
                                 "https://${GITLAB_HOST}/api/v4/projects/''' + gitlabProjectId + '''/repository/commits/${GIT_COMMIT}/comments"
-                        '''
+                        ''')
+                        }
                     }
                 }
             }
@@ -118,42 +122,43 @@ def call(
                     cleanWs()
                 }
             }
-            stage('Print ENV VARs') {
+            stage('System ENV VARs') {
                 steps {
-                    script {
-                        sh '''#!/usr/bin/env bash
-                            set -e
-                            echo "INFO: Printing ENV VARs"
-                            # We do not want the default AWS credentials from Jenkins
-                            unset JENKINS_AWS_CREDENTIALSID
-                            # Prevent colors in BASH for tfenv and tgenv
-                            # https://github.com/tfutils/tfenv#bashlog_colours
-                            export BASHLOG_COLOURS=0
-                            printenv | sort
-                        '''
-                    }
+                    sh('''#!/usr/bin/env bash
+                        set -e
+                        source "$HOME/.bashrc"
+
+                        echo "INFO: Printing ENV VARs"
+                        printenv | sort
+                    ''')
                 }
             }
             stage('Git Checkout') {
                 steps {
-                    echo "Checkout main branch"
-                    // Needed for compliance, sast, tagging
-                    git credentialsId: gitSSHCreds,
-                        url: env.GIT_URL,
-                        branch: "main"
-                    echo "Checkout feature branch"
-                    git credentialsId: gitSSHCreds,
-                        url: env.GIT_URL,
-                        branch: env.BRANCH_NAME
+                    echo "Checkout main branch for compliance, sast, tagging operations"
+                    git branch: 'main',
+                        credentialsId: gitlabGitSa,
+                        url: env.GIT_URL
+                    echo "Checkout feature branch for pipeline execution"
+                    git branch: env.BRANCH_NAME,
+                        credentialsId: gitlabGitSa,
+                        url: env.GIT_URL
                 }
             }
             stage('Install Dependencies') {
                 steps {
                     script {
-                        sh '''#!/usr/bin/env bash
+                        sh ('''#!/usr/bin/env bash
                             set -e
-                            ${WORKSPACE}/libs/bash/install.sh ''' + params.TOOLCHAIN_BRANCH + '''
-                        '''
+                            # Be sure to configure session like an interactive user
+                            # shellcheck disable=SC1091
+                            source "$HOME/.bashrc" || exit 1
+                            
+                            # this is the installer of the calling project, NOT the installer located in this projects.
+                            # if you want the pipeline for this projects look at /project/root/Jenkinsfile
+                            ${WORKSPACE}/libs/bash/install.sh
+                            source "$HOME/.bashrc"
+                        ''')
                     }
                 }
             }
@@ -162,6 +167,8 @@ def call(
                     script {
                         sh '''#!/usr/bin/env bash
                             set -e
+                            source "$HOME/.bashrc"
+                            
                             ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/iac_publish.sh
 
                             # urlencoding using CURL https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736
@@ -186,35 +193,15 @@ def call(
                     script {
                         if (env.BRANCH_NAME == 'main') {
                             // credentials to git push via ssh
-                            withCredentials([sshUserPrivateKey(
-                                credentialsId: gitSSHCreds,
+                            withCredentials([
+                                credentialsId: gitlabGitSa,
                                 keyFileVariable: 'key'
-                            )]) {
+                            ]) {
                                 sh '''#!/usr/bin/env bash
                                     set -e
+                                    source "$HOME/.bashrc"
+                                    
                                     ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/sem_ver_release_tagging.sh
-                                '''
-                            }
-                        }
-                    }
-                }
-            }
-            // if on main branch
-            // create an shared module archive
-            // push shared module archive to GL
-            stage('Publish') {
-                steps {
-                    script {
-                        if (env.BRANCH_NAME == 'main') {
-                            withCredentials([string(
-                                credentialsId:  gitlabApiToken,
-                                variable:       'gitlabPAT'
-                            )]) {
-                                sh '''
-                                    ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/publish_iac_module_version.sh \
-                                    ''' + gitlabHost + ''' \
-                                    ''' + gitlabProjectId + ''' \
-                                    ''' + gitlabProjectName + '''
                                 '''
                             }
                         }

@@ -12,6 +12,13 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.8] - 2024-06-20
+
+### FIX
+
+- `libs/jenkins/pipeline/vars/SharedModules.groovy` force non-interactive sessions to behave like interactive sessions
+- `libs/jenkins/pipeline/vars/SharedModules.groovy` to work with now SCM hosting at Kazan GitLab
+
 ## [0.53.8] - 2024-06-19
 
 ### FIX

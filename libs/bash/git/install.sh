@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
 set -e
+# Be sure to configure session like an interactive user
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
 
 # usage ./libs/bash/install.sh (optional) branch_name
 # example ./libs/bash/install.sh fix/ICON-39280/connect_preprod_module_revert_to_0_36_7_due_to_kms_permissions
 
+# Version: 0.8.0  - 2024-06-19 - UPDATED `git lfs` to less error prone `git-lfs`. Ensure non-interactive sessions act like interactive sessions.
 # Version: 0.7.0  - 2024-06-19 - UPDATED Toolchain source URL post migration to https://gitlab.kazan.myworldline.com/ SCM hosting
 # Version: 0.6.0  - 2024-05-24 - UPDATED Git hook symlink creation - David J Eddy
 # Version: 0.5.11 - 2024-05-06 - ADD Git feature checks - David J Eddy

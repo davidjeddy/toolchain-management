@@ -21,6 +21,7 @@ printf "INFO: OLD_PWD: %s\n" "${OLD_PWD}"
 
 # First, determinr runtime VARS
 
+declare WL_GC_TM_WORKSPACE
 WL_GC_TM_WORKSPACE=$(git rev-parse --show-toplevel)
 if [[ "$(ps -o args= $PPID)" == *"install.sh"* ]]
 then
@@ -102,9 +103,7 @@ cp -rf "${WL_GC_TM_WORKSPACE}/aqua.yaml" ~/.aqua/aqua.yaml || exit 1
 
 which aqua
 aqua --version
-
 aqua update-checksum
-
 aqua install
 
 # Third, use *env tools to per-directory IAC tool default versions
