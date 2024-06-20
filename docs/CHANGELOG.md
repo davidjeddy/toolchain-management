@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.10] - 2024-06-20
+
+### REMOVE
+
+- git-lfs checks in Git 2.x hooks due to causing problems using different shebang
+
 ## [0.54.9] - 2024-06-20
 
 ### FIX
