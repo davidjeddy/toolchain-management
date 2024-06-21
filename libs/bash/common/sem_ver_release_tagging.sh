@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-set -e
+set -exo pipefail
 
 declare CHANGELOG_PATH
 declare LINES_FOR_CONTEXT

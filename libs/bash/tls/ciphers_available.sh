@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # example /path/to/project/libs/bash/tls/ciphers_available.sh admintool.preprod.connect.worldline-solutions.com 443
 # source https://stackoverflow.com/questions/24457408/openssl-command-to-check-if-a-server-is-presenting-a-certificate

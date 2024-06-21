@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-set -e
+set -exo pipefail
 
 # TODO Add these tools to Aqua registry @ https://github.com/aquaproj/aqua-registry
 

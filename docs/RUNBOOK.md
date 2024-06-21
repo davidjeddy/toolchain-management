@@ -126,4 +126,25 @@ aqua install
 
 **Fix**
 
+Reset aqua configuration back to known-good. Run install again.
 
+-----
+
+**Error**
+
+[Pipeline] // script
+[Pipeline] updateGitlabCommitStatus
+ > git rev-parse HEAD^{commit} # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] End of Pipeline
+ERROR: null
+Finished: FAILURE
+
+**When**
+
+Executing pipeline
+
+**Fix**
+
+Jenkinsfile `String gitlabProjectId` value does not match the ID in GitLab.

@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-set -e
+set -exo pipefail
 
 # usage: pull_and_push_container_images.sh $AWS_ACCT_ID $AWS_REGION $ENV $APP $RND_STR $IMAGE_SOURCES()
 # example: pull_and_push_container_images.sh 730335529266 eu-west-1 dev toolbox kmsd "podman.io/jenkins/jenkins:2.440.2-lts-jdk17"

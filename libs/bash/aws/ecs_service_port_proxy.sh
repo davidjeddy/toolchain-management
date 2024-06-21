@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-set -e
+set -exo pipefail
 
 # usage: /path/to/script/ecs_service_port_proxy.sh
 #        /path/to/script/ecs_service_port_proxy.sh 

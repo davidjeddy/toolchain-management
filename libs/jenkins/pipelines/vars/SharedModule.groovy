@@ -106,8 +106,8 @@ def call(
                             credentialsId:  gitlabApiPat,
                             variable:       'gitlabPAT'
                         )]) {
-                        sh('''#!/usr/bin/env bash
-                            set -e
+                        sh('''#!/bin/bash
+                            set -exo pipefail
                             source "$HOME/.bashrc"
 
                             curl \
@@ -127,8 +127,8 @@ def call(
             }
             stage('System ENV VARs') {
                 steps {
-                    sh('''#!/usr/bin/env bash
-                        set -e
+                    sh('''#!/bin/bash
+                        set -exo pipefail
                         source "$HOME/.bashrc"
 
                         echo "INFO: Printing ENV VARs"
@@ -151,8 +151,8 @@ def call(
             stage('Install Dependencies') {
                 steps {
                     script {
-                        sh ('''#!/usr/bin/env bash
-                            set -e
+                        sh ('''#!/bin/bash
+                            set -exo pipefail
                             # Be sure to configure session like an interactive user
                             # shellcheck disable=SC1091
                             source "$HOME/.bashrc" || exit 1
@@ -168,8 +168,8 @@ def call(
             stage('Compliance & SAST') {
                 steps {
                     script {
-                        sh '''#!/usr/bin/env bash
-                            set -e
+                        sh '''#!/bin/bash
+                            set -exo pipefail
                             source "$HOME/.bashrc"
                             
                             ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/iac_publish.sh
@@ -199,8 +199,8 @@ def call(
                                 credentialsId:  gitlabApiPat,
                                 variable:       'gitlabPAT'
                             )]) {
-                                sh '''#!/usr/bin/env bash
-                                    set -e
+                                sh '''#!/bin/bash
+                                    set -exo pipefail
                                     source "$HOME/.bashrc"
                                     
                                     ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/sem_ver_release_tagging.sh
