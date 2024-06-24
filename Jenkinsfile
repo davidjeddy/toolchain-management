@@ -94,7 +94,7 @@ pipeline {
                         credentialsId:  gitlabApiPat,
                         variable:       'gitlabPAT'
                     )]) {
-                        sh('''#!/bin/bash
+                        sh('''#!/bin/bash -l
                             set -exo pipefail
 
                             curl \
@@ -114,7 +114,7 @@ pipeline {
         }
         stage('System ENV VARs') {
             steps {
-                sh('''#!/bin/bash
+                sh('''#!/bin/bash -l
                     set -exo pipefail
 
                     echo "INFO: Printing ENV VARs"
@@ -137,7 +137,7 @@ pipeline {
         // Typical direct re/install
         stage('Execute toolchain re/install') {
             steps {
-                sh('''#!/bin/bash
+                sh('''#!/bin/bash -l
                     set -exo pipefail
 
                     ${WORKSPACE}/libs/bash/install.sh
@@ -147,7 +147,7 @@ pipeline {
         }
         stage('Execute Aqua install/update') {
             steps {
-                sh('''#!/bin/bash
+                sh('''#!/bin/bash -l
                     set -exo pipefail
                     
                     # pipeline runs non-interactive, but we still want the tools from an interactive session
@@ -167,7 +167,7 @@ pipeline {
                         variable:       'gitlabPAT'
                     )]) {
                         if (env.BRANCH_NAME == gitTargetBranch) {
-                            sh('''#!/bin/bash
+                            sh('''#!/bin/bash -l
                                 set -exo pipefail
 
                                 ./libs/bash/common/sem_ver_release_tagging.sh

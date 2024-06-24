@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.12] - 2024-06-21
+
+### ADD
+
+- `./libs/jenkins/pipelines/vars/SharedModule.groovy` Bash invocations now include `-l` to make them login sessions. This triggers a loading of the users `$HOME/.bashrc` more dependably
+
 ## [0.54.11] - 2024-06-21
 
 ### ADD

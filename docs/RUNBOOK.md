@@ -148,3 +148,19 @@ Executing pipeline
 **Fix**
 
 Jenkinsfile `String gitlabProjectId` value does not match the ID in GitLab.
+
+-----
+
+**Error**
+
+[Pipeline] End of Pipeline
+ERROR: null
+Finished: FAILURE
+
+**When**
+
+Pipeline is run
+
+**Fix**
+
+Check the usage of variables inside the pipeline.environment{} block. Specifically ensure the variable being used is indeed defined.
