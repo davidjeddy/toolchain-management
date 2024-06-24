@@ -106,7 +106,7 @@ def call(
                             credentialsId:  gitlabApiPat,
                             variable:       'gitlabPAT'
                         )]) {
-                        sh('''#!/bin/bash
+                        sh('''#!/bin/bash -l
                             set -exo pipefail
                             source "$HOME/.bashrc"
 
@@ -127,9 +127,8 @@ def call(
             }
             stage('System ENV VARs') {
                 steps {
-                    sh('''#!/bin/bash
+                    sh('''#!/bin/bash -l
                         set -exo pipefail
-                        source "$HOME/.bashrc"
 
                         echo "INFO: Printing ENV VARs"
                         printenv | sort
@@ -151,16 +150,12 @@ def call(
             stage('Install Dependencies') {
                 steps {
                     script {
-                        sh ('''#!/bin/bash
+                        sh('''#!/bin/bash -l
                             set -exo pipefail
-                            # Be sure to configure session like an interactive user
-                            # shellcheck disable=SC1091
-                            source "$HOME/.bashrc" || exit 1
                             
                             # this is the installer of the calling project, NOT the installer located in this projects.
                             # if you want the pipeline for this projects look at /project/root/Jenkinsfile
                             ${WORKSPACE}/libs/bash/install.sh
-                            source "$HOME/.bashrc"
                         ''')
                     }
                 }
@@ -168,9 +163,8 @@ def call(
             stage('Compliance & SAST') {
                 steps {
                     script {
-                        sh '''#!/bin/bash
+                        sh('''#!/bin/bash -l
                             set -exo pipefail
-                            source "$HOME/.bashrc"
                             
                             ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/iac_publish.sh
 
@@ -181,7 +175,7 @@ def call(
                                 --header "PRIVATE-TOKEN: $GITLAB_CREDENTIALSID" \
                                 --request POST \
                                 "https://${GITLAB_HOST}/api/v4/projects/''' + gitlabProjectId + '''/repository/commits/${GIT_COMMIT}/comments"
-                        '''
+                        ''')
                     }
 
                     archive includes: '${WORKSPACE}/.tmp/junit*.xml'
@@ -199,12 +193,11 @@ def call(
                                 credentialsId:  gitlabApiPat,
                                 variable:       'gitlabPAT'
                             )]) {
-                                sh '''#!/bin/bash
+                                sh('''#!/bin/bash -l
                                     set -exo pipefail
-                                    source "$HOME/.bashrc"
                                     
                                     ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/sem_ver_release_tagging.sh
-                                '''
+                                ''')
                             }
                         }
                     }
