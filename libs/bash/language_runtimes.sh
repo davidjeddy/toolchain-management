@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-set -e
+set -exo pipefail
 
 function process_goenv() {
     printf "INFO: process_goenv()\n"

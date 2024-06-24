@@ -54,7 +54,7 @@ pipeline {
                     slack.slackNotification(
                         slackChannel,
                         env.JOB_NAME,
-                        ':alert: Build failed.\n Build URL: ${env.BUILD_URL}console',
+                        ':alert: Build failed.\n ${env.BUILD_URL}console',
                         slackMsgSourceAcct
                     )
                 }
@@ -69,7 +69,7 @@ pipeline {
                     slack.slackNotification(
                         slackChannel,
                         env.JOB_NAME,
-                        ':green_check_mark: ${env.BRANCH_NAME} branch build fixed.',
+                        ':tada: Build fixed.\n${env.BUILD_URL}console',
                         slackMsgSourceAcct
                     )
                 }
@@ -94,8 +94,8 @@ pipeline {
                         credentialsId:  gitlabApiPat,
                         variable:       'gitlabPAT'
                     )]) {
-                        sh('''#!/usr/bin/env bash
-                            set -e
+                        sh('''#!/bin/bash
+                            set -exo pipefail
 
                             curl \
                                 --form "note=# Build Pipeline\n\nNumber: ${BUILD_NUMBER}\n\nUrl: ${BUILD_URL}console" \
@@ -114,8 +114,8 @@ pipeline {
         }
         stage('System ENV VARs') {
             steps {
-                sh('''#!/usr/bin/env bash
-                    set -e
+                sh('''#!/bin/bash
+                    set -exo pipefail
 
                     echo "INFO: Printing ENV VARs"
                     printenv | sort
@@ -137,8 +137,8 @@ pipeline {
         // Typical direct re/install
         stage('Execute toolchain re/install') {
             steps {
-                sh('''#!/usr/bin/env bash
-                    set -e
+                sh('''#!/bin/bash
+                    set -exo pipefail
 
                     ${WORKSPACE}/libs/bash/install.sh
                     source ~/.bashrc
@@ -147,8 +147,8 @@ pipeline {
         }
         stage('Execute Aqua install/update') {
             steps {
-                sh('''#!/usr/bin/env bash
-                    set -e
+                sh('''#!/bin/bash
+                    set -exo pipefail
                     
                     # pipeline runs non-interactive, but we still want the tools from an interactive session
                     source ~/.bashrc 
@@ -167,8 +167,8 @@ pipeline {
                         variable:       'gitlabPAT'
                     )]) {
                         if (env.BRANCH_NAME == gitTargetBranch) {
-                            sh('''#!/usr/bin/env bash
-                                set -e
+                            sh('''#!/bin/bash
+                                set -exo pipefail
 
                                 ./libs/bash/common/sem_ver_release_tagging.sh
                             ''')

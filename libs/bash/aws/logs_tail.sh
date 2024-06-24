@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-set -e
+set -exo pipefail
 
 # usage: /path/to/script/logs_tail.sh
 #        /path/to/script/logs_tail.sh -l

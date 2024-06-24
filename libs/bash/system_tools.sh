@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-set -e
+set -exo pipefail
 
 # Debian (deprecated)
 function apt_systems() {

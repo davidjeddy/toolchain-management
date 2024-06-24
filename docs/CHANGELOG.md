@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.11] - 2024-06-21
+
+### ADD
+
+- `./libs/bash/iac/batch_git_cycle.sh` to batch process IAC shared modules for when doing library wide changes
+
 ## [0.54.10] - 2024-06-20
 
 ### REMOVE
@@ -404,7 +410,7 @@ Action Keywords:
 
 ### FIXED
 
-- `#!/bin/bash -e` with `#!/usr/bin/env bash` with `set -e`
+- `#!/bin/bash -e` with `#!/bin/bash` with `set -exo pipefail`
 - goenv now installed Golang ONLY if the go binary is not found or `--update true`
 
 ### REMOVED

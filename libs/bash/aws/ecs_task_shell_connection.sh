@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-set -e
+set -exo pipefail
 
 # usage: /path/to/script/ecs_task_shell_connection.sh
 #        /path/to/script/ecs_task_shell_connection.sh -l

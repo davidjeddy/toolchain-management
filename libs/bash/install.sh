@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Example: ./libs/bash/install.sh
 # Usage: ./libs/bash/install.sh
 
-set -e
+set -exo pipefail
 
 ## Preflight checks
 

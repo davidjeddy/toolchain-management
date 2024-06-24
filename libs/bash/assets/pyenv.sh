@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-set -e
+set -exo pipefail
 [ -n "$PYENV_DEBUG" ] && set -x
 
 if [ -z "$PYENV_ROOT" ]; then

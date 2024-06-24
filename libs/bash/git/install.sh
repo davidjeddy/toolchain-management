@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-set -e
+set -exo pipefail
 # Be sure to configure session like an interactive user
 # shellcheck disable=SC1091
 source "$HOME/.bashrc" || exit 1
