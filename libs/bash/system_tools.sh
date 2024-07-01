@@ -25,6 +25,7 @@ function apt_systems() {
         gcc \
         gcc-c++ \
         git \
+        git-lfs \
         gnupg \
         gnupg2 \
         libbz2-dev \
@@ -70,6 +71,7 @@ function dnf_systems() {
         gcc \
         gcc-c++ \
         git \
+        git-lfs \
         gnupg \
         gnupg2 \
         htop \
@@ -117,6 +119,7 @@ function yum_systems() {
         gcc \
         gcc-c++ \
         git \
+        git-lfs \
         gnupg \
         gnupg2 \
         htop \
