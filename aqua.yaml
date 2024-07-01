@@ -14,7 +14,6 @@ packages:
 - name: bridgecrewio/checkov@3.2.23
 - name: Checkmarx/kics@v2.1.0
 - name: flosell/iam-policy-json-to-terraform@1.8.2
-- name: git-lfs/git-lfs@v3.5.1
 - name: infracost/infracost@v0.10.37
 - name: jqlang/jq@jq-1.7.1
 - name: mikefarah/yq@v4.44.2

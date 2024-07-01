@@ -281,36 +281,6 @@
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/git-lfs/git-lfs/v3.5.1/git-lfs-darwin-amd64-v3.5.1.zip",
-      "checksum": "23F6C768E22A33DCBB57D6CB67D318DC0EDC2B16AC04B15FAA803A74A31E8C42",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/git-lfs/git-lfs/v3.5.1/git-lfs-darwin-arm64-v3.5.1.zip",
-      "checksum": "1570833E5011290DFF12A18416580BFED576BC797B7B521122916E09ADF4622D",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/git-lfs/git-lfs/v3.5.1/git-lfs-linux-amd64-v3.5.1.tar.gz",
-      "checksum": "6F28EB19FAA7A968882DCA190D92ADC82493378B933958D67CEAEB9EBE4D731E",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/git-lfs/git-lfs/v3.5.1/git-lfs-linux-arm64-v3.5.1.tar.gz",
-      "checksum": "4F8700AACAA0FD26AE5300FB0996AED14D1FD0CE1A63EB690629C132FF5163A9",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/git-lfs/git-lfs/v3.5.1/git-lfs-windows-amd64-v3.5.1.zip",
-      "checksum": "94435072F6B3A6F9064B277760C8340E432B5EDE0DB8205D369468B9BE52C6B6",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/git-lfs/git-lfs/v3.5.1/git-lfs-windows-arm64-v3.5.1.zip",
-      "checksum": "54FB4A04A5597EBDAE83B2873ADB363C2E2B7022B8B2CE813CC0F198C12F8A61",
-      "algorithm": "sha256"
-    },
-    {
       "id": "github_release/github.com/infracost/infracost/v0.10.35/infracost-darwin-amd64.tar.gz",
       "checksum": "951818ED7562BD75001A3D9CCF1AD5877E39AAA952DECD47BEC5DF9716052BFD",
       "algorithm": "sha256"

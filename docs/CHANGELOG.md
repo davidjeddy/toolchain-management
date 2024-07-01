@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.13] - 2024-07-01
+
+### FIX
+
+- `git-lfs` is now installed by package installers instead of aqua due to installation issues
+
 ## [0.54.12] - 2024-06-21
 
 ### ADD
