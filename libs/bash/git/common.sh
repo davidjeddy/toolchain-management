@@ -29,7 +29,7 @@ function exec() {
     # Before anything else, is the branch name valid
     validateBranchName
 
-    for THIS_DIR in ${1}
+    for THIS_DIR in "$@"
     do
         # Path to shared modules root is the same as WORKSPACE; in depoloyment project there is additional dirs to traverse
         if [[ ${WORKSPACE} == ${THIS_DIR}* ]]
@@ -116,7 +116,7 @@ function documentation() {
         THIS_MODULE_NAME=${THIS_MODULE_NAME^^}
 
         # Add markers for tf_docs to insert API documentation
-        print "# %s
+        printf "# %s
         <\!-- BEGIN_TF_DOCS -->
         <\!-- END_TF_DOCS -->" "${THIS_MODULE_NAME}" | awk '{$1=$1;print}' >README.md
         sed -i 's/\\//' README.md

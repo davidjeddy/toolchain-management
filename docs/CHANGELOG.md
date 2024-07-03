@@ -12,6 +12,13 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.14] - 2024-07-03
+
+### FIX
+
+- `libs/bash/git/common.sh` `exec()` only iterating over the first module
+- README.md not generated properly causing pipeline and pre-commit hook to fail
+
 ## [0.54.13] - 2024-07-01
 
 ### FIX
