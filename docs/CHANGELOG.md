@@ -12,6 +12,13 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.15] - 2024-06-28
+
+### ADD
+
+- deleteDir() to post.success to clean successful workspace to save disk in shared pipeline. 
+- options.buildDiscarder() to codify removal of artifacts and builds in lue of web console configuration
+
 ## [0.54.14] - 2024-07-03
 
 ### FIX

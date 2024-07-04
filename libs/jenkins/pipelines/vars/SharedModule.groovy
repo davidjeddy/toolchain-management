@@ -20,11 +20,11 @@ def call(
     Object slack,
     String slackChannel
 ) {
-    // Static pipeline configuration
     String githubPAT            = 'GH_PAT'
     String gitlabApiPat         = 'gitlab-kazan-technical-api-token'
     String gitlabConnectionName = 'gitlab.kazan.myworldline.com'
     String gitlabGitSa          = 'cicd-technical-user'
+    String numToKeepStr         = '7' // Must be a string
     String workerNode           = 'bambora-aws-slave-terraform'
 
     pipeline {
@@ -37,6 +37,10 @@ def call(
         }
         options {
             ansiColor('xterm') // https://plugins.jenkins.io/ansicolor/
+            buildDiscarder(logRotator(
+                artifactNumToKeepStr: numToKeepStr,
+                numToKeepStr: numToKeepStr
+            ))
             gitLabConnection(gitlabConnectionName)
             skipStagesAfterUnstable()
             timeout(time: jobTimeout, unit: 'MINUTES') // https://stackoverflow.com/questions/38096004/how-to-add-a-timeout-step-to-jenkins-pipeline
@@ -44,13 +48,26 @@ def call(
         }
         // https://www.jenkins.io/doc/book/pipeline/syntax/#parameters
         parameters {
-            string(name: 'TOOLCHAIN_BRANCH', defaultValue: 'main')
+            string(
+                defaultValue: 'main',
+                name: 'TOOLCHAIN_BRANCH'
+            )
         }
         // source https://stackoverflow.com/questions/36651432/how-to-implement-post-build-stage-using-jenkins-pipeline-plug-in
         // source https://plugins.jenkins.io/gitlab-plugin/
         post {
             // TODO save scan reports as archive for X amount of time
             always {
+                // https://plugins.jenkins.io/ws-cleanup/
+                cleanWs(
+                    cleanWhenAborted: true,
+                    cleanWhenNotBuilt: true,
+                    cleanWhenSuccess: true,
+                    deleteDirs: true,
+                    patterns: [
+                        [pattern: '/**/.tmp/*', type: 'EXCLUDE'] // keep the artifacts
+                    ]
+                )
                 // do not archive toolchain-management
                 // archiveArtifacts artifacts: "./.tmp/junit-*.xml", excludes: "./.tmp/toolchain-management/**", fingerprint: true
                 junit allowEmptyResults: true, testResults: "./.tmp/junit-*.xml"
@@ -120,11 +137,6 @@ def call(
                     }
                 }
             }
-            stage('Clean Workspace') {
-                steps {
-                    cleanWs()
-                }
-            }
             stage('System ENV VARs') {
                 steps {
                     sh('''#!/bin/bash -l
@@ -149,15 +161,12 @@ def call(
             }
             stage('Install Dependencies') {
                 steps {
-                    script {
-                        sh('''#!/bin/bash -l
-                            set -exo pipefail
-                            
-                            # this is the installer of the calling project, NOT the installer located in this projects.
-                            # if you want the pipeline for this projects look at /project/root/Jenkinsfile
-                            ${WORKSPACE}/libs/bash/install.sh
-                        ''')
-                    }
+                    sh('''#!/bin/bash -l
+                        set -exo pipefail
+
+                        ${WORKSPACE}/libs/bash/install.sh ''' + params.TOOLCHAIN_BRANCH + '''
+                        source ~/.bashrc
+                    ''')
                 }
             }
             stage('Compliance & SAST') {
