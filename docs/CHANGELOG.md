@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.16] - 2024-07-05
+
+### FIX
+
+- pre-commit diff logic was fixed to compare only the most recent commit
+
 ## [0.54.15] - 2024-06-28
 
 ### ADD
