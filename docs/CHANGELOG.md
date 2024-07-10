@@ -12,6 +12,15 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.17] - 2024-07-10
+
+## FIX
+
+- libs/bash/auth/onelogin_bambora_aws.sh now masks MFA token
+- libs/bash/auth/onelogin_bambora_aws.sh now exports AWS_PROFILE if invoked using `source` as is documented in the script
+- libs/jenkins/pipelines/vars/SharedModule.groovy buildDiscarder var for keeping build artifacts
+- libs/jenkins/pipelines/vars/SharedModule.groovy added deleteDir() for successful builds
+
 ## [0.54.16] - 2024-07-05
 
 ### FIX

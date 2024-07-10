@@ -26,6 +26,12 @@ def call(
     String gitlabGitSa          = 'cicd-technical-user'
     String numToKeepStr         = '7' // Must be a string
     String workerNode           = 'bambora-aws-slave-terraform'
+    List buildDiscarder = [
+        artifactDaysToKeepStr: 7
+        artifactNumToKeepStr:  7
+        daysToKeepStr:         7
+        numToKeepStr:          7
+    ]
 
     pipeline {
         agent {
@@ -110,6 +116,7 @@ def call(
             }
             success{
                 updateGitlabCommitStatus name: 'build', state: 'success'
+                deleteDir() // clean up our workspace if successful
             }
             unstable {
                 updateGitlabCommitStatus name: 'build', state: 'success'
