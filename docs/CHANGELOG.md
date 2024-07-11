@@ -12,9 +12,15 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.18] - 2024-07-11
+
+### FIX
+
+- Syntax error in libs/jenkins/pipelines/vars/SharedModule.groovy, lists require line ending comma
+
 ## [0.54.17] - 2024-07-10
 
-## FIX
+### FIX
 
 - libs/bash/auth/onelogin_bambora_aws.sh now masks MFA token
 - libs/bash/auth/onelogin_bambora_aws.sh now exports AWS_PROFILE if invoked using `source` as is documented in the script

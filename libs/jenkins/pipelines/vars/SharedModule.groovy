@@ -27,9 +27,9 @@ def call(
     String numToKeepStr         = '7' // Must be a string
     String workerNode           = 'bambora-aws-slave-terraform'
     List buildDiscarder = [
-        artifactDaysToKeepStr: 7
-        artifactNumToKeepStr:  7
-        daysToKeepStr:         7
+        artifactDaysToKeepStr: 7,
+        artifactNumToKeepStr:  7,
+        daysToKeepStr:         7,
         numToKeepStr:          7
     ]
 
