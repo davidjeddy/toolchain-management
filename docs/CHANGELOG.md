@@ -12,6 +12,16 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.20] - 2024-07-11
+
+### ADD
+
+- disableConcurrentBuilds() to ./libs/bash/pipeline/vars/SharedModules.groovy to prevent parallel executions from stepping on each other
+
+### FIX
+
+- buildDiscarder() expects strings, not integers
+
 ## [0.54.19] - 2024-07-11
 
 ### FIX
