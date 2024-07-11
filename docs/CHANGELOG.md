@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.19] - 2024-07-11
+
+### FIX
+
+- Correctly write the tfenv version file to the correct location when using TGENV during clean installs
+
 ## [0.54.18] - 2024-07-11
 
 ### FIX
