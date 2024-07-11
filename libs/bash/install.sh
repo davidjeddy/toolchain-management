@@ -109,19 +109,23 @@ aqua install
 # Third, use *env tools to per-directory IAC tool default versions
 
 printf "INFO: Setting CLI *env tool versions.\n"
+
 # shellcheck disable=SC2046
 tfenv install "$(cat .terraform-version)"
+
 # shellcheck disable=SC2046
 tfenv use "$(cat .terraform-version)"
+
 # shellcheck disable=SC2046
 tgenv install "$(cat .terragrunt-version)"
-# shellcheck disable=SC2046
+
+mkdir -p "$HOME/.local/share/aquaproj-aqua/pkgs/github_archive/github.com/tgenv/tgenv/v$(cat .terragrunt-version)/tgenv-$(cat .terragrunt-version)" || exit 1
+cat .terragrunt-version > "$HOME/.local/share/aquaproj-aqua/pkgs/github_archive/github.com/tgenv/tgenv/v$(cat .terragrunt-version)/tgenv-$(cat .terragrunt-version)/version"
 tgenv use "$(cat .terragrunt-version)"
-# TODO Fix 'causes tgenv is not writing the default terragrunt version to file correctly
-# shellcheck disable=SC2005
-echo "$(cat .terragrunt-version)" > ~/.local/share/aquaproj-aqua/pkgs/github_archive/github.com/tgenv/tgenv/v1.2.0/tgenv-1.2.0/version
+
 # shellcheck disable=SC2046
 tofuenv install "$(cat .tofu-version)"
+
 # shellcheck disable=SC2046
 tofuenv use "$(cat .tofu-version)"
 
