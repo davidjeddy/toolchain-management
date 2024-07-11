@@ -26,12 +26,6 @@ def call(
     String gitlabGitSa          = 'cicd-technical-user'
     String numToKeepStr         = '7' // Must be a string
     String workerNode           = 'bambora-aws-slave-terraform'
-    List buildDiscarder = [
-        artifactDaysToKeepStr: 7,
-        artifactNumToKeepStr:  7,
-        daysToKeepStr:         7,
-        numToKeepStr:          7
-    ]
 
     pipeline {
         agent {
@@ -42,14 +36,20 @@ def call(
             GITHUB_TOKEN = credentials("${githubPAT}")
         }
         options {
-            ansiColor('xterm') // https://plugins.jenkins.io/ansicolor/
-            buildDiscarder(logRotator(
-                artifactNumToKeepStr: numToKeepStr,
-                numToKeepStr: numToKeepStr
-            ))
+            // https://plugins.jenkins.io/ansicolor/
+            ansiColor('xterm')
+            // https://stackoverflow.com/questions/39542485/how-to-write-pipeline-to-discard-old-builds
+            buildDiscarder(
+                logRotator(
+                    artifactNumToKeepStr: '7',
+                    numToKeepStr: '7',
+                )
+            )
+            disableConcurrentBuilds()
             gitLabConnection(gitlabConnectionName)
             skipStagesAfterUnstable()
-            timeout(time: jobTimeout, unit: 'MINUTES') // https://stackoverflow.com/questions/38096004/how-to-add-a-timeout-step-to-jenkins-pipeline
+            // https://stackoverflow.com/questions/38096004/how-to-add-a-timeout-step-to-jenkins-pipeline
+            timeout(time: jobTimeout, unit: 'MINUTES')
             timestamps()
         }
         // https://www.jenkins.io/doc/book/pipeline/syntax/#parameters
