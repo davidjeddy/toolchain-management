@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.22] - 2024-07-15
+
+### REMOVE
+
+- Errant creation of `slack` object in `./libs/bash/jenkins/pipelines/vars/SharedModule.groovy`, the object is passed in from the calling pipeline
+
 ## [0.54.21] - 2024-07-15
 
 ### FIX

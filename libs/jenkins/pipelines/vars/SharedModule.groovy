@@ -25,7 +25,6 @@ def call(
     String gitlabConnectionName = 'gitlab.kazan.myworldline.com'
     String gitlabGitSa          = 'cicd-technical-user'
     String gitTargetBranch      = 'main'
-    String numToKeepStr         = '7' // Must be a string
     String workerNode           = 'bambora-aws-slave-terraform'
 
     pipeline {
@@ -93,7 +92,6 @@ def call(
                 script {
                     if (env.gitlabBranch == gitTargetBranch) {
                         // if main, send to nl-pros-equad-releases
-                        object slack = new Slack(this.steps, this.env)
                         slack.slackNotification(
                             slackChannel,
                             slackMsgSourceAcct,
@@ -110,7 +108,6 @@ def call(
                 script {
                     if (env.gitlabBranch == gitTargetBranch) {
                         // if main, send to nl-pros-equad-releases
-                        object slack = new Slack(this.steps, this.env)
                         slack.slackNotification(
                             slackChannel,
                             slackMsgSourceAcct,
