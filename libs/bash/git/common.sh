@@ -1,6 +1,9 @@
 #!/bin/bash
 
 set -exo pipefail
+# Enforce the session load like an interactive user
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
 
 if [[ $WL_IAC_LOGGING == "TRACE" ]]
 then 
@@ -139,7 +142,6 @@ function generateSBOM() {
         return
     fi
 
-    printf "INFO: Ignore warning about 'Failed to download module', this is due to a limitation of checkov\n"
     # Do not generate SBOM if user is jenkins, onlyjust ensure it exists
     if [[ ! -f sbom.xml && $(whoami) == 'jenkins' ]]
     then
@@ -190,7 +192,6 @@ function iacCompliance() {
     printf "INFO: starting iacCompliance()\n"
 
     printf "INFO: checkov executing...\n"
-    printf "WARN: Ignore warning about 'Failed to download module', this is due to a limitation of checkov)\n"
     {
         rm -rf ".tmp/junit-checkov.xml" || exit 1
         touch ".tmp/junit-checkov.xml" || exit 1

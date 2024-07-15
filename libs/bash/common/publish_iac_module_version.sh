@@ -1,6 +1,9 @@
 #!/bin/bash
 
 set -exo pipefail
+# Enforce the session load like an interactive user
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
 
 printf "INFO: Starting publis_iac_module_version.\n"
 

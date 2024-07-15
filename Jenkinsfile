@@ -35,11 +35,12 @@ pipeline {
         GITLAB_CREDENTIALSID = credentials("${gitlabApiPat}")
         GITHUB_TOKEN = credentials("${githubPat}")
     }
-    options {
-        ansiColor('xterm') // https://plugins.jenkins.io/ansicolor/
+    options { // https://www.jenkins.io/doc/book/pipeline/syntax/#options
+        ansiColor('xterm')
+        buildDiscarder(logRotator(numToKeepStr: '7', artifactNumToKeepStr: '7'))
         gitLabConnection(gitlabConnectionName)
         skipStagesAfterUnstable()
-        timeout(time: jobTimeout, unit: 'MINUTES') // https://stackoverflow.com/questions/38096004/how-to-add-a-timeout-step-to-jenkins-pipeline
+        timeout(time: jobTimeout, unit: 'MINUTES')
         timestamps()
     }
     // https://stackoverflow.com/questions/36651432/how-to-implement-post-build-stage-using-jenkins-pipeline-plug-in
@@ -53,12 +54,14 @@ pipeline {
                     object slack = new Slack(this.steps, this.env)
                     slack.slackNotification(
                         slackChannel,
-                        env.JOB_NAME,
-                        ':alert: Build failed.\n ${env.BUILD_URL}console',
-                        slackMsgSourceAcct
+                        slackMsgSourceAcct,
+                        env.JOB_NAME + 'Build FAILED.\n${env.BUILD_URL}console',
+                        ':tada:'
                     )
                 }
             }
+            // https://www.jenkins.io/doc/pipeline/steps/gitlab-plugin/
+            /* groovylint-disable-next-line DuplicateMapLiteral, DuplicateStringLiteral */
             updateGitlabCommitStatus name: 'build', state: 'failed'
         }
         fixed {
@@ -68,14 +71,15 @@ pipeline {
                     object slack = new Slack(this.steps, this.env)
                     slack.slackNotification(
                         slackChannel,
-                        env.JOB_NAME,
-                        ':tada: Build fixed.\n${env.BUILD_URL}console',
-                        slackMsgSourceAcct
+                        slackMsgSourceAcct,
+                        env.JOB_NAME + 'Build FIXED.\n${env.BUILD_URL}console',
+                        ':tada:'
+                        
                     )
                 }
             }
             /* groovylint-disable-next-line DuplicateMapLiteral, DuplicateStringLiteral */
-            updateGitlabCommitStatus name: 'build', state: 'failed'
+            updateGitlabCommitStatus name: 'build', state: 'success'
         }
         success {
             /* groovylint-disable-next-line DuplicateStringLiteral */
@@ -83,7 +87,7 @@ pipeline {
         }
         unstable {
             /* groovylint-disable-next-line DuplicateMapLiteral, DuplicateStringLiteral */
-            updateGitlabCommitStatus name: 'build', state: 'success'
+            updateGitlabCommitStatus name: 'build', state: 'failed'
         }
     }
     stages {
@@ -116,6 +120,7 @@ pipeline {
             steps {
                 sh('''#!/bin/bash -l
                     set -exo pipefail
+                    source $HOME/.bashrc
 
                     echo "INFO: Printing ENV VARs"
                     printenv | sort
@@ -139,6 +144,7 @@ pipeline {
             steps {
                 sh('''#!/bin/bash -l
                     set -exo pipefail
+                    source $HOME/.bashrc
 
                     ${WORKSPACE}/libs/bash/install.sh
                     source ~/.bashrc
@@ -149,9 +155,7 @@ pipeline {
             steps {
                 sh('''#!/bin/bash -l
                     set -exo pipefail
-                    
-                    # pipeline runs non-interactive, but we still want the tools from an interactive session
-                    source ~/.bashrc 
+                    source $HOME/.bashrc 
 
                     aqua install
                     aqua update
@@ -169,6 +173,7 @@ pipeline {
                         if (env.BRANCH_NAME == gitTargetBranch) {
                             sh('''#!/bin/bash -l
                                 set -exo pipefail
+                                source $HOME/.bashrc
 
                                 ./libs/bash/common/sem_ver_release_tagging.sh
                             ''')
