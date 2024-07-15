@@ -1,6 +1,9 @@
 #!/bin/bash
 
 set -exo pipefail
+# Enforce the session load like an interactive user
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
 
 function get_cmd_options() {
   declare VALID_ARGS

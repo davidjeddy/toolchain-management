@@ -1,6 +1,9 @@
 #!/bin/bash
 
 set -exo pipefail
+# Enforce the session load like an interactive user
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
 
 declare CHANGELOG_PATH
 declare LINES_FOR_CONTEXT

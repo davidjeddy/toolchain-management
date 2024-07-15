@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -exo pipefail
-# Be sure to configure session like an interactive user
+# Enforce the session load like an interactive user
 # shellcheck disable=SC1091
 source "$HOME/.bashrc" || exit 1
 

@@ -24,6 +24,7 @@ def call(
     String gitlabApiPat         = 'gitlab-kazan-technical-api-token'
     String gitlabConnectionName = 'gitlab.kazan.myworldline.com'
     String gitlabGitSa          = 'cicd-technical-user'
+    String gitTargetBranch      = 'main'
     String numToKeepStr         = '7' // Must be a string
     String workerNode           = 'bambora-aws-slave-terraform'
 
@@ -90,36 +91,45 @@ def call(
             // always, changed, fixed, regression, aborted, failure, success, unstable, unsuccessful, and cleanup
             failure {
                 script {
-                    if (env.BRANCH_NAME == 'main') {
+                    if (env.gitlabBranch == gitTargetBranch) {
+                        // if main, send to nl-pros-equad-releases
+                        object slack = new Slack(this.steps, this.env)
                         slack.slackNotification(
                             slackChannel,
-                            env.JOB_NAME,
-                            ":alert: Build failed.\n Build URL: ${env.BUILD_URL}console",
-                            ':jenkins:'
+                            slackMsgSourceAcct,
+                            env.JOB_NAME + 'Build FAILED.\n${env.BUILD_URL}console',
+                            ':tada:'
                         )
                     }
                 }
+                // https://www.jenkins.io/doc/pipeline/steps/gitlab-plugin/
+                /* groovylint-disable-next-line DuplicateMapLiteral, DuplicateStringLiteral */
                 updateGitlabCommitStatus name: 'build', state: 'failed'
             }
             fixed {
                 script {
-                    if (env.BRANCH_NAME == 'main') {
+                    if (env.gitlabBranch == gitTargetBranch) {
+                        // if main, send to nl-pros-equad-releases
+                        object slack = new Slack(this.steps, this.env)
                         slack.slackNotification(
                             slackChannel,
-                            env.JOB_NAME,
-                            ":tada: Build fixed.",
-                            ':jenkins:'
+                            slackMsgSourceAcct,
+                            env.JOB_NAME + 'Build FIXED.\n${env.BUILD_URL}console',
+                            ':tada:'
+                            
                         )
                     }
                 }
+                /* groovylint-disable-next-line DuplicateMapLiteral, DuplicateStringLiteral */
                 updateGitlabCommitStatus name: 'build', state: 'success'
             }
-            success{
+            success {
+                /* groovylint-disable-next-line DuplicateStringLiteral */
                 updateGitlabCommitStatus name: 'build', state: 'success'
-                deleteDir() // clean up our workspace if successful
             }
             unstable {
-                updateGitlabCommitStatus name: 'build', state: 'success'
+                /* groovylint-disable-next-line DuplicateMapLiteral, DuplicateStringLiteral */
+                updateGitlabCommitStatus name: 'build', state: 'failed'
             }
         }
         stages {
@@ -170,6 +180,7 @@ def call(
                 steps {
                     sh('''#!/bin/bash -l
                         set -exo pipefail
+                        source ~/.bashrc
 
                         ${WORKSPACE}/libs/bash/install.sh ''' + params.TOOLCHAIN_BRANCH + '''
                         source ~/.bashrc
@@ -181,6 +192,7 @@ def call(
                     script {
                         sh('''#!/bin/bash -l
                             set -exo pipefail
+                            source ~/.bashrc
                             
                             ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/iac_publish.sh
 
@@ -211,6 +223,7 @@ def call(
                             )]) {
                                 sh('''#!/bin/bash -l
                                     set -exo pipefail
+                                    source ~/.bashrc
                                     
                                     ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/sem_ver_release_tagging.sh
                                 ''')

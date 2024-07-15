@@ -12,6 +12,19 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.21] - 2024-07-15
+
+### FIX
+
+- slack.slackNotification() argument order in Jenkinsfiles
+- Force the loading of `~/.bashrc` on every stage in `./libs/bash/jenkins/pipelines/vars`
+- Force the loading of `~/.bashrc` on every `./libs/bash/git/**/*.sh` helper script
+- Force the loading of `~/.bashrc` on every `./libs/bash/common/*.sh` helper script
+  
+### REMOVE
+
+- printf() regarding checkov warning, no longer valid as we use `git` based IAC module sources
+
 ## [0.54.20] - 2024-07-11
 
 ### ADD
