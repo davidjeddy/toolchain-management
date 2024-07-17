@@ -21,7 +21,7 @@ function autoUpdate() {
 
     # Check if remote is avaiable
     declare GL_HTTP_RES
-    GL_HTTP_RES=$)curl \
+    GL_HTTP_RES=$(curl \
         --location \
         --output /dev/null \
         --silent \
