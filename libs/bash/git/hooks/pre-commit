@@ -1,9 +1,59 @@
-#!/bin/bash
+#!/bin/bash -l
 
-set -exo pipefail
+# set -exo pipefail # when debuggin
+set -eo pipefail
+
 # Enforce the session load like an interactive user
 # shellcheck disable=SC1091
 source "$HOME/.bashrc" || exit 1
+
+if [[ $WL_IAC_LOGGING == "TRACE" ]]
+then 
+    set -x
+fi
+
+# Functions
+
+function autoUpdate() {
+    # GitLab PAt token from ~/.terraformrc
+    local GITLAB_TOKEN
+    GITLAB_TOKEN=$(grep -A 1 'gitlab' ~/.terraformrc | sed -n '2 p' | awk '{print $3}' | jq -rM '.')
+
+    # Check if remote is avaiable
+    declare GL_HTTP_RES
+    GL_HTTP_RES=$)curl \
+        --location \
+        --output /dev/null \
+        --silent \
+        --write-out "%{http_code}\n" \
+        "https://gitlab.kazan.myworldline.com")
+    if [[ "$GL_HTTP_RES" != 200 ]]
+    then
+        return 0
+    fi
+
+    # Version of toolchain in Gitlab via latest tag
+    local VER_IN_GL
+    VER_IN_GL=$(curl \
+        --location \
+        --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+        --header "Content-Type: appliction/json" \
+        "https://gitlab.kazan.myworldline.com/api/v4/projects/78445/repository/tags" \
+        | jq -rM .[0].name)
+
+    # Version of toolchain on Localhost via tags
+    local VER_IN_LH
+    VER_IN_LH=$(git describe --tags --abbrev=0)
+
+    # If not equal, time to update
+    if [[ "$VER_IN_LH" != "$VER_IN_GL" ]]
+    then
+        # switch to project root
+        cd "$WORKSPACE" || exit 1
+        # execute installer
+        ./libs/bash/install.sh
+    fi
+}
 
 if [[ $WL_IAC_LOGGING == "TRACE" ]]
 then 
@@ -17,6 +67,10 @@ then
     export WORKSPACE
     printf "INFO: WORKSPACE %s\n" "${WORKSPACE}"
 fi
+
+# Auto-update Toolchain
+
+autoUpdate
 
 # shellcheck disable=SC1091
 source "${WORKSPACE}/.tmp/toolchain-management/libs/bash/git/common.sh"

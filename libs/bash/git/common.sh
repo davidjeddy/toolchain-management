@@ -1,6 +1,8 @@
-#!/bin/bash
+#!/bin/bash -l
 
-set -exo pipefail
+# set -exo pipefail # when debuggin
+set -eo pipefail
+
 # Enforce the session load like an interactive user
 # shellcheck disable=SC1091
 source "$HOME/.bashrc" || exit 1
@@ -9,6 +11,8 @@ if [[ $WL_IAC_LOGGING == "TRACE" ]]
 then 
     set -x
 fi
+
+# logic
 
 if [[ ! $WORKSPACE ]]
 then
