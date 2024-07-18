@@ -26,6 +26,12 @@ Action Keywords:
 
 ## [0.54.22] - 2024-07-15
 
+### ADD
+
+- [localStack-cli](https://github.com/localstack/localstack-cli) via additional_tools.sh
+- [Maven (mvn)](https://github.com/apache/maven-mvnd) via additional_tools.sh
+- [Maven daemon (mvnd)](https://github.com/apache/maven-mvnd) via Aqua
+
 ### REMOVE
 
 - Errant creation of `slack` object in `./libs/bash/jenkins/pipelines/vars/SharedModule.groovy`, the object is passed in from the calling pipeline
@@ -34,10 +40,11 @@ Action Keywords:
 
 ### FIX
 
-- slack.slackNotification() argument order in Jenkinsfiles
-- Force the loading of `~/.bashrc` on every stage in `./libs/bash/jenkins/pipelines/vars`
-- Force the loading of `~/.bashrc` on every `./libs/bash/git/**/*.sh` helper script
 - Force the loading of `~/.bashrc` on every `./libs/bash/common/*.sh` helper script
+- Force the loading of `~/.bashrc` on every `./libs/bash/git/**/*.sh` helper script
+- Force the loading of `~/.bashrc` on every stage in `./libs/bash/jenkins/pipelines/vars`
+- Respect users shell configuration by carring the pre-exist PATH value through the Aqua modification of the PATH ENV VAR
+- slack.slackNotification() argument order in Jenkinsfiles
   
 ### REMOVE
 

@@ -1,6 +1,10 @@
-#!/bin/bash
+#!/bin/bash -l
 
-set -exo pipefail
+# set -exo pipefail # For debuggin
+set -eo pipefail
+
+# shellcheck disable=SC1090
+source ~/.bashrc
 
 # Parameters:
 #   - MFA_DEVICE_ARN    the ARN of your MFA device (optional - if not provided, the script will try to get this information from user's account)

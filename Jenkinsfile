@@ -9,12 +9,14 @@ import com.ingenico.epayments.ci.common.Slack
 // configuration vars
 
 Number jobTimeout           = 30
+String artifactNumToKeepStr = '7'
 String githubPat            = 'GH_PAT'
 String gitlabApiPat         = 'gitlab-kazan-technical-api-token'
 String gitlabConnectionName = 'gitlab.kazan.myworldline.com'
 String gitlabGitSa          = 'cicd-technical-user'
 String gitlabProjectId      = 78445
 String gitTargetBranch      = 'main'
+String numToKeepStr         = '7'
 String slackChannel         = 'nl-pros-centaurus-squad-releases'
 String slackMsgSourceAcct   = ':jenkins:'
 String workerNode           = 'bambora-aws-slave-terraform'
@@ -37,7 +39,8 @@ pipeline {
     }
     options { // https://www.jenkins.io/doc/book/pipeline/syntax/#options
         ansiColor('xterm')
-        buildDiscarder(logRotator(numToKeepStr: '7', artifactNumToKeepStr: '7'))
+        buildDiscarder(logRotator(numToKeepStr: numToKeepStr, artifactNumToKeepStr: artifactNumToKeepStr))
+        disableConcurrentBuilds()
         gitLabConnection(gitlabConnectionName)
         skipStagesAfterUnstable()
         timeout(time: jobTimeout, unit: 'MINUTES')
