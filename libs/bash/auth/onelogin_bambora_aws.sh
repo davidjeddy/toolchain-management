@@ -1,5 +1,8 @@
 #!/bin/bash -l
 
+# set -exo pipefail # For debuggin
+set -eo pipefail
+
 # shellcheck disable=SC1090
 source ~/.bashrc
 
@@ -9,7 +12,7 @@ source ~/.bashrc
 # 0.0.1 - init
 # 0.1.0 - libs/bash/auth/onelogin_bambora_aws.sh now masks MFA token
 #       - libs/bash/auth/onelogin_bambora_aws.sh now exports AWS_PROFILE if invoked using `source` as is documented in the script
-# Usage: source /path/to/script/bambora_onelogin_aws.sh ${ACCOUNT}
+# Usage: source /path/to/script/bambora_onelogin_aws.sh
 
 if [[ ! $1 ]]
 then
@@ -29,7 +32,7 @@ PROFILE="$1"
 printf "MFA value: \n"
 read -rs TOKEN
 
-printf "INFO: Authentication request sent...\n"
+printf "INFO: Sending authentication request...\n"
 
 RESPONSE=$(yes "$TOKEN" | onelogin-aws-login -C "$PROFILE")
 

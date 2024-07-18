@@ -66,6 +66,26 @@
       "algorithm": "sha256"
     },
     {
+      "id": "github_release/github.com/apache/maven-mvnd/1.0.1/maven-mvnd-1.0.1-darwin-aarch64.tar.gz",
+      "checksum": "685EE0017014ED413CA7AEF9FC40759A15BDDC64E9DBAAEA152A1672AB9EAF5A",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/apache/maven-mvnd/1.0.1/maven-mvnd-1.0.1-darwin-amd64.tar.gz",
+      "checksum": "83C953218474ECEFBCF829FF999A7D5CE717D4ED641BD8D7E9461368384A0C03",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/apache/maven-mvnd/1.0.1/maven-mvnd-1.0.1-linux-amd64.tar.gz",
+      "checksum": "4E3200769EE233E56B6B8209ECB7F880876775A5E29B95A6E8887BDE4190A147",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/apache/maven-mvnd/1.0.1/maven-mvnd-1.0.1-windows-amd64.tar.gz",
+      "checksum": "1AE180D078293E8E90F892A355E17656494024B29B1CE65D5A024B966134BB48",
+      "algorithm": "sha256"
+    },
+    {
       "id": "github_release/github.com/aquasecurity/tfsec/v1.28.5/tfsec_1.28.5_darwin_amd64.tar.gz",
       "checksum": "4AD9A313D84AA11893672C7779A99F85A6ACAAB26C5A05CCC432DB08BC4C0A37",
       "algorithm": "sha256"

@@ -7,10 +7,7 @@
   - [Description](#description)
   - [Purpose](#purpose)
   - [Requirements / Supported Platforms](#requirements--supported-platforms)
-  - [Tools Includes (but is not limited to)](#tools-includes-but-is-not-limited-to)
-    - [AWS](#aws)
-    - [Terraform / OpenTofu](#terraform--opentofu)
-    - [Language Run-times](#language-run-times)
+  - [Tools List](#tools-list)
   - [Usage](#usage)
     - [WARNING](#warning)
     - [Install](#install)
@@ -40,29 +37,9 @@ Engineer commits change to localhost git project -> toolchain triggered (pre-com
 - [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) >= 5.x
 - [Git](https://git-scm.com/) >= 2.x
 
-## Tools Includes (but is not limited to)
+## Tools List
 
-### AWS
-
-- AWS CLI
-- iam-policy-json-to-terraform (x86)
-
-### Terraform / OpenTofu
-
-- Checkov
-- Infracost
-- kics
-- OpenTofu version manager
-- Terraform version manager
-- Terragrunt version manager
-- tf-docs
-- tflint
-- trivy
-
-### Language Run-times
-
-- Golang
-- Python
+For a complete list of tools provided please view ./aqua.yml, ./libs/bash/additional_tools.sh, ./libs/bash/language_runtimes.sh, or ./libs/bash/system_tools.sh
 
 ## Usage
 
