@@ -43,15 +43,16 @@ function autoUpdate() {
 
     # Version of toolchain on Localhost via tags
     local VER_IN_LH
+    cd $WORKSPACE/.tmp/toolchain-management || exit 1
+    git fetch --tag
     VER_IN_LH=$(git describe --tags --abbrev=0)
+    cd $WORKSPACE || exit 1
 
     # If not equal, time to update
     if [[ "$VER_IN_LH" != "$VER_IN_GL" ]]
     then
-        # switch to project root
-        cd "$WORKSPACE" || exit 1
         # execute installer
-        ./libs/bash/install.sh
+        $WORKSPACE/libs/bash/install.sh
     fi
 }
 

@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.23] - 2024-07-18
+
+### FIX
+
+- `./libs/bash/git/hooks/pre-commit` autoautoUpdate() was not properly getting tags for toolchain project
+
 ## [0.54.22] - 2024-07-17
 
 ### FIX
