@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.24] - 2024-07-19
+
+### FIX
+
+- Removed `grep "terraform/aws/"` from filtering out `generateDiffList()` output - it caused shared modules projects to skip most of the pre-commit logic
+
 ## [0.54.23] - 2024-07-18
 
 ### FIX

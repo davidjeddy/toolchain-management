@@ -466,7 +466,6 @@ function generateDiffList() {
     # Checks w/ -v are ignored/removed as being valid strings
     THIS_FILE_CHANGE_LIST=$(
         eval "${1}" |
-        grep "terraform/aws/" |
         grep "hcl\$\|tf\$" |
         grep -v .tmp/ |
         grep -v docs/ |
