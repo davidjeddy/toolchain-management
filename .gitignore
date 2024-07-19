@@ -39,6 +39,7 @@ terraform.rc
 # Editor meta-data
 .idea/
 .vscode/
+*.iml
 
 # dep graph files
 dependency_graph.dot
