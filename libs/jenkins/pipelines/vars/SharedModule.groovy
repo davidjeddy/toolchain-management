@@ -20,6 +20,8 @@ def call(
     Object slack,
     String slackChannel
 ) {
+    List logRotator             = ['7', '7']
+
     String githubPAT            = 'GH_PAT'
     String gitlabApiPat         = 'gitlab-kazan-technical-api-token'
     String gitlabConnectionName = 'gitlab.kazan.myworldline.com'
@@ -41,8 +43,8 @@ def call(
             // https://stackoverflow.com/questions/39542485/how-to-write-pipeline-to-discard-old-builds
             buildDiscarder(
                 logRotator(
-                    artifactNumToKeepStr: '7',
-                    numToKeepStr: '7',
+                    artifactNumToKeepStr: logRotator.get(0),
+                    numToKeepStr: logRotator.get(1),
                 )
             )
             disableConcurrentBuilds()

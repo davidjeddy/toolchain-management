@@ -12,6 +12,13 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.29] - 2024-07-24
+
+### FIX
+
+- libs/jenkins/pipeline/vars/SharedModule.groovy logRotator now uses Groovy List for configuration
+- Working on CODEOWNER feature enablement
+
 ## [0.54.28] - 2024-07-24
 
 ### FIX
