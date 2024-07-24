@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.30] - 2024-07-24
+
+### FIX
+
+- `libs/bash/git/install.sh` no longer updates itself causing errors in the process 
+
 ## [0.54.29] - 2024-07-24
 
 ### FIX
