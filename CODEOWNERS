@@ -1,0 +1,19 @@
+# https://docs.gitlab.com/ee/user/project/codeowners/
+# https://docs.gitlab.com/ee/user/project/codeowners/reference.html
+
+# User IDS
+# Centaurus: W128214 - David, W104184 - Kevin, W104279 - Mano, W103979 - Selin
+# K2: W103993 - Arvin, W127197 - Damian, W128214 - David, W119082 - Deeppuk, W104262 - Jem
+# Others: W104080 - Lucio, W127225 - Volkan B.
+# CODEOWNERS only applies for users below `developer` RBOC role
+
+[docs]
+/docs/ @cicd
+*.md @cicd
+
+[libs]
+/libs/ @cicd/terraform/tools
+
+[root]
+aqua* @W128214 @W104184 @W104279 @W103979
+versions.sh @W128214 @W104184 @W104279 @W103979
