@@ -1,0 +1,9 @@
+# https://docs.gitlab.com/ee/user/project/codeowners/
+
+# USer IDS
+# CICD: W128214 - David, W104184 - Kevin, W104279 - Mano, W103979 - Selin
+# K2: W103993 - Arvin, W127197 - Damian, W128214 - David, W119082 - Deeppuk, W104262 - Jem
+# ?: W104080 - Lucio, W127225 - Volkan B.
+
+./libs/jenkins @cicd
+./libs/bash @W128214 @W127197
