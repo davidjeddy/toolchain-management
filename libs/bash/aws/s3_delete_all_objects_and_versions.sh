@@ -1,12 +1,20 @@
-#!/bin/bash
+#!/bin/bash -l
 
-set -exo pipefail
+## configuration
+
+set -eo pipefail
+
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
+
+if [[ $LOG_LEVEL == "TRACE" ]]
+then 
+    set -x
+fi
 
 # source https://gist.github.com/weavenet/f40b09847ac17dd99d16
 # version 0.0.5
 # usage s3_delete_all_objects_and_versions.sh BUCKET [BUCKET…]
-
-set -o errexit -o noclobber -o nounset -o pipefail
 
 if [[ "$#" -eq 0 ]]
 then

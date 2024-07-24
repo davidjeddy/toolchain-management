@@ -1,6 +1,16 @@
-#!/bin/bash
+#!/bin/bash -l
 
-set -exo pipefail
+## configuration
+
+set -eo pipefail
+
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
+
+if [[ $LOG_LEVEL == "TRACE" ]]
+then 
+    set -x
+fi
 
 # example ~/Projects/Worldline/gitlab.test.igdcs.com/cicd/terraform/tools/toolchain-management/libs/bash/iac/cycle_modules.sh
 # usage   ~/Projects/Worldline/gitlab.test.igdcs.com/cicd/terraform/tools/toolchain-management/libs/bash/iac/cycle_modules.sh

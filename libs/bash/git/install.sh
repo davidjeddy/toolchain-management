@@ -7,6 +7,11 @@ set -eo pipefail
 # shellcheck disable=SC1091
 source "$HOME/.bashrc" || exit 1
 
+if [[ $LOG_LEVEL == "TRACE" ]]
+then 
+    set -x
+fi
+
 # usage ./libs/bash/install.sh (optional) branch_name
 # example ./libs/bash/install.sh fix/ICON-39280/connect_preprod_module_revert_to_0_36_7_due_to_kms_permissions
 
@@ -18,9 +23,7 @@ source "$HOME/.bashrc" || exit 1
 # Version: 0.5.10 - 2024-04-22
 # Version: 0.5.8  - 2024-03-19
 
-## configuration
-
-if [[ $WL_TF_DEPLOYMENT_LOG == "TRACE" ]]
+if [[ $LOG_LEVEL == "TRACE" ]]
 then 
     set -x
 fi

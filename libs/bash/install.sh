@@ -1,9 +1,16 @@
-#!/bin/bash
+#!/bin/bash -l
 
-# Example: ./libs/bash/install.sh
-# Usage: ./libs/bash/install.sh
+## configuration
 
-set -exo pipefail
+set -eo pipefail
+
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
+
+if [[ $LOG_LEVEL == "TRACE" ]]
+then 
+    set -x
+fi
 
 ## Preflight checks
 

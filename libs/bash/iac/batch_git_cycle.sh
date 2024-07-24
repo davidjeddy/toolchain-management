@@ -1,11 +1,21 @@
-#!/bin/bash
+#!/bin/bash -l
+
+## configuration
+
+set -eo pipefail
+
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
+
+if [[ $LOG_LEVEL == "TRACE" ]]
+then 
+    set -x
+fi
 
 # Example: /path/to/script/batch_git_cycle.sh "Updated installer"
 # Note: Must be used from the parent directory containing the module library
 # Usage: /path/to/script/batch_git_cycle.sh STRING
 # Version: 0.1.0 - 2024-06-21 - David Eddy - Init add of logic
-
-set -exo pipefail
 
 # input validations
 

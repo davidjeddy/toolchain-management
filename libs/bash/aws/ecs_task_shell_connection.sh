@@ -1,6 +1,16 @@
-#!/bin/bash
+#!/bin/bash -l
 
-set -exo pipefail
+## configuration
+
+set -eo pipefail
+
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
+
+if [[ $LOG_LEVEL == "TRACE" ]]
+then 
+    set -x
+fi
 
 # usage: /path/to/script/ecs_task_shell_connection.sh
 #        /path/to/script/ecs_task_shell_connection.sh -l

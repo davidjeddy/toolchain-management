@@ -1,9 +1,16 @@
-#!/bin/bash
+#!/bin/bash -l
 
-set -exo pipefail
-# Enforce the session load like an interactive user
+## configuration
+
+set -eo pipefail
+
 # shellcheck disable=SC1091
 source "$HOME/.bashrc" || exit 1
+
+if [[ $LOG_LEVEL == "TRACE" ]]
+then 
+    set -x
+fi
 
 function get_cmd_options() {
   declare VALID_ARGS
