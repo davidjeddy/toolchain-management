@@ -23,11 +23,6 @@ fi
 # Version: 0.5.10 - 2024-04-22
 # Version: 0.5.8  - 2024-03-19
 
-if [[ $LOG_LEVEL == "TRACE" ]]
-then 
-    set -x
-fi
-
 ## vars
 
 ### Configure required ENV VAR
@@ -95,9 +90,6 @@ then
     printf "INFO: Sync Git submodules.\n"
     git submodule update --init --recursive
 fi
-
-printf "INFO: Updating in-project installer.\n"
-cp --force "$WORKSPACE/.tmp/toolchain-management/libs/bash/git/install.sh" "$WORKSPACE/libs/bash/install.sh"
 
 # Post-flight resets
 cd "$WORKSPACE" || exit 1
