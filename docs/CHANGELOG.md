@@ -14,6 +14,12 @@ Action Keywords:
 
 ## [0.54.25] - 2024-07-24
 
+### FIX
+
+- Working on CODEOWNER feature enablement
+
+## [0.54.25] - 2024-07-24
+
 ### ADD
 
 - ./CODEOWNER to scope who can approve merge requests
