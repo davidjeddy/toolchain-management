@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.26] - 2024-07-24
+
+### FIX
+
+- Working on CODEOWNER feature enablement
+
 ## [0.54.25] - 2024-07-24
 
 ### FIX
