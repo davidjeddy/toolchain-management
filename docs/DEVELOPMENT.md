@@ -6,18 +6,28 @@
 vi ~/.bashrc
 ```
 
-Remove all references to aqua, goenv, and pyenv
+Remove all lines (inclusive) from `# WL GC Toolchain Management Starting` to `# WL GC Toolchain Management Ending`.
+
+Next, remove tool cache directories.
 
 ```sh
 rm -rf ~/.aqua/
 rm -rf ~/.goenv/
 rm -rf ~/.kics-installer/
-rm -rf ~/.pyenv/
 rm -rf ~/.local/share/aquaproj-aqua/
-source ~/.bashrc
+rm -rf ~/.pyenv/
+rm -rf ~/.terraform.d/*
+rm -rf ~/.tofu*
+sudo rm -rf ~/go
 ```
 
-You are now reset to non-aqua configuration.
+Start a new shell and output PATH.
+
+```sh
+echo $PATH
+```
+
+We expect to NOT see any of the configuration from the Toolchain. Specifically the PATH value should NOT include `.aqua` segments.
 
 ## Install Java
 

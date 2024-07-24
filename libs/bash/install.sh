@@ -48,6 +48,10 @@ then
     SESSION_SHELL=~/.bashrc
 fi
 export SESSION_SHELL
+
+# Put an indicator of where the toolchain configurations start
+echo "# WL GC Toolchain Management Starting" >> $SESSION_SHELL
+
 # shellcheck disable=SC1090,SC1091
 source "${SESSION_SHELL}" || exit 1
 printf "INFO: PATH is %s\n" "$PATH"
@@ -135,6 +139,9 @@ tofuenv install "$(cat .tofu-version)"
 
 # shellcheck disable=SC2046
 tofuenv use "$(cat .tofu-version)"
+
+# Put an indicator of where the toolchain configurations end
+echo "# WL GC Toolchain Management Ending" >> $SESSION_SHELL
 
 # Lastly, Wrap up and exit
 

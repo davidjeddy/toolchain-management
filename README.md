@@ -39,7 +39,7 @@ Engineer commits change to localhost git project -> toolchain triggered (pre-com
 
 ## Tools List
 
-For a complete list of tools provided please view ./aqua.yml, ./libs/bash/additional_tools.sh, ./libs/bash/language_runtimes.sh, or ./libs/bash/system_tools.sh
+For a complete list of tools provided please view ./aqua.yml, ./libs/bash/additional_tools.sh, ./libs/bash/language_runtimes.sh, ./libs/bash/system_tools.sh, and ./versions.sh
 
 ## Usage
 

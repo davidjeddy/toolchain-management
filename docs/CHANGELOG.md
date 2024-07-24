@@ -12,6 +12,13 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.25] - 2024-07-24
+
+### ADD
+
+- ./CODEOWNER to scope who can approve merge requests
+- ./libs/bash/aws/backup_delete_all_recovery_points.sh to remove recovery points from AWS Backup Plan
+
 ## [0.54.24] - 2024-07-19
 
 ### FIX
