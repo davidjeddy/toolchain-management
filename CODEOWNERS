@@ -1,10 +1,13 @@
 # https://docs.gitlab.com/ee/user/project/codeowners/
+# https://docs.gitlab.com/ee/user/project/codeowners/reference.html
 
 # USer IDS
 # CICD: W128214 - David, W104184 - Kevin, W104279 - Mano, W103979 - Selin
 # K2: W103993 - Arvin, W127197 - Damian, W128214 - David, W119082 - Deeppuk, W104262 - Jem
 # ?: W104080 - Lucio, W127225 - Volkan B.
+# /docs/*.md Do not Define as anyone can update docs
 
-etc @W128214
-libs/bash @W128214 @W127197
-libs/jenkins @cicd
+[Testing]
+/etc/ @W128214
+/libs/bash/ @W128214 @W127197
+/libs/jenkins/ @cicd/terraform

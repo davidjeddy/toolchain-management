@@ -14,4 +14,6 @@ fi
 
 printf "INFO: Starting...\n"
 
+printf "INFO: Try for version 0.54.26\n"
+
 printf "INFO: ...done.\n"
