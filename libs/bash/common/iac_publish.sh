@@ -1,13 +1,13 @@
-#!/bin/bash
-
-set -exo pipefail
-# Enforce the session load like an interactive user
-# shellcheck disable=SC1091
-source "$HOME/.bashrc" || exit 1
+#!/bin/bash -l
 
 ## configuration
 
-if [[ $WL_TF_DEPLOYMENT_LOG == "TRACE" ]]
+set -eo pipefail
+
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
+
+if [[ $LOG_LEVEL == "TRACE" ]]
 then 
     set -x
 fi

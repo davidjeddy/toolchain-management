@@ -1,6 +1,16 @@
-#!/bin/bash
+#!/bin/bash -l
 
-set -exo pipefail
+## configuration
+
+set -eo pipefail
+
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
+
+if [[ $LOG_LEVEL == "TRACE" ]]
+then 
+    set -x
+fi
 
 # usage: pull_and_push_container_images.sh $AWS_ACCT_ID $AWS_REGION $ENV $APP $RND_STR $IMAGE_SOURCES()
 # example: pull_and_push_container_images.sh 730335529266 eu-west-1 dev toolbox kmsd "podman.io/jenkins/jenkins:2.440.2-lts-jdk17"
@@ -11,7 +21,7 @@ set -exo pipefail
 
 ## execution configuration
 
-if [[ $WL_TF_DEPLOYMENT_LOG == "TRACE" ]]
+if [[ $LOG_LEVEL == "TRACE" ]]
 then 
     set -x
 fi

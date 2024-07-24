@@ -12,7 +12,8 @@ source ~/.bashrc
 # 0.0.1 - init
 # 0.1.0 - libs/bash/auth/onelogin_bambora_aws.sh now masks MFA token
 #       - libs/bash/auth/onelogin_bambora_aws.sh now exports AWS_PROFILE if invoked using `source` as is documented in the script
-# Usage: source /path/to/script/bambora_onelogin_aws.sh
+# 0.1.1 - Fix output formatting when asking for MFA token 
+# Usage: source /path/to/script/bambora_onelogin_aws.sh ${ACCOUNT}
 
 if [[ ! $1 ]]
 then
@@ -29,8 +30,9 @@ declare TOKEN
 
 PROFILE="$1"
 
-printf "MFA value: \n"
+printf "MFA value: "
 read -rs TOKEN
+printf "\n"
 
 printf "INFO: Sending authentication request...\n"
 
@@ -39,8 +41,8 @@ RESPONSE=$(yes "$TOKEN" | onelogin-aws-login -C "$PROFILE")
 # There appears to be only 1 success case and multiple failure scenarios so only checking for success
 if [[ ! "$RESPONSE" =~ "Credentials cached" ]] 
 then
-  printf "%s\n" "$RESPONSE"
-  exit 1
+  printf "Non-success error message returned:\n%s\n" "$RESPONSE"
+  exit 0
 fi
 
 # parse response

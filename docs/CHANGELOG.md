@@ -36,6 +36,13 @@ Action Keywords:
 
 - `./libs/bash/git/install.sh` to auto-update toolchain as an upstream project if the localhost version does not match the latest in the remote host
 
+## [0.54.23] - 2024-07-15
+
+### FIX
+
+- Logging level VAR changed to generic `LOG_LEVEL`
+- Verbosity output of Bash scripts, leveraging ENV VAR `LOG_LEVEL`
+
 ## [0.54.22] - 2024-07-15
 
 ### ADD
