@@ -7,12 +7,22 @@ set -eo pipefail
 # shellcheck disable=SC1091
 source "$HOME/.bashrc" || exit 1
 
-if [[ $WL_IAC_LOGGING == "TRACE" ]]
+if [[ $LOG_LEVEL == "TRACE" ]]
 then 
     set -x
 fi
 
-# logic
+## Function
+
+function rebaseFromOriginMain() {
+    # git fetch origin
+    # git rebase origin/main
+    # if ! 0
+    # printf error, please rebase
+    # exit 1
+}
+
+## Logic
 
 if [[ ! $WORKSPACE ]]
 then
@@ -21,6 +31,9 @@ then
     export WORKSPACE
     printf "INFO: WORKSPACE %s\n" "${WORKSPACE}"
 fi
+
+# TODO WIP Come back to this next time around
+#rebaseFromOriginMain # Rebase feature from on origin/main before push to prevent merge-conflict and running complaince tooling on untouched resources
 
 # shellcheck disable=SC1091
 source "${WORKSPACE}/.tmp/toolchain-management/libs/bash/git/common.sh"

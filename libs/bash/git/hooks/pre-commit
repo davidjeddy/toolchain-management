@@ -15,7 +15,7 @@ fi
 # Functions
 
 function autoUpdate() {
-    # GitLab PAt token from ~/.terraformrc
+    # GitLab Pat token from ~/.terraformrc
     local GITLAB_TOKEN
     GITLAB_TOKEN=$(grep -A 1 'gitlab' ~/.terraformrc | sed -n '2 p' | awk '{print $3}' | jq -rM '.')
 
@@ -29,17 +29,24 @@ function autoUpdate() {
         "https://gitlab.kazan.myworldline.com")
     if [[ "$GL_HTTP_RES" != 200 ]]
     then
+        printf "WARN: Unable to check remote version of Toolchain. Skipping automatic update process.\n"
         return 0
     fi
 
     # Version of toolchain in Gitlab via latest tag
     local VER_IN_GL
     VER_IN_GL=$(curl \
-        --location \
-        --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
         --header "Content-Type: appliction/json" \
+        --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+        --location \
+        --silent \
         "https://gitlab.kazan.myworldline.com/api/v4/projects/78445/repository/tags" \
         | jq -rM .[0].name)
+    if [[ "$VER_IN_GL" != 200 ]]
+    then
+        printf "WARN: Unable to check local version of Toolchain. Skipping automatic update process.\n"
+        return 0
+    fi
 
     # Version of toolchain on Localhost via tags
     local VER_IN_LH
@@ -55,11 +62,6 @@ function autoUpdate() {
         $WORKSPACE/libs/bash/install.sh
     fi
 }
-
-if [[ $WL_IAC_LOGGING == "TRACE" ]]
-then 
-    set -x
-fi
 
 if [[ ! $WORKSPACE ]]
 then
