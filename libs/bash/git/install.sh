@@ -91,6 +91,10 @@ then
     git submodule update --init --recursive
 fi
 
+# Reported as not working, but why not?
+# printf "INFO: Updating in-project installer.\n"
+# cp --force "$WORKSPACE/.tmp/toolchain-management/libs/bash/git/install.sh" "$WORKSPACE/libs/bash/install.sh"
+
 # Post-flight resets
 cd "$WORKSPACE" || exit 1
 

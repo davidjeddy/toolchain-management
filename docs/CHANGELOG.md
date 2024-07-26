@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.32] - 2024-07-25
+
+### FIX
+
+- Method calls on objects not allowed outside "script" blocks.
+
 ## [0.54.31] - 2024-07-24
 
 ### FIX
