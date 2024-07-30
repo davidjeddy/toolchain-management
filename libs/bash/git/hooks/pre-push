@@ -15,11 +15,15 @@ fi
 ## Function
 
 function rebaseFromOriginMain() {
-    # git fetch origin
-    # git rebase origin/main
-    # if ! 0
-    # printf error, please rebase
-    # exit 1
+    # Do a preliminary rebase against origin/main to ensure history is up to date from source branch
+    git fetch origin --all
+    git rebase origin/main
+    if [[ $? != "0" ]]
+    then
+        printf "ERR: Looks like we are not able to cleanly rebase from origin/main. This would cause exessice work and possible merge conflicts.\n"
+        printf "ERR: Please pull the current branch from target branch before pushing.\n"
+        exit 1
+    fi
 }
 
 ## Logic
@@ -32,8 +36,9 @@ then
     printf "INFO: WORKSPACE %s\n" "${WORKSPACE}"
 fi
 
-# TODO WIP Come back to this next time around
-#rebaseFromOriginMain # Rebase feature from on origin/main before push to prevent merge-conflict and running complaince tooling on untouched resources
+# Rebase from origin/main to ensure a smooth pre-push compliance and security scan process
+
+rebaseFromOriginMain
 
 # shellcheck disable=SC1091
 source "${WORKSPACE}/.tmp/toolchain-management/libs/bash/git/common.sh"

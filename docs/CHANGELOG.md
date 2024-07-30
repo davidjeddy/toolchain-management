@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.33] - 2024-07-30
+
+### FIX
+
+- `./libs/bash/git/hooks/pre-push` to rebase from origin/main to ensure compliance and security scans execute correctly
+
 ## [0.54.32] - 2024-07-25
 
 ### FIX
