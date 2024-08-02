@@ -167,8 +167,7 @@ elif [[ $(which apt) ]]
 then
     apt_systems
 else
-    printf "ERR: No supported system package manager found. Please consider submitting an update adding your distributions package manager.\n"
-    exit 1
+    printf "WARN: No supported system package manager found. Please consider submitting an update adding your distributions package manager.\n"
 fi
 
 # shellcheck disable=SC2088,SC2143
