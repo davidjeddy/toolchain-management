@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.37] - 2024-08-02
+
+### FIX
+
+- Do not fail when system package manager is not found, enable executing in Alpine based containers
+
 ## [0.54.36] - 2024-08-02
 
 ### ADD
