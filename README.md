@@ -5,6 +5,7 @@
 - [Toolchain Management](#toolchain-management)
   - [Table of Contents](#table-of-contents)
   - [Description](#description)
+  - [Diagrams](#diagrams)
   - [Purpose](#purpose)
   - [Requirements / Supported Platforms](#requirements--supported-platforms)
   - [Tools List](#tools-list)
@@ -20,6 +21,18 @@
 ## Description
 
 Collection of resources and tools used to manage IAC projects.
+
+## Diagrams
+
+[An example of using Mermaid markdown inside of a markdown document.](https://docs.gitlab.com/ee/user/markdown.html#mermaid)
+
+```mermaid
+graph TD;
+  A-->B;
+  A-->C;
+  B-->D;
+  C-->D;
+```
 
 ## Purpose
 

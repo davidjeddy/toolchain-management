@@ -12,6 +12,18 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.36] - 2024-08-02
+
+### ADD
+
+- `./libs/bash/git/delete_old_branches.sh` to prune stale/abandoned branches
+
+### FIX
+
+- `./libs/bash/aws/backup_delete_all_recovery_points.sh` file mode
+- Version bumped some tools
+- Version output of TF anf TG reading from incorrect files
+
 ## [0.54.34] - 2024-08-01
 
 ### FIX

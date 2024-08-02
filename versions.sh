@@ -18,13 +18,13 @@ declare TOFU_VER
 
 # set var values
 
-## https://github.com/aquaproj/aqua/tags
-export AQUA_VER="2.29.0"
-## https://github.com/golang/go/tags
+## https://github.com/aquaproj/aqua
+export AQUA_VER="2.30.0"
+## https://github.com/golang/go
 export GO_VER="1.21"
-## https://github.com/syndbg/goenv/releases
-export GOENV_VER="2.1.14"
-## https://github.com/LOCALSTACK_VER/LOCALSTACK_VER-cli/releases
+## https://github.com/syndbg/goenv
+export GOENV_VER="2.2.1"
+## https://github.com/localstack/localstack
 export LOCALSTACK_VER="3.5.0"
 ## https://maven.apache.org/
 export MAVEN_VER="3.9.8"
@@ -32,14 +32,14 @@ export MAVEN_VER="3.9.8"
 export ONELOGIN_AWS_CLI_VER="0.1.19"
 ## https://www.python.org/downloads/
 export PYTHON_VER="3.8.18"
-## https://github.com/pyenv/pyenv/tags
-export PYENV_VER="2.4.0"
+## https://github.com/pyenv/pyenv
+export PYENV_VER="2.4.8"
 ## https://github.com/hashicorp/terraform
 export TF_VER="1.6.2"
 ## https://github.com/gruntwork-io/terragrunt
-export TG_VER="0.58.2"
+export TG_VER="0.64.1"
 ## https://github.com/opentofu
-export TOFU_VER="1.7.0"
+export TOFU_VER="1.8.0"
 
 # System Tools
 echo "AQUA_VER: $AQUA_VER"
@@ -64,6 +64,6 @@ echo "$TOFU_VER" > .tofu-version
 # read version
 echo "GO_VER: $(cat .go-version)"
 echo "PYTHON_VER: $(cat .python-version)"
-echo "TF_VER: $(cat .tf-version)"
-echo "TG_VER: $(cat .tg-version)"
+echo "TF_VER: $(cat .terraform-version)"
+echo "TG_VER: $(cat .terragrunt-version)"
 echo "TOFU_VER: $(cat .tofu-version)"
