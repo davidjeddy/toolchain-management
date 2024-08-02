@@ -3,13 +3,13 @@
 
 //- Library Imports
 @Library('jenkins-pipeline-lib')
-import com.ingenico.epayments.ci.common.PipelineCommon
 import com.ingenico.epayments.ci.common.Slack
 
 // configuration vars
 
 Number jobTimeout           = 30
 String artifactNumToKeepStr = '7'
+// Intentionally left blank
 String githubPat            = 'GH_PAT'
 String gitlabApiPat         = 'gitlab-kazan-technical-api-token'
 String gitlabConnectionName = 'gitlab.kazan.myworldline.com'
@@ -30,7 +30,7 @@ String workerNode           = 'bambora-aws-slave-terraform'
 // execution
 
 pipeline {
-    agent {
+    agent { // https://digitalvarys.com/jenkins-declarative-pipeline-with-examples/
         node workerNode
     }
     environment {
@@ -46,8 +46,9 @@ pipeline {
         timeout(time: jobTimeout, unit: 'MINUTES')
         timestamps()
     }
-    // https://stackoverflow.com/questions/36651432/how-to-implement-post-build-stage-using-jenkins-pipeline-plug-in
-    // https://plugins.jenkins.io/gitlab-plugin/
+    parameters { // https://www.jenkins.io/doc/book/pipeline/syntax/#parameters
+        string(name: 'TOOLCHAIN_BRANCH', defaultValue: 'main')
+    }
     post {
         // always, changed, fixed, regression, aborted, failure, success, unstable, unsuccessful, and cleanup
         failure {
@@ -140,6 +141,16 @@ pipeline {
                 git branch: env.BRANCH_NAME,
                     credentialsId: gitlabGitSa,
                     url: env.GIT_URL
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh('''#!/bin/bash -l
+                        set -exo pipefail
+
+                        ${WORKSPACE}/libs/bash/install.sh ''' + params.TOOLCHAIN_BRANCH + '''
+                        source ~/.bashrc
+                ''')
             }
         }
         // Typical direct re/install

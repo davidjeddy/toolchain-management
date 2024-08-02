@@ -180,11 +180,13 @@ then
 
     curl \
         --location \
+        --silent \
         --verbose \
         --output "localstack-cli-${LOCALSTACK_VER}-checksums.txt" \
         "https://github.com/localstack/localstack-cli/releases/download/v${LOCALSTACK_VER}/localstack-cli-${LOCALSTACK_VER}-checksums.txt"
     curl \
         --location \
+        --silent \
         --verbose \
         --output "localstack-cli-${LOCALSTACK_VER}-linux-${ARCH}-onefile.tar.gz" \
         "https://github.com/localstack/localstack-cli/releases/download/v${LOCALSTACK_VER}/localstack-cli-${LOCALSTACK_VER}-linux-arm64-onefile.tar.gz"
@@ -198,7 +200,9 @@ then
         exit 1
     fi
 
-    sudo tar xvzf "localstack-cli-${LOCALSTACK_VER}-linux-${ARCH}-onefile.tar.gz" -C /usr/local/bin
+    sudo tar xvzf "localstack-cli-${LOCALSTACK_VER}-linux-${ARCH}-onefile.tar.gz"
+    sudo chmod +x ./localstack
+    sudo cp -rf ./localstack /usr/local/bin
     rm -rf localstack-*
 
     which localstack

@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.34] - 2024-08-01
+
+### FIX
+
+- Jenkinsfile update
+
 ## [0.54.33] - 2024-07-30
 
 ### FIX
