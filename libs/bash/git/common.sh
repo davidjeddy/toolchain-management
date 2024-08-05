@@ -386,7 +386,7 @@ function iacLinting() {
 
     printf "INFO: IAC formatting.\n"
     {
-        git add "$(terraform fmt -no-color -recursive .)"
+        git add "$(terraform fmt -no-color .)"
     } || {
         printf "INFO: No Terraform formatting issues found, Good job!\n"
     }
@@ -478,6 +478,11 @@ function generateDiffList() {
     if [[ ! $THIS_FILE_CHANGE_LIST ]]
     then
         printf "%s" "${THIS_FILE_CHANGE_LIST}"
+    fi
+
+    if [[ ! "$THIS_FILE_CHANGE_LIST" ]]
+    then
+        return
     fi
 
     local THIS_DIR_CHANGE_LIST

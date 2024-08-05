@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.54.38] - 2024-08-02
+
+### FIX
+
+- Do not execute `terraform fmt` recursively.
+
 ## [0.54.37] - 2024-08-02
 
 ### FIX
