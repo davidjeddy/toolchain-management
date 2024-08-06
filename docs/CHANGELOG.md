@@ -12,13 +12,29 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
-## [0.54.38] - 2024-08-02
+## [0.55.0] - 2024-08-06
 
 ### FIX
 
-- Do not execute `terraform fmt` recursively.
+- Can now be used with Alpine (apk) based containers / systems
+
+## [0.54.39] - 2024-08-05
+
+### FIX
+
+- `./libs/jenkins/pipelines/vars/SharedModule.groovy` steps shell invocation better aligned with helper scripts
+
+## [0.54.38] - 2024-08-03
+
+### FIX
+
+- Do not try to install Python/PIP related resources on APK based hosts
 
 ## [0.54.37] - 2024-08-02
+
+### ADD
+
+- helper script to execute IAC lifecycle on child dir
 
 ### FIX
 

@@ -16,7 +16,7 @@ fi
 
 function rebaseFromOriginMain() {
     # Do a preliminary rebase against origin/main to ensure history is up to date from source branch
-    git fetch origin --all
+    git fetch --all
     git rebase origin/main
     if [[ $? != "0" ]]
     then

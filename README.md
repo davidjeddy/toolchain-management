@@ -5,7 +5,6 @@
 - [Toolchain Management](#toolchain-management)
   - [Table of Contents](#table-of-contents)
   - [Description](#description)
-  - [Diagrams](#diagrams)
   - [Purpose](#purpose)
   - [Requirements / Supported Platforms](#requirements--supported-platforms)
   - [Tools List](#tools-list)
@@ -22,17 +21,6 @@
 
 Collection of resources and tools used to manage IAC projects.
 
-## Diagrams
-
-[An example of using Mermaid markdown inside of a markdown document.](https://docs.gitlab.com/ee/user/markdown.html#mermaid)
-
-```mermaid
-graph TD;
-  A-->B;
-  A-->C;
-  B-->D;
-  C-->D;
-```
 
 ## Purpose
 
@@ -58,6 +46,7 @@ For a complete list of tools provided please view ./aqua.yml, ./libs/bash/additi
 
 ### WARNING
 
+- OneLogin-AWS-CLI is NOT installed on `apk` based systems as the running container will have permissions based on IAM Task Role permissions
 - System packages managed by `apt`, `dnf`, or `yum` will be installed / updated to the latest version on every execution.
 
 ### Install

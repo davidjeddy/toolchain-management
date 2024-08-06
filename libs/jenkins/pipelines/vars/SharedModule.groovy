@@ -138,7 +138,13 @@ def call(
                             variable:       'gitlabPAT'
                         )]) {
                         sh('''#!/bin/bash -l
-                            set -exo pipefail
+                            set -eo pipefail
+
+                            if [[ $LOG_LEVEL == "TRACE" ]]
+                            then 
+                                set -x
+                            fi
+
                             source "$HOME/.bashrc"
 
                             curl \
@@ -154,7 +160,14 @@ def call(
             stage('System ENV VARs') {
                 steps {
                     sh('''#!/bin/bash -l
-                        set -exo pipefail
+                        set -eo pipefail
+
+                        if [[ $LOG_LEVEL == "TRACE" ]]
+                        then 
+                            set -x
+                        fi
+
+                        source "$HOME/.bashrc"
 
                         echo "INFO: Printing ENV VARs"
                         printenv | sort
@@ -175,9 +188,15 @@ def call(
             }
             stage('Install Dependencies') {
                 steps {
-                    sh('''#!/bin/bash -l
-                        set -exo pipefail
-                        source ~/.bashrc
+                        sh('''#!/bin/bash -l
+                            set -eo pipefail
+
+                            if [[ $LOG_LEVEL == "TRACE" ]]
+                            then 
+                                set -x
+                            fi
+
+                            source "$HOME/.bashrc"
 
                         ${WORKSPACE}/libs/bash/install.sh ''' + params.TOOLCHAIN_BRANCH + '''
                         source ~/.bashrc
@@ -188,8 +207,14 @@ def call(
                 steps {
                     script {
                         sh('''#!/bin/bash -l
-                            set -exo pipefail
-                            source ~/.bashrc
+                            set -eo pipefail
+
+                            if [[ $LOG_LEVEL == "TRACE" ]]
+                            then 
+                                set -x
+                            fi
+
+                            source "$HOME/.bashrc"
                             
                             ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/iac_publish.sh
 
@@ -219,8 +244,14 @@ def call(
                                 variable:       'gitlabPAT'
                             )]) {
                                 sh('''#!/bin/bash -l
-                                    set -exo pipefail
-                                    source ~/.bashrc
+                                    set -eo pipefail
+
+                                    if [[ $LOG_LEVEL == "TRACE" ]]
+                                    then 
+                                        set -x
+                                    fi
+
+                                    source "$HOME/.bashrc"
                                     
                                     ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/sem_ver_release_tagging.sh
                                 ''')
