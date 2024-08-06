@@ -153,4 +153,9 @@ function process_pyenv() {
 }
 
 process_goenv
-process_pyenv
+
+# Alpine systems manage Python via the apk package manager
+if [[ ! $(which apk) ]]
+then
+    process_pyenv
+fi

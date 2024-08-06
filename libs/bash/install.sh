@@ -61,14 +61,22 @@ printf "INFO: PATH is %s\n" "$PATH"
 # shellcheck disable=SC1090,SC1091
 source "./versions.sh" || exit 1
 
-# shellcheck disable=SC1090,SC1091
-source "./libs/bash/system_tools.sh" || exit 1
+# DO NOT install system tools on Alpine (apk) based systems
+if [[ ! $(which apk) ]]
+then
+    # shellcheck disable=SC1090,SC1091
+    source "./libs/bash/system_tools.sh" || exit 1
+fi
 
 # shellcheck disable=SC1090,SC1091
 source "./libs/bash/language_runtimes.sh" || exit 1
 
-# shellcheck disable=SC1090,SC1091
-source "./libs/bash/additional_tools.sh" || exit 1
+# DO NOT install additional tools on Alpine (apk) based systems
+if [[ ! $(which apk) ]]
+then
+    # shellcheck disable=SC1090,SC1091
+    source "./libs/bash/additional_tools.sh" || exit 1
+fi
 
 # Third, now we can trigger Aqua to install all the other toolings
 
