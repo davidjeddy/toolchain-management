@@ -12,6 +12,15 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.55.1] - 2024-08-07
+
+### FIX
+
+- migrate from ~/.bashrc to $HOME/.bashrc due to ~/ not expanding to the full path on some systems
+- pyenv failing to install properly due to ~/.bashrc not being interprited correctly
+- Stop putting the start/end indicators into ~/.bashrc repeatidly
+- Start/Stop lines in ~/.bashrc changed to be more descriptive of the owner
+
 ## [0.55.0] - 2024-08-06
 
 ### FIX

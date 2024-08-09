@@ -4,7 +4,7 @@
 set -eo pipefail
 
 # shellcheck disable=SC1090
-source ~/.bashrc
+source $HOME/.bashrc
 
 # Example: source /path/to/script/bambora_onelogin_aws.sh worldline-gc-connect-staging
 # Recommended: Add the script invokation to .basrc with an alias for each account: alias oli_bmbr_cicd_build_dev="source /path/to/script/onelogin_bambora_aws.sh worldline-gc-cicd-build-dev"

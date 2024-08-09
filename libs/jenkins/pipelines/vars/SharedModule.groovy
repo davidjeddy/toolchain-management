@@ -199,7 +199,7 @@ def call(
                             source "$HOME/.bashrc"
 
                         ${WORKSPACE}/libs/bash/install.sh ''' + params.TOOLCHAIN_BRANCH + '''
-                        source ~/.bashrc
+                        source $HOME/.bashrc
                     ''')
                 }
             }
