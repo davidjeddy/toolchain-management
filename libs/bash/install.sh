@@ -4,15 +4,22 @@
 
 set -eo pipefail
 
-# shellcheck disable=SC1091
-source "$HOME/.bashrc" || exit 1
-
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
     set -x
 fi
 
+declare OLD_PWD
+OLD_PWD="$(pwd)"
+printf "INFO: OLD_PWD: %s\n" "${OLD_PWD}"
+
 ## Preflight checks
+
+if [[ ! $HOME || $HOME == "" ]]
+then
+    printf "ERR: HOME EN VAR must be set"
+    exit 1
+fi
 
 if [ "$EUID" -eq 0 ]
 then
@@ -20,11 +27,12 @@ then
   exit 1
 fi
 
-declare OLD_PWD
-OLD_PWD="$(pwd)"
-printf "INFO: OLD_PWD: %s\n" "${OLD_PWD}"
+# load ENV configuration
 
-## 
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
+
+# execute
 
 # First, determinr runtime VARS
 
@@ -45,12 +53,19 @@ declare SESSION_SHELL
 SESSION_SHELL="${HOME}/.bashrc"
 if [[ $- == *i* ]]
 then
-    SESSION_SHELL=~/.bashrc
+    SESSION_SHELL="$HOME/.bashrc"
 fi
 export SESSION_SHELL
 
+# Remove configurations from start line to end line (inclusive)
+# While this removes only one instance per run, eventually the empty blocks will all be removed
+## < 0.55.0 strings
+sed -i '/# WL GC Toolchain Management Starting/,/# WL GC Toolchain Management Ending/d' "$HOME/.bashrc"
+## > 0.55.0 strings
+sed -i '/# WL - GC - Centaurus - Toolchain Management Starting/,/# WL - GC - Centaurus - Toolchain Management Ending/d' "$HOME/.bashrc"
+
 # Put an indicator of where the toolchain configurations start
-echo "# WL GC Toolchain Management Starting" >> $SESSION_SHELL
+echo "# WL - GC - Centaurus - Toolchain Management Starting" >> $SESSION_SHELL
 
 # shellcheck disable=SC1090,SC1091
 source "${SESSION_SHELL}" || exit 1
@@ -149,7 +164,7 @@ tofuenv install "$(cat .tofu-version)"
 tofuenv use "$(cat .tofu-version)"
 
 # Put an indicator of where the toolchain configurations end
-echo "# WL GC Toolchain Management Ending" >> $SESSION_SHELL
+echo "# WL - GC - Centaurus - Toolchain Management Ending" >> $SESSION_SHELL
 
 # Lastly, Wrap up and exit
 
@@ -165,4 +180,4 @@ then
     printf "INFO: Looks like you do not yet have a ~/.terraformrc credentials configuration, pleaes follow https://confluence.worldline-solutions.com/display/PPSTECHNO/Using+Shared+Modules+from+GitLab+Private+Registry before attempting to use Terraf.\n"
 fi
 
-printf "INFO: Done. Please reload your shell by running the following command: \"source ~/.bashrc\".\n"
+printf "INFO: Done. Please reload your shell by running the following command: \"source $HOME/.bashrc\".\n"

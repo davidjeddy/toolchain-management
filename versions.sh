@@ -41,6 +41,13 @@ export TG_VER="0.64.1"
 ## https://github.com/opentofu
 export TOFU_VER="1.8.0"
 
+# .*-version managed language runtimes
+echo "$GO_VER" > .go-version
+echo "$PYTHON_VER" > .python-version
+echo "$TF_VER" > .terraform-version
+echo "$TG_VER" > .terragrunt-version
+echo "$TOFU_VER" > .tofu-version
+
 # System Tools
 echo "AQUA_VER: $AQUA_VER"
 echo "GO_VER: $GO_VER"
@@ -53,17 +60,3 @@ echo "PYTHON_VER: $PYTHON_VER"
 echo "TF_VER: $TF_VER"
 echo "TG_VER: $TG_VER"
 echo "TOFU_VER: $TOFU_VER"
-
-# .*-version managed language runtimes
-echo "$GO_VER" > .go-version
-echo "$PYTHON_VER" > .python-version
-echo "$TF_VER" > .terraform-version
-echo "$TG_VER" > .terragrunt-version
-echo "$TOFU_VER" > .tofu-version
-
-# read version
-echo "GO_VER: $(cat .go-version)"
-echo "PYTHON_VER: $(cat .python-version)"
-echo "TF_VER: $(cat .terraform-version)"
-echo "TG_VER: $(cat .terragrunt-version)"
-echo "TOFU_VER: $(cat .tofu-version)"

@@ -4,7 +4,7 @@
 set -eo pipefail
 
 # shellcheck disable=SC1090
-source ~/.bashrc
+source $HOME/.bashrc
 
 # Parameters:
 #   - MFA_DEVICE_ARN    the ARN of your MFA device (optional - if not provided, the script will try to get this information from user's account)

@@ -149,7 +149,7 @@ pipeline {
                         set -exo pipefail
 
                         ${WORKSPACE}/libs/bash/install.sh ''' + params.TOOLCHAIN_BRANCH + '''
-                        source ~/.bashrc
+                        source $HOME/.bashrc
                 ''')
             }
         }
@@ -161,7 +161,7 @@ pipeline {
                     source $HOME/.bashrc
 
                     ${WORKSPACE}/libs/bash/install.sh
-                    source ~/.bashrc
+                    source $HOME/.bashrc
                 ''')
             }
         }
