@@ -100,8 +100,9 @@ function process_pyenv() {
             # shellcheck disable=SC2016
             {
                 echo 'export PYENV_ROOT="$HOME/.pyenv"'
-                echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
+                echo 'export PATH="$PYENV_ROOT/bin:$PATH"'
                 echo 'export PATH="$PYENV_ROOT/shims:$PATH"'
+                echo 'command -v pyenv > /dev/null'
                 echo 'eval "$(pyenv init -)"'
                 echo 'eval "$(pyenv virtualenv-init -)"'
             } >> "${SESSION_SHELL}"
