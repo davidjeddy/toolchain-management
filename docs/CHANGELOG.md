@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.55.2] - 2024-08-12
+
+### FIX
+
+- `bash: pyenv: command not found...` after clean install
+
 ## [0.55.1] - 2024-08-07
 
 ### FIX
