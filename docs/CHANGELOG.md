@@ -12,6 +12,12 @@ Action Keywords:
 `FIX`   : Functionality existed but did not behave as expected.
 `REMOVE` : Functionality is no longer available.
 
+## [0.55.3] - 2024-08-27
+
+### FIX
+
+- `./libs/bash/auth/onelogin_bambora_aws.sh` to once again function as desired
+  
 ## [0.55.2] - 2024-08-12
 
 ### FIX
