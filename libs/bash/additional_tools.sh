@@ -18,39 +18,47 @@ printf "ALERT: We should try to add this tools to the Aqua Registry. We should t
 # https://stackoverflow.com/questions/12806176/checking-for-installed-packages-and-if-not-found-install
 printf "INFO: Processing AWS session-manager-plugin.\n"
 # shellcheck disable=SC2126
-if [[ $(which dnf) && $(dnf list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) -eq 0 ]]
+if [[ $(which dnf) && $(dnf list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) != 0 ]]
 then
     echo "INFO: Installing AWS CLI session-manager-plugin via dnf system package manager.";
     # Fedora
-    if [[ $(uname -m) == "x86_64" ]]
+    if [[ $(uname -m) == "x86_64" || $(uname -m) == "amd64" ]]
     then
         ## arm64
-        sudo dnf install -y "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm"
-    elif [[ $(uname -m) == "aarch64" ]]
+        sudo dnf reinstall -y "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm"
+    elif [[ $(uname -m) == "arm64" || $(uname -m) == "aarch64" ]]
     then
         ## amd64
-        sudo dnf install -y "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_arm64/session-manager-plugin.rpm"
+        sudo dnf reinstall -y "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_arm64/session-manager-plugin.rpm"
     else
         prinf "ALERT: Unable to determine CPU architecture for Fedora distro of AWS session-manager-plugin.\n"
     fi
-elif [[ $(which yum) && $(yum list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) -eq 0 ]]
+elif [[ $(which yum) && $(yum list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) != 0 ]]
 then
     # RHEL
     echo "INFO: Installing AWS CLI session-manager-plugin via yum system package manager.";
     # We have to manually remove the symlink to make the pacakge install idempotent
     sudo rm "/usr/local/bin/session-manager-plugin" || true
     sudo rpm -iUvh --replacepkgs "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm"
-elif [[ $(which apt) && $(apt list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) -eq 0 ]]
+elif [[ $(which apt) && $(apt list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) != 0 ]]
 then
     echo "INFO: Installing AWS CLI session-manager-plugin via apt system package manager.";
-    if [[ $(uname -m) == "x86_64" ]]
+    if [[ $(uname -m) == "x86_64" || $(uname -m) == "amd64" ]]
     then
         ## arm64
-        curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
-    elif [[ $(uname -m) == "aarch64" ]]
+        curl \
+            --location \
+            --output "session-manager-plugin.deb" \
+            --verbose \
+            "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb"
+    elif [[ $(uname -m) == "arm64" || $(uname -m) == "aarch64" ]]
     then
         ## amd64
-        curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_arm64/session-manager-plugin.deb" -o "session-manager-plugin.deb"
+        curl \
+            --location \
+            --output "session-manager-plugin.deb" \
+            --verbose \
+            "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_arm64/session-manager-plugin.deb"
     else
         prinf "ALERT: Unable to determine CPU architecture for Debian distro of AWS session-manager-plugin.\n"
     fi
@@ -102,8 +110,7 @@ then
     curl \
         --location \
         --output "kics-v${KICS_VER}.tar.gz" \
-        --show-error \
-        --silent \
+        --verbose \
         "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" 
     tar -xf kics-v"${KICS_VER}".tar.gz
     # we want the dir to have the `v`
@@ -132,14 +139,12 @@ then
     curl \
         --location \
         --output "apache-maven-${MAVEN_VER}-bin.tar.gz" \
-        --show-error \
-        --silent \
+        --verbose \
         "https://downloads.apache.org/maven/maven-3/${MAVEN_VER}/binaries/apache-maven-${MAVEN_VER}-bin.tar.gz"
     curl \
         --location \
         --output "apache-maven-${MAVEN_VER}-bin.tar.gz.sha512" \
-        --show-error \
-        --silent \
+        --verbose \
         "https://downloads.apache.org/maven/maven-3/${MAVEN_VER}/binaries/apache-maven-${MAVEN_VER}-bin.tar.gz.sha512"
 
     declare CALCULATED_CHECKSUM
@@ -180,15 +185,13 @@ then
 
     curl \
         --location \
-        --silent \
-        --verbose \
         --output "localstack-cli-${LOCALSTACK_VER}-checksums.txt" \
+        --verbose \
         "https://github.com/localstack/localstack-cli/releases/download/v${LOCALSTACK_VER}/localstack-cli-${LOCALSTACK_VER}-checksums.txt"
     curl \
         --location \
-        --silent \
-        --verbose \
         --output "localstack-cli-${LOCALSTACK_VER}-linux-${ARCH}-onefile.tar.gz" \
+        --verbose \
         "https://github.com/localstack/localstack-cli/releases/download/v${LOCALSTACK_VER}/localstack-cli-${LOCALSTACK_VER}-linux-arm64-onefile.tar.gz"
     
     declare CALCULATED_CHECKSUM
