@@ -109,6 +109,7 @@ yes | rm /usr/local/bin/tgenv || true
 yes | rm /usr/local/bin/tofu || true
 yes | rm /usr/local/bin/tofuenv || true
 yes | rm /usr/local/bin/xeol || true
+yes | rm -rf /usr/local/bin/localstack* || true
 yes | rm -rf /usr/local/bin/pip3* || true
 yes | rm -rf /usr/local/bin/pydoc3* || true
 yes | rm -rf /usr/local/bin/python3* || true

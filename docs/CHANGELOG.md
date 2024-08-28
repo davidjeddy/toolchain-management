@@ -8,9 +8,16 @@
 
 Action Keywords:
 
-`ADD`   : Functionality did not exist previously.
-`FIX`   : Functionality existed but did not behave as expected.
-`REMOVE` : Functionality is no longer available.
+- `ADD`   : Functionality did not exist previously.
+- `FIX`   : Functionality existed but did not behave as expected.
+- `REMOVE` : Functionality is no longer available.
+
+## [0.55.4] - 2024-08-28
+
+### FIX
+
+- `./libs/bash/additional_tools.sh` once again installs AWS SessionManagerPlugin per OS/Arch as desired
+- `curl` invocations in `./libs/bash/additional_tools.sh` now includes `--verbose`
 
 ## [0.55.3] - 2024-08-27
 
