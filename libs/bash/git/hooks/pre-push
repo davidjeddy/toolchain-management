@@ -3,7 +3,6 @@
 # set -exo pipefail # when debuggin
 set -eo pipefail
 
-# Enforce the session load like an interactive user
 # shellcheck disable=SC1091
 source "$HOME/.bashrc" || exit 1
 
@@ -11,20 +10,6 @@ if [[ $LOG_LEVEL == "TRACE" ]]
 then 
     set -x
 fi
-
-## Function
-
-function rebaseFromOriginMain() {
-    # Do a preliminary rebase against origin/main to ensure history is up to date from source branch
-    git fetch --all
-    git rebase origin/main
-    if [[ $? != "0" ]]
-    then
-        printf "ERR: Looks like we are not able to cleanly rebase from origin/main. This would cause exessice work and possible merge conflicts.\n"
-        printf "ERR: Please pull the current branch from target branch before pushing.\n"
-        exit 1
-    fi
-}
 
 ## Logic
 
@@ -36,12 +21,12 @@ then
     printf "INFO: WORKSPACE %s\n" "${WORKSPACE}"
 fi
 
-# Rebase from origin/main to ensure a smooth pre-push compliance and security scan process
+# shellcheck disable=SC1091
+source "${WORKSPACE}/.tmp/toolchain-management/libs/bash/git/common.sh"
 
 rebaseFromOriginMain
 
-# shellcheck disable=SC1091
-source "${WORKSPACE}/.tmp/toolchain-management/libs/bash/git/common.sh"
+# Logic
 
 declare DIFF_LOGIC
 DIFF_LOGIC="git diff origin/main --name-only"

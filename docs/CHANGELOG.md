@@ -12,6 +12,16 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.55.5] - 2024-09-03
+
+### ADD
+
+- Blast radius constraint function that limits change sets to a single IAC deployments (terraform/aws/[[ACCT]]/[[REGION]]/[[APP/SRV]])
+
+## FIX
+
+- `./libs/bash/git/hooks/pre-*` by moving the functions to `./libs/bash/git/common.sh`
+
 ## [0.55.4] - 2024-08-28
 
 ### FIX
@@ -91,6 +101,16 @@ Action Keywords:
 ### FIX
 
 - `./libs/bash/git/hooks/pre-push` to rebase from origin/main to ensure compliance and security scans execute correctly
+
+## [0.54.33] - 2024-09-03
+
+### ADD
+
+- Blast radius constraint function that limits change sets to a single IAC deployments (terraform/aws/[[ACCT]]/[[REGION]]/[[APP/SRV]])
+
+## FIX
+
+- `./libs/bash/git/hooks/pre-*` by moving the functions to common.sh; now the pre-* hook sscripts are once again nearly identical
 
 ## [0.54.32] - 2024-07-25
 
