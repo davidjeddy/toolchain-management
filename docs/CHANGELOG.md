@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.55.6] - 2024-09-04
+
+### FIX
+
+- Comparison operation in Blast radius constraint function
+
 ## [0.55.5] - 2024-09-03
 
 ### ADD
