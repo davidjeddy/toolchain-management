@@ -206,7 +206,7 @@ then
     sudo tar xvzf "localstack-cli-${LOCALSTACK_VER}-linux-${ARCH}-onefile.tar.gz"
     sudo chmod +x ./localstack
     sudo cp -rf ./localstack /usr/local/bin
-    rm -rf localstack-*
+    rm -rf localstack*
 
     which localstack
     echo "localstack $(localstack --version)"

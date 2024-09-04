@@ -1,9 +1,8 @@
 #!/bin/bash -l
 
-# set -exo pipefail # when debuggin
+# set -exo pipefail # for debugging
 set -eo pipefail
 
-# Enforce the session load like an interactive user
 # shellcheck disable=SC1091
 source "$HOME/.bashrc" || exit 1
 
@@ -22,7 +21,69 @@ then
     printf "INFO: WORKSPACE %s\n" "${WORKSPACE}"
 fi
 
-## fn()
+## Functions
+
+function autoUpdate() {
+    # GitLab Pat token from ~/.terraformrc
+    local GITLAB_TOKEN
+    GITLAB_TOKEN=$(grep -A 1 'gitlab' ~/.terraformrc | sed -n '2 p' | awk '{print $3}' | jq -rM '.')
+
+    # Check if remote is avaiable
+    declare GL_HTTP_RES
+    GL_HTTP_RES=$(curl \
+        --location \
+        --output /dev/null \
+        --silent \
+        --write-out "%{http_code}\n" \
+        "https://gitlab.kazan.myworldline.com")
+    if [[ "$GL_HTTP_RES" != 200 ]]
+    then
+        printf "WARN: Unable to check remote version of Toolchain. Skipping automatic update process.\n"
+        return 0
+    fi
+
+    # Version of toolchain in Gitlab via latest tag
+    local VER_IN_GL
+    VER_IN_GL=$(curl \
+        --header "Content-Type: appliction/json" \
+        --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+        --location \
+        --silent \
+        "https://gitlab.kazan.myworldline.com/api/v4/projects/78445/repository/tags" \
+        | jq -rM .[0].name)
+    if [[ "$VER_IN_GL" != 200 ]]
+    then
+        printf "WARN: Unable to check local version of Toolchain. Skipping automatic update process.\n"
+        return 0
+    fi
+
+    # Version of toolchain on Localhost via tags
+    local VER_IN_LH
+    cd $WORKSPACE/.tmp/toolchain-management || exit 1
+    git fetch --tag
+    VER_IN_LH=$(git describe --tags --abbrev=0)
+    cd $WORKSPACE || exit 1
+
+    # If not equal, time to update
+    if [[ "$VER_IN_LH" != "$VER_IN_GL" ]]
+    then
+        # execute installer
+        $WORKSPACE/libs/bash/install.sh
+    fi
+}
+
+# Rebase from origin/main. If not successful do not allow pushing of the feature branch
+function rebaseFromOriginMain() {
+    git fetch origin main
+    # Why does the different git subcommands reference remote branches differently?
+    git rebase origin/main
+    if [[ "$?" != 0 ]]
+    then
+        printf "ERR: Looks like we are not able to cleanly rebase from origin/main. This would cause exessice work and possible merge conflicts.\n"
+        printf "ERR: Please pull origin default branch and rebase before pushing this feature branch.\n"
+        exit 1
+    fi
+}
 
 function exec() {
     printf "INFO: starting exec()\n"
@@ -35,6 +96,9 @@ function exec() {
 
     # Before anything else, is the branch name valid
     validateBranchName
+
+    # Blast Radius constraints
+    blastRadiusConstraintsPreventMultipleDeploymentChangeSets "${1}"
 
     for THIS_DIR in "$@"
     do
@@ -62,12 +126,13 @@ function exec() {
             generateSBOM
             # format, lint, and syntax
             iacLinting
-            # jump to the next item in THIS_DIR_CHANGE_LIST list
-            continue 
+            # jump to the next item in "$@" list
+            continue
         fi
 
         # Any other invokation executes the full battery of checks
         doNotAllowSharedModulesInsideDeploymentProjects
+
         # SAST
         iacCompliance
     done
@@ -146,7 +211,7 @@ function generateSBOM() {
         return
     fi
 
-    # Do not generate SBOM if user is jenkins, onlyjust ensure it exists
+    # Do not generate SBOM if user is jenkins, only ensure it exists
     if [[ ! -f sbom.xml && $(whoami) == 'jenkins' ]]
     then
         printf "ERR: sbom.xml missing, failing."
@@ -488,4 +553,42 @@ function generateDiffList() {
     local THIS_DIR_CHANGE_LIST
     THIS_DIR_CHANGE_LIST=$(printf "%s" "$THIS_FILE_CHANGE_LIST" | xargs -L1 dirname | sort | uniq)
     printf "%s" "${THIS_DIR_CHANGE_LIST}"
+}
+
+# Do not allow multi-account, multi-refion changes in the same MR.
+# This is to prevent blowing up more than on deployment at a time.
+#
+# IE this is a blast radius contraint
+# ARG $1 STRING list of modules paths
+# RETURN INT
+#
+function blastRadiusConstraintsPreventMultipleDeploymentChangeSets() {
+    printf "INFO: starting blastRadiusConstraintsPreventMultipleDeploymentChangeSets()\n"
+
+    if [[ ! ${1} ]]
+    then
+        printf "ERR: Argument 1 must be list of IAC module paths.\n"
+        exit 1
+    fi
+
+    # extract the deployment path
+    local DEPLOYMENT_PREFIX
+    # TODO better way to extract the first 5 segments from a path?
+    DEPLOYMENT_PREFIX=$(echo ${1} | cut -d/ -f1)"/"$(echo ${1} | cut -d/ -f2)"/"$(echo ${1} | cut -d/ -f3)"/"$(echo ${1} | cut -d/ -f4)"/"$(echo ${1} | cut -d/ -f5)
+
+    printf "INFO: DEPLOYMENT_PREFIX: %s\n" "${DEPLOYMENT_PREFIX}"
+    printf "INFO: DIFF_LIST: \n%s\n" "${DIFF_LIST}"
+    # iterate through the entire DIFF_LIST, if any deploymenth path does not match we exit with error
+    # https://www.baeldung.com/linux/shell-script-iterate-over-string-list
+    for DEPLOYMENT_PATH in ${DIFF_LIST}
+    do
+        printf "INFO: DEPLOYMENT_PATH: %s\n" "${DEPLOYMENT_PATH}"
+        if [[ ${DEPLOYMENT_PREFIX} != "${DEPLOYMENT_PATH}"* ]]
+        then
+            printf "ERR: DIFF_LIST contains the following changed deployments:\n%s\n" "${DIFF_LIST}"
+            printf "ERR: We do not support cross-deployment change sets in order to limit the blast radius of any one set of changes.\n"
+            printf "ERR: Please create separate branches per deployment change set.\n"
+            exit 1
+        fi
+    done
 }

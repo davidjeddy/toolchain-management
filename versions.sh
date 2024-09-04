@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-# set -exo pipefail # when debuggin
+# set -exo pipefail # for debugging
 set -eo pipefail
 
 # declare vars
