@@ -583,7 +583,7 @@ function blastRadiusConstraintsPreventMultipleDeploymentChangeSets() {
     for DEPLOYMENT_PATH in ${DIFF_LIST}
     do
         printf "INFO: DEPLOYMENT_PATH: %s\n" "${DEPLOYMENT_PATH}"
-        if [[ ${DEPLOYMENT_PREFIX} != "${DEPLOYMENT_PATH}"* ]]
+        if [[ ${DEPLOYMENT_PATH} != "${DEPLOYMENT_PREFIX}"* ]]
         then
             printf "ERR: DIFF_LIST contains the following changed deployments:\n%s\n" "${DIFF_LIST}"
             printf "ERR: We do not support cross-deployment change sets in order to limit the blast radius of any one set of changes.\n"
