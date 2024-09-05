@@ -13,6 +13,7 @@
     - [Install](#install)
     - [Update](#update)
     - [Upgrade From \< 0.50.0 to \>= 0.50.0](#upgrade-from--0500-to--0500)
+  - [Options](#options)
   - [Versioning](#versioning)
   - [Contributors](#contributors)
   - [Additional Information](#additional-information)
@@ -20,7 +21,6 @@
 ## Description
 
 Collection of resources and tools used to manage IAC projects.
-
 
 ## Purpose
 
@@ -46,8 +46,7 @@ For a complete list of tools provided please view ./aqua.yml, ./libs/bash/additi
 
 ### WARNING
 
-- OneLogin-AWS-CLI is NOT installed on `apk` based systems as the running container will have permissions based on IAM Task Role permissions
-- System packages managed by `apt`, `dnf`, or `yum` will be installed / updated to the latest version on every execution.
+- System packages managed by `apt`, `dnf`, or `yum` will be installed / updated to the  version listed in `versions.sh` or `libs/bash/*.sh` configurations.
 
 ### Install
 
@@ -93,6 +92,14 @@ Third, remove all pre-upgrade managed tools
 ```sh
 sudo su
 
+# For < 0.56.0
+yes | rm -rf /usr/local/bin/localstack* || true
+yes | rm -rf /usr/local/bin/maven || true
+yes | rm -rf /usr/local/bin/mvn || true
+yes | rm -rf /usr/local/bin/pip3* || true
+yes | rm -rf /usr/local/bin/pydoc3* || true
+yes | rm -rf /usr/local/bin/sonar-scanner || true
+yes | rm -rf $HOME/.local/lib/python3* || true
 yes | rm /usr/local/bin/iam-policy-json-to-terraform || true
 yes | rm /usr/local/bin/infracost || true
 yes | rm /usr/local/bin/kics || true
@@ -109,18 +116,41 @@ yes | rm /usr/local/bin/tgenv || true
 yes | rm /usr/local/bin/tofu || true
 yes | rm /usr/local/bin/tofuenv || true
 yes | rm /usr/local/bin/xeol || true
-yes | rm -rf /usr/local/bin/localstack* || true
-yes | rm -rf /usr/local/bin/pip3* || true
-yes | rm -rf /usr/local/bin/pydoc3* || true
-yes | rm -rf /usr/local/bin/python3* || true
+
+
+# For >= 0.56.0
+yes | rm -rf /usr/bin/maven || true
+yes | rm -rf /usr/bin/mvn || true
+yes | rm -rf /usr/bin/pip3* || true
+yes | rm -rf /usr/bin/pydoc3* || true
+yes | rm -rf /usr/bin/sonar-scanner || true
+yes | rm -rf $HOME/.local/lib/python3* || true
+yes | rm /usr/bin/iam-policy-json-to-terraform || true
+yes | rm /usr/bin/infracost || true
+yes | rm /usr/bin/kics || true
+yes | rm /usr/bin/packer || true
+yes | rm /usr/bin/pydoc || true
+yes | rm /usr/bin/session-manager-plugin  || true
+yes | rm /usr/bin/terraform || true
+yes | rm /usr/bin/terraform-docs || true
+yes | rm /usr/bin/terragrunt  || true
+yes | rm /usr/bin/terrascan || true
+yes | rm /usr/bin/tfenv || true
+yes | rm /usr/bin/tflint || true
+yes | rm /usr/bin/tfsec || true
+yes | rm /usr/bin/tgenv || true
+yes | rm /usr/bin/tofu || true
+yes | rm /usr/bin/tofuenv || true
+yes | rm /usr/bin/xeol || true
 
 exit # return back to normal user
 ```
 
-To verify we are now in good shape, list the contains of `/usr/local/bin`
+To verify we are now in good shape, list the contains of `/usr/local/bin` and `/usr/bin`
 
 ```sh
 ls -lah /usr/local/bin
+ls -lah /usr/bin
 ```
 
 No IAC, Golang, nor Python (3.x) binaries or directories should be listed.
@@ -133,6 +163,20 @@ source ~/.bashrc
 ```
 
 With that the upgrade process is complete. Tools managed by Aqua should be available globally and at the version defined in `.aqua.yaml`.
+
+
+## Options
+
+Environmental variable overrides:
+
+- LOG_LEVEL="TRACE" Enable BASH shell command outputting to see every command being executed
+- SESSION_SHELL="$HOME/.some_shell_config" allows for overriding .bashrc as the default session shell configuration
+- WL_GC_TOOLCHAIN_ADDITIONAL_TOOLS_SKIP=true skip this section of the install process (may have unintended side effects)
+- WL_GC_TOOLCHAIN_AQUA_SKIP=true skip this section of the install process (may have unintended side effects)
+- WL_GC_TOOLCHAIN_IAC_SKIP4=true skip this section of the install process (may have unintended side effects)
+- WL_GC_TOOLCHAIN_LANGUAGE_TOOLS_SKIP=true skip this section of the install process (may have unintended side effects)
+- WL_GC_TOOLCHAIN_ROOT_OVERRIDE=true allows for intalling the Toolchain as the root user
+- WL_GC_TOOLCHAIN_SYSTEM_TOOLS_SKIP=true skip this section of the install process (may have unintended side effects)
 
 ## Versioning
 

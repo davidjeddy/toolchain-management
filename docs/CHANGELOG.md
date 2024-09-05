@@ -12,6 +12,36 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.57.0] - 2024-09-04
+
+### ADD
+
+- `./libs/bash/reset.sh` to assist in cleaning localhost for clean re/installation
+- `options` section to the README.md
+- ability to skip additiona, aqua, iac, lanugage, and system tools using ENV VAR
+- if `SESSION_SHELL` file does not exist, we now create it
+- Missing `setuptools` Python package
+- noted when `apt` (Debian/Ubuntu) and `yum` (RHEL) support will be removed from system tools
+- sonar-scanner CLI to `additional_tools.sh`
+- SonarQube `sonar-scanner` to additonal tools
+- wrapped `autoUpdate()` in an ENV VAR to enable disablement
+
+### FIX
+
+- `additional_tools.sh` now install into `/usr/bin` to align better with containerized workloads
+- `autoUpdate()` logic to properly check localhost version VS remote version
+- Do not install system tools if `sudo` is not available (typically in containers)
+- Helper scripts now properly source `source "$SESSION_SHELL"` not `$HOME/.bashrc`
+- Localstack now installed via Pythons package manager `pip` like other Python packages
+  - To note: We install `localstack[runtime]` is the user is jenkins or root. This is to ensure functionality on container hosted instances of localstack
+  - [The initial install can take a long time due to PIP package version resolving](https://github.com/localstack/localstack/blob/master/requirements-runtime.txt)
+- Python packages now managed by PIP and `requirements.txt`
+- Python updated to version 3.12.5
+
+### REMOVED
+
+- `apk` evaluations, no longer using Alpine. Lets stick w/ Fedora for consistance
+
 ## [0.55.6] - 2024-09-04
 
 ### FIX

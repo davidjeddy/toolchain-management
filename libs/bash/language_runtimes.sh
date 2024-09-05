@@ -5,7 +5,7 @@
 set -eo pipefail
 
 # shellcheck disable=SC1091
-source "$HOME/.bashrc" || exit 1
+source "$SESSION_SHELL" || exit 1
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
@@ -39,9 +39,13 @@ function process_goenv() {
         # shellcheck disable=SC1090
         source "${SESSION_SHELL}"
 
-        # Install language version using *env tool
-        goenv install --force --quiet "$(cat .go-version)"
-        goenv global "$(cat .go-version)"
+        {
+            goenv install --force --quiet "$(cat .go-version)"
+            goenv global "$(cat .go-version)"
+        } || {
+            printf "ERR: Failed to install Golang via goenv\n"
+            exit 1
+        }
     fi
 
     # If installed version does not match desired version
@@ -59,13 +63,17 @@ function process_goenv() {
 
         cd "$OLD_PWD" || exit 1
 
-        # Install language version using *env tool
-        goenv install --force --quiet "$(cat .go-version)"
-        goenv global "$(cat .go-version)"
+        {
+            goenv install --force --quiet "$(cat .go-version)"
+            goenv global "$(cat .go-version)"
+        } || {
+            printf "ERR: Failed to update Golang via goenv\n"
+            exit 1
+        }
     fi
 
     # If no *env AND runtime interpreter is not found
-    if [[ ! $(which goenv) || ! $(which go) ]]
+    if [[ ! $(which goenv) || ! $(which go) || $(go version) != *"$(cat .go-version)"* ]]
     then
         printf "ERR: Failed to install Golang via goenv.\n"
         exit 1
@@ -84,6 +92,13 @@ function process_pyenv() {
     printf "INFO: SESSION_SHELL: %s\n" "$SESSION_SHELL"
     printf "INFO: PYENV_VER: %s\n" "$PYENV_VER"
     printf "INFO: PYTHON_VER: %s\n" "$(cat .python-version)"
+
+    if [[ $(cat /etc/*release) != *"PRETTY_NAME=\"Fedora"* ]]
+    then
+        printf "WARN: Deprecated release of host OS detected. Do special things to make compiling Python > 3.x work.\n"
+        export CFLAGS="$CFLAGS $(pkg-config --cflags openssl11)"
+        export LDFLAGS="$LDFLAGS $(pkg-config --libs openssl11)"
+    fi
 
     if [[ ! $(which pyenv) ]]
     then
@@ -111,33 +126,34 @@ function process_pyenv() {
             source "${SESSION_SHELL}"
         fi
 
-        pyenv install --force "$(cat .python-version)"
-        pyenv global "$(cat .python-version)"
-        python -m ensurepip --upgrade
+        {
+            pyenv install --force --verbose "$(cat .python-version)"
+            pyenv global "$(cat .python-version)"
+            python -m ensurepip --upgrade
+        } || {
+            printf "ERR: Failed to install Python via pyenv\n"
+            exit 1
+        }
     fi
 
     # If installed version does not match desired version
     if [[ $(which pyenv) && $(python --version) != *"$(cat .python-version)"* ]]
     then
-        printf "INFO: Updating Python via pyenv to version %s\n" "$(cat .python-version)"
-    
-        declare OLD_PWD
-        OLD_PWD="$(pwd)"
-        cd "$HOME/.pyenv" || exit 1
+        printf "INFO: Updating pyenv and Python to version %s\n" "$(cat .python-version)"
+        pyenv update
 
-        git reset master --hard
-        git fetch --all --tags
-        git checkout "v${PYENV_VER}"
-
-        cd "$OLD_PWD" || exit 1
-
-        pyenv install --force "$(cat .python-version)"
-        pyenv global "$(cat .python-version)"
-        python -m ensurepip --upgrade
+        {
+            pyenv install --force  --verbose "$(cat .python-version)"
+            pyenv global "$(cat .python-version)"
+            python -m ensurepip --upgrade
+        } || {
+            printf "ERR: Failed to update Python via pyenv\n"
+            exit 1
+        }
     fi
 
     # If no *env AND runtime interpreter is not found
-    if [[ ! $(which pyenv) && ! $(which python) ]]
+    if [[ ! $(which pyenv) || ! $(which python) || $(python --version) != *"$(cat .python-version)"* ]]
     then
         printf "ERR: Failed to install Python via pyenv.\n"
         exit 1
@@ -153,10 +169,27 @@ function process_pyenv() {
     pyenv --version
 }
 
-process_goenv
+function process_pip_install() {
+    {
+        printf "INFO: Install Python modules via PIP package manager using requirements.txt\n"
+        pip install --upgrade pip
+        pip install --user --requirement requirements.txt
 
-# Alpine systems manage Python via the apk package manager
-if [[ ! $(which apk) ]]
-then
-    process_pyenv
-fi
+        if [[ $(whoami) == "root" || $(whoami) == "jenkins" ]]
+        then
+            printf "INFO: Ensure localstack runs on all container / local hosts. This can take a long time during first run.\n"
+            pip install --user localstack[runtime]
+        fi
+
+        {
+            echo 'export PATH=/home/david/.local/bin:$PATH'
+        } >> "${SESSION_SHELL}"
+    } || {
+        printf "ERR: Failed to install pip packages\n"
+        exit 1
+    }
+}
+
+process_goenv
+process_pyenv
+process_pip_install
