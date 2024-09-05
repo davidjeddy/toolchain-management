@@ -576,6 +576,11 @@ function blastRadiusConstraintsPreventMultipleDeploymentChangeSets() {
     # TODO better way to extract the first 5 segments from a path?
     DEPLOYMENT_PREFIX=$(echo ${1} | cut -d/ -f1)"/"$(echo ${1} | cut -d/ -f2)"/"$(echo ${1} | cut -d/ -f3)"/"$(echo ${1} | cut -d/ -f4)"/"$(echo ${1} | cut -d/ -f5)
 
+    if [[ $DEPLOYMENT_PREFIX == "././././." ]]
+    then
+        return 0
+    fi
+
     printf "INFO: DEPLOYMENT_PREFIX: %s\n" "${DEPLOYMENT_PREFIX}"
     printf "INFO: DIFF_LIST: \n%s\n" "${DIFF_LIST}"
     # iterate through the entire DIFF_LIST, if any deploymenth path does not match we exit with error

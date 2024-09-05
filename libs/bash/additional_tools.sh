@@ -117,7 +117,7 @@ then
         "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" 
     tar -xf kics-v"${KICS_VER}".tar.gz
     # we want the dir to have the `v`
-    mv kics-"${KICS_VER}" kics-v"${KICS_VER}"
+    sudo mv kics-"${KICS_VER}" kics-v"${KICS_VER}"
     # Automation can target `~/.kics-installer/target_query_libs`
     ln -sfn ./kics-v"${KICS_VER}"/assets/queries/ target_query_libs
     ls -lah
@@ -171,7 +171,7 @@ then
     # Not impressed that Maven does not have a pre-compiled binary
     sudo tar xvzf "apache-maven-${MAVEN_VER}-bin.tar.gz"
     sudo mv --force "apache-maven-${MAVEN_VER}" /usr/bin/maven
-    rm -rf apache-maven-*
+    sudo rm -rf apache*
 
     which mvn
     mvn --version
