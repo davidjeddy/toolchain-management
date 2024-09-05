@@ -21,10 +21,13 @@ then
     printf "INFO: WORKSPACE %s\n" "${WORKSPACE}"
 fi
 
-# shellcheck disable=SC1091
-source "${WORKSPACE}/.tmp/toolchain-management/libs/bash/git/common.sh"
-
-autoUpdate
+# Toolchain autoUpdate
+if [[ "${WL_GC_TOOLCHAIN_UPDATE_OVERRIDE}" != "" ]]
+then 
+    printf "WARN: Toolchain Management automatic updates disabled.\n"
+else
+    autoUpdate
+fi
 
 # Logic
 

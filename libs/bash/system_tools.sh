@@ -5,14 +5,17 @@
 set -eo pipefail
 
 # shellcheck disable=SC1091
-source "$HOME/.bashrc" || exit 1
+source "$SESSION_SHELL" || exit 1
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
     set -x
 fi
 
-# Debian (deprecated)
+# Debian
+# DEPRECATED 2024-03-11
+# remove on 2028-10-01
+# Use intstall_dnf()
 function apt_systems() {
     printf "INFO: Updating and installing system tools via apt. \n"
 
@@ -67,47 +70,52 @@ function apt_systems() {
             zlib1g-dev 
 }
 
-# CentOS/Fedora (prefered)
+# CentOS/Fedora distros
 function dnf_systems() {
     printf "INFO: Updating and installing system tools via dnf.\n"
 
-    # Fedora 38, 39
+    # Fedora 38, 39, 40
     sudo dnf update -y
     sudo dnf install -y \
-        bzip2 \
-        bzip2-devel \
         ca-certificates \
         curl \
-        gcc \
-        gcc-c++ \
         git \
         git-lfs \
         gnupg \
         gnupg2 \
         htop \
+        parallel \
+        patch \
+        podman \
+        skopeo \
+        tk-devel \
+        tree \
+        unzip
+
+    # Only for compiling Pythong
+    sudo dnf install -y \
+        bzip2 \
+        bzip2-devel \
+        gcc \
+        gcc-c++ \
         libffi-devel \
         lzma \
         make \
         ncurses \
         openssl \
         openssl-devel \
-        parallel \
-        patch \
-        podman \
         readline \
         readline-devel \
-        skopeo \
         sqlite \
         sqlite-devel \
         sqlite3 \
-        tk-devel \
-        tree \
-        unzip \
-        xz-devel \
-        zlib-devel
+        zlib-devel \
+        xz-devel
 }
 
-# DEPRECATED 2024-03-11. Use intstall_dnf()
+# DEPRECATED 2024-03-11
+# remove on 2028-10-01
+# Use intstall_dnf()
 function yum_systems() {
     printf "INFO: Updating and installing system tools via yum.\n"
 
@@ -134,20 +142,19 @@ function yum_systems() {
         gnupg2 \
         htop \
         libffi-devel \
-        lzma \
+        libvirt \
         make \
         ncurses \
         openssl \
         openssl-devel \
+        openssl11-libs \
         parallel \
         patch \
         podman \
         readline \
         readline-devel \
-        skopeo \
         sqlite \
         sqlite-devel \
-        sqlite3 \
         tk-devel \
         tree \
         unzip \
@@ -156,7 +163,6 @@ function yum_systems() {
 }
 
 printf "INFO: Installing system tool using OS package manager.\n"
-
 if [[ $(which dnf) ]]
 then
     dnf_systems
@@ -168,6 +174,7 @@ then
     apt_systems
 else
     printf "WARN: No supported system package manager found. Please consider submitting an update adding your distributions package manager.\n"
+    exit 1
 fi
 
 # shellcheck disable=SC2088,SC2143

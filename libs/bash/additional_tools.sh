@@ -14,9 +14,24 @@ fi
 
 printf "ALERT: We should try to add this tools to the Aqua Registry. We should try to limit the number of tools installed via scripting.\n"
 
+# TODO remove this once the node has been migrated to ECS Cluster hosting
+if [[ $(cat /etc/*release) = *"Red Hat"* ]]
+then
+    printf "WARN: Another garbage work arounds for RHEL 7.x. on the bambora-aws Jenkins node.\n"
+    export JAVA_HOME="/usr/lib/jvm/java-17-amazon-corretto/"
+fi
+
 # aws - ssm-session-manager plugin
 # https://stackoverflow.com/questions/12806176/checking-for-installed-packages-and-if-not-found-install
 printf "INFO: Processing AWS session-manager-plugin.\n"
+
+# >= 0.56.0 required
+if [[ -d "/usr/local/bin/session-manager-plugin" ]]
+then
+    printf "WARN: Removing AWS session-manager-plugin from old location.\n"
+    sudo rm "/usr/local/bin/session-manager-plugin"
+fi
+
 # shellcheck disable=SC2126
 if [[ $(which dnf) && $(dnf list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) != 0 ]]
 then
@@ -35,13 +50,19 @@ then
     fi
 elif [[ $(which yum) && $(yum list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) != 0 ]]
 then
+    # DEPRECATED 2024-03-11
+    # remove on 2028-10-01
+    # Use intstall_dnf()
     # RHEL
     echo "INFO: Installing AWS CLI session-manager-plugin via yum system package manager.";
     # We have to manually remove the symlink to make the pacakge install idempotent
-    sudo rm "/usr/local/bin/session-manager-plugin" || true
+    sudo rm "/usr/bin/session-manager-plugin" || true
     sudo rpm -iUvh --replacepkgs "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm"
 elif [[ $(which apt) && $(apt list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) != 0 ]]
 then
+    # DEPRECATED 2024-03-11
+    # remove on 2028-10-01
+    # Use intstall_dnf()
     echo "INFO: Installing AWS CLI session-manager-plugin via apt system package manager.";
     if [[ $(uname -m) == "x86_64" || $(uname -m) == "amd64" ]]
     then
@@ -64,24 +85,6 @@ then
     fi
     sudo dpkg -i session-manager-plugin.deb
 fi
-
-# https://pypi.org/project/onelogin-aws-cli/
-# `onelogin-aws-login` provided by package `onelogin-aws-cli`
-printf "INFO: Processing OneLogin.\n"
-if [[ ! $(which onelogin-aws-login) || $(onelogin-aws-login --version) != "${ONELOGIN_AWS_CLI_VER}" ]]
-then
-    printf "INFO: Remove old onelogin-aws-cli if it exists.\n"
-    pip uninstall -y onelogin-aws-cli || true
-
-    # We always want the latest vesrsion of tools installed via pip
-    printf "INFO: Installing onelogin-aws-cli compliance tool.\n"
-    pip install -U onelogin-aws-cli=="$ONELOGIN_AWS_CLI_VER"
-fi
-
-onelogin-aws-login --version
-echo "onelogin-aws-cli $(pip show onelogin-aws-cli)"
-
-# -----
 
 # Even with KICS being installed via Aqua we still need the query libraries
 printf "INFO: Processing KICS query library.\n"
@@ -122,16 +125,25 @@ then
     cd "${OLD_PWD}" || exit 1
 fi
 
+# -----
+
 printf "INFO: Processing Maven.\n"
 # [Maven](https://maven.apache.org/)
-unset JAVA_HOME # Not sure why/how JAVA_HOME is being set to an incorrect value but we need to remove it for mvn to work
-if [[ $(mvn --version) != *${MAVEN_VER}* ]]
-then
 
-    if [[ $(cat "$SESSION_SHELL") != *"/usr/local/bin/maven/bin"*  ]]
+# >= 0.56.0 required
+if [[ -d "/usr/local/bin/maven" ]]
+then
+    printf "WARN: Removing Maven from old location.\n"
+    sudo rm -rf /usr/local/bin/maven || true
+    sudo rm "/usr/local/bin/mvn" || true
+fi
+
+if [[ ! $(which mvn) || $(mvn --version) != *${MAVEN_VER}* ]]
+then
+    if [[ $(cat "$SESSION_SHELL") != *"/usr/bin/maven/bin"*  ]]
     then
-        printf "INFO: Maven location not in PATH, adding...\n"
-        echo "export PATH=\"/usr/local/bin/maven/bin:\$PATH\"" >> "${SESSION_SHELL}"
+        printf "INFO: Maven bin location not in PATH, adding...\n"
+        echo "export PATH=\"/usr/bin/maven/bin:\$PATH\"" >> "${SESSION_SHELL}"
         # shellcheck disable=SC1090
         source "${SESSION_SHELL}"
     fi
@@ -158,17 +170,66 @@ then
 
     # Not impressed that Maven does not have a pre-compiled binary
     sudo tar xvzf "apache-maven-${MAVEN_VER}-bin.tar.gz"
-    sudo mv --force "apache-maven-${MAVEN_VER}" maven
-    if [[ -d /usr/local/bin/maven ]]
-    then
-        sudo rm -rf /usr/local/bin/maven
-    fi
-    sudo mv --force maven /usr/local/bin
+    sudo mv --force "apache-maven-${MAVEN_VER}" /usr/bin/maven
     rm -rf apache-maven-*
 
     which mvn
     mvn --version
 fi
+
+# -----
+
+printf "INFO: Processing SonarQube Scanner.\n"
+# [SonarQube Scanner](https://docs.sonarsource.com/sonarqube/latest/)
+
+# >= 0.56.0 required
+if [[ -f "/usr/local/bin/sonar-scanner" ]]
+then
+    printf "WARN: Removing sonar-scanner from old location.\n"
+    sudo rm -rf /usr/local/bin/sonar-scanner || true
+fi
+
+if [[ ! $(which sonar-scanner) || $(sonar-scanner --version) != *${SONARQUBE_SCANNER_VER}* ]]
+then
+    if [[ $(cat "$SESSION_SHELL") != *"/usr/bin/sonar-scanner/bin"*  ]]
+    then
+        printf "INFO: sonar-scanner bin location not in PATH, adding...\n"
+        echo "export PATH=\"/usr/bin/sonar-scanner/bin:\$PATH\"" >> "${SESSION_SHELL}"
+        # shellcheck disable=SC1090
+        source "${SESSION_SHELL}"
+    fi
+
+    curl \
+        --location \
+        --output "sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip" \
+        --verbose \
+        "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip"
+    curl \
+        --location \
+        --output "sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip.sha256" \
+        --verbose \
+        "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip.sha256"
+
+    declare CALCULATED_CHECKSUM
+    CALCULATED_CHECKSUM=$(sha512sum "sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip" | awk '{print $1}')
+    # shellcheck disable=SC2143
+    if [[ $(grep -q "${CALCULATED_CHECKSUM}" "sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip.sha256") ]]
+    then
+        printf "ERR: Calculated checksum not found in provided list. Possible tampering with the archive. Aborting sonar-scanner install.\n"
+        exit 1
+    fi
+
+    # Not impressed that Maven does not have a pre-compiled binary
+    unzip sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip
+    sudo mv --force "sonar-scanner-${SONARQUBE_SCANNER_VER}-linux" /usr/bin/sonar-scanner
+    rm -rf sonar-scanner-*
+
+    which sonar-scanner
+    sonar-scanner --version
+fi
+
+
+# -----
 
 printf "INFO: Processing LocalStack.\n"
 # [LocalStack CLI](https://github.com/localstack/localstack-cli/releases)
@@ -192,7 +253,7 @@ then
         --location \
         --output "localstack-cli-${LOCALSTACK_VER}-linux-${ARCH}-onefile.tar.gz" \
         --verbose \
-        "https://github.com/localstack/localstack-cli/releases/download/v${LOCALSTACK_VER}/localstack-cli-${LOCALSTACK_VER}-linux-arm64-onefile.tar.gz"
+        "https://github.com/localstack/localstack-cli/releases/download/v${LOCALSTACK_VER}/localstack-cli-${LOCALSTACK_VER}-linux-${ARCH}-onefile.tar.gz"
     
     declare CALCULATED_CHECKSUM
     CALCULATED_CHECKSUM=$(sha256sum "localstack-cli-${LOCALSTACK_VER}-linux-${ARCH}-onefile.tar.gz" | awk '{print $1}')
@@ -211,3 +272,4 @@ then
     which localstack
     echo "localstack $(localstack --version)"
 fi
+

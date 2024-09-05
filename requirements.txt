@@ -1,0 +1,9 @@
+# https://pip.pypa.io/en/stable/reference/requirements-file-format/
+# https://pypi.org/project/awscli-local/
+awscli-local==0.22.0
+# https://github.com/localstack/localstack
+localstack==3.6.0
+# https://pypi.org/project/onelogin-aws-cli/
+onelogin-aws-cli==0.1.19
+# https://pypi.org/project/setuptools/
+setuptools==73.0.1

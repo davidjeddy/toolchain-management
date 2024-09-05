@@ -7,9 +7,7 @@ set -eo pipefail
 declare AQUA_VER
 declare GO_VER
 declare GOENV_VER
-declare LOCALSTACK_VER
 declare MAVEN_VER
-declare ONELOGIN_AWS_CLI_VER
 declare PYENV_VER
 declare PYTHON_VER
 declare TF_VER
@@ -24,16 +22,14 @@ export AQUA_VER="2.30.0"
 export GO_VER="1.21"
 ## https://github.com/syndbg/goenv
 export GOENV_VER="2.2.1"
-## https://github.com/localstack/localstack
-export LOCALSTACK_VER="3.5.0"
 ## https://maven.apache.org/
 export MAVEN_VER="3.9.8"
-## https://pypi.org/project/onelogin-aws-cli/
-export ONELOGIN_AWS_CLI_VER="0.1.19"
 ## https://www.python.org/downloads/
-export PYTHON_VER="3.8.18"
+export PYTHON_VER="3.12.5"
 ## https://github.com/pyenv/pyenv
 export PYENV_VER="2.4.8"
+## https://docs.sonarsource.com/sonarqube/latest/
+export SONARQUBE_SCANNER_VER="4.2.0.1873"
 ## https://github.com/hashicorp/terraform
 export TF_VER="1.6.2"
 ## https://github.com/gruntwork-io/terragrunt
@@ -52,11 +48,10 @@ echo "$TOFU_VER" > .tofu-version
 echo "AQUA_VER: $AQUA_VER"
 echo "GO_VER: $GO_VER"
 echo "GOENV_VER: $GOENV_VER"
-echo "LOCALSTACK_VER: $LOCALSTACK_VER"
 echo "MAVEN_VER: $MAVEN_VER"
-echo "ONELOGIN_AWS_CLI_VER: $ONELOGIN_AWS_CLI_VER"
 echo "PYENV_VER: $PYENV_VER"
 echo "PYTHON_VER: $PYTHON_VER"
+echo "SONARQUBE_SCANNER_VER: $SONARQUBE_SCANNER_VER"
 echo "TF_VER: $TF_VER"
 echo "TG_VER: $TG_VER"
 echo "TOFU_VER: $TOFU_VER"
