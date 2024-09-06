@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.57.0] - 2024-09-05
+
+### FIX
+
+- Should source `common.sh` before calling the `autoUpdate()`
+
 ## [0.57.0] - 2024-09-04
 
 ### ADD
