@@ -81,7 +81,7 @@ printf "INFO: PATH is %s\n" "$PATH"
 # Second, install tools and language interpreters not yet in aqua's standard registry
 
 # shellcheck disable=SC1090,SC1091
-source "./versions.sh" || exit 1
+source "versions.sh" || exit 1
 
 # Skip system tools if ENV VAR is set
 if [[ ! "${WL_GC_TOOLCHAIN_SYSTEM_TOOLS_SKIP}" ]]
@@ -146,7 +146,7 @@ then
     rm -rf ~/.aqua || true
     mkdir -p ~/.aqua
     # shellcheck disable=SC2088
-    cp -rf "${WL_GC_TM_WORKSPACE}/aqua.yaml" ~/.aqua/aqua.yaml || exit 1
+    cp -rf "aqua.yaml" ~/.aqua/aqua.yaml || exit 1
 
     which aqua
     aqua --version
@@ -197,4 +197,4 @@ echo "# WL - GC - Centaurus - Toolchain Management Ending" >> $SESSION_SHELL
 
 cd "$OLD_PWD" || exit 1
 
-printf "INFO: Done. Please reload your shell by running the following command: \"source $HOME/.bashrc\".\n"
+printf "INFO: Done. Please reload your shell by running the following command: \"source $SESSION_SHELL\".\n"
