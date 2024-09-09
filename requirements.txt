@@ -1,8 +1,9 @@
 # https://pip.pypa.io/en/stable/reference/requirements-file-format/
 # https://pypi.org/project/awscli-local/
 awscli-local==0.22.0
+# DO NOT install localstack via PIP; use language_runtimes.sh to control what hosts recieve the packages
 # https://github.com/localstack/localstack
-localstack==3.6.0
+# localstack==3.6.0
 # https://pypi.org/project/onelogin-aws-cli/
 onelogin-aws-cli==0.1.19
 # https://pypi.org/project/setuptools/

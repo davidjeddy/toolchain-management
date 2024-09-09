@@ -1,8 +1,9 @@
 #!/bin/bash -l
 
-# set -exo pipefail # for debugging
+# set -exo pipefail # when debuggin
 set -eo pipefail
 
+# Enforce the session load like an interactive user
 # shellcheck disable=SC1091
 source "$HOME/.bashrc" || exit 1
 
@@ -97,4 +98,4 @@ fi
 # Post-flight resets
 cd "$WORKSPACE" || exit 1
 
-printf "INFO: Done. Please reload your shell by running the following command: \"source $HOME/.bashrc\".\n"
+printf "INFO: Done. Please reload your shell by running the following command: \"source ~/.bashrc\".\n"

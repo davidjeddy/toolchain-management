@@ -12,6 +12,16 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.57.1] - 2024-09-05
+
+### FIX
+
+- Minor cleanup of the install.sh
+
+### REMOVE
+
+- LocalStack from installation via PIP on Red Hat 7 hosts or NOT jenkins / root user due to install requirements
+
 ## [0.57.0] - 2024-09-05
 
 ### FIX

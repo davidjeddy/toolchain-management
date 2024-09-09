@@ -175,6 +175,14 @@ function process_pip_install() {
         pip install --upgrade pip
         pip install --user --requirement requirements.txt
 
+        # DO NOT INSTALL LocalStack on RHEL 7 machines
+        if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
+        then
+            printf "WARN: NOT installing LocalStack on Red Hat hosts to unsupported host OS.\n"
+            return 0
+        fi
+
+        # ONLY install LocalStack[runtime] if the user is jenkins or root
         if [[ $(whoami) == "root" || $(whoami) == "jenkins" ]]
         then
             printf "INFO: Ensure localstack runs on all container / local hosts. This can take a long time during first run.\n"
