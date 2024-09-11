@@ -12,6 +12,11 @@ then
     set -x
 fi
 
+if [[ $(/usr/bin/id -u) -ne 0 ]]; then
+    printf "ERR: Script must be run with sudo or root permissions."
+    exit 1
+fi
+
 # documentation
 
 # example sudo ./libs/bash/reset.sh
@@ -25,21 +30,24 @@ printf "INFO: Starting...\n"
 printf "INFO: Remove all lines between the start and end of \"# WL - GC - Centaurus - ...\" in your shell (bashrc*) profile configurations\n"
 read -p "INFO: Press any key to continue"
 
-vi $HOME/.bashrc
-vi $HOME/.bash_profile
+vi /home/$SUDO_USER/.bashrc
+vi /home/$SUDO_USER/.bash_profile
 
-printf "INFO: Remove group shell configuration and language runtimes\n"
+printf "INFO: Remove shell configuration, language *env helpers, IAC plugin cache, and package managers from \$HOME\n"
 
-rm -rf $HOME/.goenv/ || true
-rm -rf $HOME/.local/lib/python*/ || true
-rm -rf $HOME/.local/bin/ || true
-rm -rf $HOME/.pyenv/ || true
-rm -rf $HOME/go/ || true
-rm $HOME.worldline_pps_* || true
+yes | rm -rf $HOME/.kics-installer || true
+yes | rm -rf $HOME/.aqua || true
+yes | rm -rf $HOME/.go || true
+yes | rm -rf $HOME/.goenv || true
+yes | rm -rf $HOME/.local/lib/python3* || true
+yes | rm -rf $HOME/.m2 || true
+yes | rm -rf $HOME/.pyenv || true
+yes | rm -rf $HOME/.terraform.d/plugin-cache || true
 
-printf "INFO: Removing all pre-upgrade managed tools\n"
+printf "INFO: Removing all Toolchain managed tool binaries\n"
 
 # For < 0.56.0
+rm $HOME.worldline_pps_* || true
 yes | rm -rf /usr/local/bin/localstack* || true
 yes | rm -rf /usr/local/bin/maven || true
 yes | rm -rf /usr/local/bin/mvn || true
@@ -70,7 +78,6 @@ yes | rm -rf /usr/bin/mvn || true
 yes | rm -rf /usr/bin/pip3* || true
 yes | rm -rf /usr/bin/pydoc3* || true
 yes | rm -rf /usr/bin/sonar-scanner || true
-yes | rm -rf $HOME/.local/lib/python3* || true
 yes | rm /usr/bin/iam-policy-json-to-terraform || true
 yes | rm /usr/bin/infracost || true
 yes | rm /usr/bin/kics || true
@@ -94,5 +101,8 @@ read -p "INFO: Press any key to continue"
 
 ls /usr/local/bin
 ls /usr/bin
+
+printf "INFO: Remove OS package manager packages\n"
+sudo dnf remove session-manager-plugin
 
 printf "INFO: Done. Open a new session to take effect\n"

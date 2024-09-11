@@ -12,6 +12,17 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.57.2] - 2024-09-10
+
+### FIX
+
+- `./libs/bash/reset.sh` editing the wrong BASH profile files
+- `./libs/bash/reset.sh` only runs as with `sudo` or `root` permissions
+- `./libs/bash/reset.sh` updated to remove more tooling controls inside user `$HOME`
+- `curl` invocation argument `--verbose` with `--show-error`
+- `sonar-scanner --version` no longer outputs on QEMU hosts due to error
+- Stop reinstalling the AWS CLI `session-manager-plugin` on every execution
+
 ## [0.57.1] - 2024-09-05
 
 ### FIX
