@@ -33,22 +33,24 @@ then
 fi
 
 # shellcheck disable=SC2126
-if [[ $(which dnf) && $(dnf list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) != 0 ]]
+if [[ $(which dnf) && $(dnf list installed | cut -f1 -d" " | grep --extended "^session-manager-plugin*" | wc -l) == 0 ]]
 then
     echo "INFO: Installing AWS CLI session-manager-plugin via dnf system package manager.";
     # Fedora
     if [[ $(uname -m) == "x86_64" || $(uname -m) == "amd64" ]]
     then
-        ## arm64
-        sudo dnf reinstall -y "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm"
+        ## amd64
+        # Use RPM to support `reinstall`
+        sudo rpm -iUvh --replacepkgs "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm"
     elif [[ $(uname -m) == "arm64" || $(uname -m) == "aarch64" ]]
     then
-        ## amd64
-        sudo dnf reinstall -y "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_arm64/session-manager-plugin.rpm"
+        ## arm64
+        # Use RPM to support `reinstall`
+        sudo rpm -iUvh --replacepkgs "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_arm64/session-manager-plugin.rpm"
     else
         prinf "ALERT: Unable to determine CPU architecture for Fedora distro of AWS session-manager-plugin.\n"
     fi
-elif [[ $(which yum) && $(yum list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) != 0 ]]
+elif [[ $(which yum) && $(yum list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) == 0 ]]
 then
     # DEPRECATED 2024-03-11
     # remove on 2028-10-01
@@ -58,7 +60,7 @@ then
     # We have to manually remove the symlink to make the pacakge install idempotent
     sudo rm "/usr/bin/session-manager-plugin" || true
     sudo rpm -iUvh --replacepkgs "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm"
-elif [[ $(which apt) && $(apt list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) != 0 ]]
+elif [[ $(which apt) && $(apt list installed | cut -f1 -d" " | grep --extended '^session-manager-plugin*' | wc -l) == 0 ]]
 then
     # DEPRECATED 2024-03-11
     # remove on 2028-10-01
@@ -70,7 +72,7 @@ then
         curl \
             --location \
             --output "session-manager-plugin.deb" \
-            --verbose \
+            --show-error \
             "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb"
     elif [[ $(uname -m) == "arm64" || $(uname -m) == "aarch64" ]]
     then
@@ -78,7 +80,7 @@ then
         curl \
             --location \
             --output "session-manager-plugin.deb" \
-            --verbose \
+            --show-error \
             "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_arm64/session-manager-plugin.deb"
     else
         prinf "ALERT: Unable to determine CPU architecture for Debian distro of AWS session-manager-plugin.\n"
@@ -113,7 +115,7 @@ then
     curl \
         --location \
         --output "kics-v${KICS_VER}.tar.gz" \
-        --verbose \
+        --show-error \
         "https://github.com/Checkmarx/kics/archive/refs/tags/v${KICS_VER}.tar.gz" 
     tar -xf kics-v"${KICS_VER}".tar.gz
     # we want the dir to have the `v`
@@ -151,12 +153,12 @@ then
     curl \
         --location \
         --output "apache-maven-${MAVEN_VER}-bin.tar.gz" \
-        --verbose \
+        --show-error \
         "https://downloads.apache.org/maven/maven-3/${MAVEN_VER}/binaries/apache-maven-${MAVEN_VER}-bin.tar.gz"
     curl \
         --location \
         --output "apache-maven-${MAVEN_VER}-bin.tar.gz.sha512" \
-        --verbose \
+        --show-error \
         "https://downloads.apache.org/maven/maven-3/${MAVEN_VER}/binaries/apache-maven-${MAVEN_VER}-bin.tar.gz.sha512"
 
     declare CALCULATED_CHECKSUM
@@ -191,6 +193,15 @@ fi
 
 if [[ ! $(which sonar-scanner) || $(sonar-scanner --version) != *${SONARQUBE_SCANNER_VER}* ]]
 then
+    # sonar-scanner does not like QEMU (Linux/Unix KVM) hosts
+    # https://unix.stackexchange.com/questions/89714/easy-way-to-determine-the-virtualization-technology-of-a-linux-machine
+    if [[ $(sudo dmidecode -s system-product-name) == "QEMU"* ]]
+    then
+        printf "WARN: Running in QEMU host, sonar-scanner will not function.\n"
+        # Return to the calling ./install.sh without throwing an error
+        return 0
+    fi
+
     if [[ $(cat "$SESSION_SHELL") != *"/usr/bin/sonar-scanner/bin"*  ]]
     then
         printf "INFO: sonar-scanner bin location not in PATH, adding...\n"
@@ -202,12 +213,12 @@ then
     curl \
         --location \
         --output "sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip" \
-        --verbose \
+        --show-error \
         "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip"
     curl \
         --location \
         --output "sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip.sha256" \
-        --verbose \
+        --show-error \
         "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip.sha256"
 
     declare CALCULATED_CHECKSUM
