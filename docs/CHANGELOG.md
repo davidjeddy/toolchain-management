@@ -12,6 +12,14 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.57.2] - 2024-09-17
+
+### FIX
+
+- `bridgecrewio/checkov` set to version that still satisfies pathing pattern pre removal of the version from the release artifact
+- `goenv` changes namespace in GitHub
+- Jenkinsfile no longer configures `set -x` on BASH shell invokations
+
 ## [0.57.2] - 2024-09-10
 
 ### FIX

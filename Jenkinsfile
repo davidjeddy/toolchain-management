@@ -103,7 +103,7 @@ pipeline {
                         variable:       'gitlabPAT'
                     )]) {
                         sh('''#!/bin/bash -l
-                            set -exo pipefail
+                            set -eo pipefail
 
                             curl \
                                 --form "note=# Build Pipeline\n\nNumber: ${BUILD_NUMBER}\n\nUrl: ${BUILD_URL}console" \
@@ -123,7 +123,7 @@ pipeline {
         stage('System ENV VARs') {
             steps {
                 sh('''#!/bin/bash -l
-                    set -exo pipefail
+                    set -eo pipefail
                     source $HOME/.bashrc
 
                     echo "INFO: Printing ENV VARs"
@@ -146,7 +146,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh('''#!/bin/bash -l
-                        set -exo pipefail
+                        set -eo pipefail
 
                         ${WORKSPACE}/libs/bash/install.sh ''' + params.TOOLCHAIN_BRANCH + '''
                         source $HOME/.bashrc
@@ -157,7 +157,7 @@ pipeline {
         stage('Execute toolchain re/install') {
             steps {
                 sh('''#!/bin/bash -l
-                    set -exo pipefail
+                    set -eo pipefail
                     source $HOME/.bashrc
 
                     ${WORKSPACE}/libs/bash/install.sh
@@ -168,11 +168,10 @@ pipeline {
         stage('Execute Aqua install/update') {
             steps {
                 sh('''#!/bin/bash -l
-                    set -exo pipefail
+                    set -eo pipefail
                     source $HOME/.bashrc 
 
                     aqua install
-                    aqua update
                 ''')
             }
         }
@@ -186,7 +185,7 @@ pipeline {
                     )]) {
                         if (env.BRANCH_NAME == gitTargetBranch) {
                             sh('''#!/bin/bash -l
-                                set -exo pipefail
+                                set -eo pipefail
                                 source $HOME/.bashrc
 
                                 ./libs/bash/common/sem_ver_release_tagging.sh
