@@ -22,7 +22,7 @@ function process_goenv() {
     then
         printf "INFO: Installing goenv to %s to enable Go support\n" "$HOME/.goenv"
         rm -rf "$HOME/.goenv" || true
-        git clone --quiet "https://github.com/syndbg/goenv.git" "$HOME/.goenv"
+        git clone --quiet "https://github.com/go-nv/goenv.git" "$HOME/.goenv"
 
         # shellcheck disable=SC2143
         if [[ -f ${SESSION_SHELL} && ! $(grep "export GOENV_ROOT" "${SESSION_SHELL}") ]]
