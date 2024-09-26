@@ -12,13 +12,24 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.57.5] - 2024-09-26
+
+### ADD
+
+- Compiler packages `system_tools.sh`
+
+### FIX
+
+- Installer helpers now all use "source $SESSION_SHELL"
+- `./libs/bash/aws/ec2_ssm_start_session.sh` now accepts $1 and $2 CLI arguments
+  
 ## [0.57.4] - 2024-09-17
 
 ### FIX
 
 - `bridgecrewio/checkov` set to version that still satisfies pathing pattern pre removal of the version from the release artifact
 - `goenv` changes namespace in GitHub
-- Jenkinsfile no longer configures `set -x` on BASH shell invokations
+- Jenkinsfile no longer configures `set -x` on BASH shell invocations
 
 ## [0.57.3] - 2024-09-13
 
@@ -59,12 +70,12 @@ Action Keywords:
 
 - `./libs/bash/reset.sh` to assist in cleaning localhost for clean re/installation
 - `options` section to the README.md
-- ability to skip additiona, aqua, iac, lanugage, and system tools using ENV VAR
+- ability to skip additional, aqua, iac, language, and system tools using ENV VAR
 - if `SESSION_SHELL` file does not exist, we now create it
 - Missing `setuptools` Python package
 - noted when `apt` (Debian/Ubuntu) and `yum` (RHEL) support will be removed from system tools
 - sonar-scanner CLI to `additional_tools.sh`
-- SonarQube `sonar-scanner` to additonal tools
+- SonarQube `sonar-scanner` to additional tools
 - wrapped `autoUpdate()` in an ENV VAR to enable disablement
 
 ### FIX
@@ -81,7 +92,7 @@ Action Keywords:
 
 ### REMOVED
 
-- `apk` evaluations, no longer using Alpine. Lets stick w/ Fedora for consistance
+- `apk` evaluations, no longer using Alpine. Lets stick w/ Fedora for consistency
 
 ## [0.55.6] - 2024-09-04
 
@@ -123,8 +134,8 @@ Action Keywords:
 ### FIX
 
 - migrate from ~/.bashrc to $HOME/.bashrc due to ~/ not expanding to the full path on some systems
-- pyenv failing to install properly due to ~/.bashrc not being interprited correctly
-- Stop putting the start/end indicators into ~/.bashrc repeatidly
+- pyenv failing to install properly due to ~/.bashrc not being interpreted correctly
+- Stop putting the start/end indicators into ~/.bashrc repeatably
 - Start/Stop lines in ~/.bashrc changed to be more descriptive of the owner
 
 ## [0.55.0] - 2024-08-06
@@ -187,7 +198,7 @@ Action Keywords:
 
 ## FIX
 
-- `./libs/bash/git/hooks/pre-*` by moving the functions to common.sh; now the pre-* hook sscripts are once again nearly identical
+- `./libs/bash/git/hooks/pre-*` by moving the functions to common.sh; now the pre-* hook scripts are once again nearly identical
 
 ## [0.54.32] - 2024-07-25
 
@@ -199,7 +210,7 @@ Action Keywords:
 
 ### FIX
 
-- Working on CODEOWNER feature enablement
+- Working on CODEOWNERS feature enablement
 
 ## [0.54.30] - 2024-07-24
 
@@ -212,37 +223,37 @@ Action Keywords:
 ### FIX
 
 - libs/jenkins/pipeline/vars/SharedModule.groovy logRotator now uses Groovy List for configuration
-- Working on CODEOWNER feature enablement
+- Working on CODEOWNERS feature enablement
 
 ## [0.54.28] - 2024-07-24
 
 ### FIX
 
-- Working on CODEOWNER feature enablement
+- Working on CODEOWNERS feature enablement
 
 ## [0.54.27] - 2024-07-24
 
 ### FIX
 
-- Working on CODEOWNER feature enablement
+- Working on CODEOWNERS feature enablement
 
 ## [0.54.26] - 2024-07-24
 
 ### FIX
 
-- Working on CODEOWNER feature enablement
+- Working on CODEOWNERS feature enablement
 
 ## [0.54.25] - 2024-07-24
 
 ### FIX
 
-- Working on CODEOWNER feature enablement
+- Working on CODEOWNERS feature enablement
 
 ## [0.54.25] - 2024-07-24
 
 ### ADD
 
-- ./CODEOWNER to scope who can approve merge requests
+- ./CODEOWNERS to scope who can approve merge requests
 - ./libs/bash/aws/backup_delete_all_recovery_points.sh to remove recovery points from AWS Backup Plan
 
 ## [0.54.24] - 2024-07-19
@@ -255,7 +266,7 @@ Action Keywords:
 
 ### FIX
 
-- `./libs/bash/git/hooks/pre-commit` autoautoUpdate() was not properly getting tags for toolchain project
+- `./libs/bash/git/hooks/pre-commit` autoUpdate() was not properly getting tags for toolchain project
 
 ## [0.54.22] - 2024-07-17
 
@@ -295,7 +306,7 @@ Action Keywords:
 - Force the loading of `~/.bashrc` on every `./libs/bash/common/*.sh` helper script
 - Force the loading of `~/.bashrc` on every `./libs/bash/git/**/*.sh` helper script
 - Force the loading of `~/.bashrc` on every stage in `./libs/bash/jenkins/pipelines/vars`
-- Respect users shell configuration by carring the pre-exist PATH value through the Aqua modification of the PATH ENV VAR
+- Respect users shell configuration by carrying the pre-exist PATH value through the Aqua modification of the PATH ENV VAR
 - slack.slackNotification() argument order in Jenkinsfiles
   
 ### REMOVE
@@ -427,7 +438,7 @@ Action Keywords:
 
 ### FIX
 
-- `checkov` now does not execute recursivly when running complaince scans
+- `checkov` now does not execute recursively when running compliance scans
 
 ## [0.53.3] - 2024-05-28
 
@@ -459,7 +470,7 @@ Action Keywords:
 ### ADD
 
 - WORKSPACE ENV VAR check to git scripts
-- Exctracted IAC module diff list creation into `generateDiffList()`
+- Extracted IAC module diff list creation into `generateDiffList()`
 
 ### FIX
 
