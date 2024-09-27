@@ -4,7 +4,7 @@
 
 set -eo pipefail
 
-# shellcheck disable=SC1091
+# shellcheck disable=SC1090
 source "$SESSION_SHELL" || exit 1
 
 if [[ $LOG_LEVEL == "TRACE" ]]
@@ -92,12 +92,14 @@ function dnf_systems() {
         tree \
         unzip
 
-    # Only for compiling Pythong
+    # Only for compiling Python
     sudo dnf install -y \
+        automake \
         bzip2 \
         bzip2-devel \
         gcc \
         gcc-c++ \
+        kernel-devel \
         libffi-devel \
         lzma \
         make \
@@ -109,8 +111,8 @@ function dnf_systems() {
         sqlite \
         sqlite-devel \
         sqlite3 \
-        zlib-devel \
-        xz-devel
+        xz-devel \
+        zlib-devel
 }
 
 # DEPRECATED 2024-03-11

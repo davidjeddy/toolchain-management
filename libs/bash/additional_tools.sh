@@ -4,8 +4,8 @@
 
 set -eo pipefail
 
-# shellcheck disable=SC1091
-source "$HOME/.bashrc" || exit 1
+# shellcheck disable=SC1090
+source "$SESSION_SHELL" || exit 1
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
