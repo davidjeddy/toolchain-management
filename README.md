@@ -11,8 +11,8 @@
   - [Usage](#usage)
     - [WARNING](#warning)
     - [Install](#install)
+    - [Pipeline](#pipeline)
     - [Update](#update)
-    - [Upgrade From \< 0.50.0 to \>= 0.50.0](#upgrade-from--0500-to--0500)
   - [Options](#options)
   - [Versioning](#versioning)
   - [Contributors](#contributors)
@@ -58,112 +58,14 @@ cd toolchain-management
 source ~/.bashrc
 ```
 
+### Pipeline
+
+- Jenkins pipeline should only be run on EC2 hosts
+- ECS hosts should have container image build and deployed with the Toolchain version pre-installed
+
 ### Update
 
 Unlike the <= 0.50.0 release family of this project, it is no longer needed to pass CLI arguments to update the tools. Simply change the desired version number in `aqua.yaml`, `.*-version` or `VERSIONS.sh`. Then re-run the `./libs/bash/install.sh` to update tooling.
-
-### Upgrade From < 0.50.0 to >= 0.50.0
-
-Note: This process only needs to be executed only once.
-
-**MAKE A BACKUP of your OS (VM/etc)! This process involves deleting configurations, binaries, and language interpreters.**
-
-If, like me, you want to keep you system as clean as possible execute the following before running the installer of >= 0.50.0
-
-First, remove all references to goenv, pyenv, aqua, and .worldline_pps_* files.
-
-```sh
-vi ~/.bashrc
-vi ~/.bash_profile
-# ... and any other shell profile configurations that may container references to toolchain configuration
-source ~/.bashrc
-```
-
-Next, remove group shell configuration and language runtimes
-
-```sh
-rm -rf ~/.goenv/ || true
-rm -rf ~/.pyenv/ || true
-rm ~/.worldline_pps_* || true
-```
-
-Third, remove all pre-upgrade managed tools
-
-```sh
-sudo su
-
-# For < 0.56.0
-yes | rm -rf /usr/local/bin/localstack* || true
-yes | rm -rf /usr/local/bin/maven || true
-yes | rm -rf /usr/local/bin/mvn || true
-yes | rm -rf /usr/local/bin/pip3* || true
-yes | rm -rf /usr/local/bin/pydoc3* || true
-yes | rm -rf /usr/local/bin/sonar-scanner || true
-yes | rm -rf $HOME/.local/lib/python3* || true
-yes | rm /usr/local/bin/iam-policy-json-to-terraform || true
-yes | rm /usr/local/bin/infracost || true
-yes | rm /usr/local/bin/kics || true
-yes | rm /usr/local/bin/packer || true
-yes | rm /usr/local/bin/session-manager-plugin  || true
-yes | rm /usr/local/bin/terraform || true
-yes | rm /usr/local/bin/terraform-docs || true
-yes | rm /usr/local/bin/terragrunt  || true
-yes | rm /usr/local/bin/terrascan || true
-yes | rm /usr/local/bin/tfenv || true
-yes | rm /usr/local/bin/tflint || true
-yes | rm /usr/local/bin/tfsec || true
-yes | rm /usr/local/bin/tgenv || true
-yes | rm /usr/local/bin/tofu || true
-yes | rm /usr/local/bin/tofuenv || true
-yes | rm /usr/local/bin/xeol || true
-
-
-# For >= 0.56.0
-yes | rm -rf /usr/bin/maven || true
-yes | rm -rf /usr/bin/mvn || true
-yes | rm -rf /usr/bin/pip3* || true
-yes | rm -rf /usr/bin/pydoc3* || true
-yes | rm -rf /usr/bin/sonar-scanner || true
-yes | rm -rf $HOME/.local/lib/python3* || true
-yes | rm /usr/bin/iam-policy-json-to-terraform || true
-yes | rm /usr/bin/infracost || true
-yes | rm /usr/bin/kics || true
-yes | rm /usr/bin/packer || true
-yes | rm /usr/bin/pydoc || true
-yes | rm /usr/bin/session-manager-plugin  || true
-yes | rm /usr/bin/terraform || true
-yes | rm /usr/bin/terraform-docs || true
-yes | rm /usr/bin/terragrunt  || true
-yes | rm /usr/bin/terrascan || true
-yes | rm /usr/bin/tfenv || true
-yes | rm /usr/bin/tflint || true
-yes | rm /usr/bin/tfsec || true
-yes | rm /usr/bin/tgenv || true
-yes | rm /usr/bin/tofu || true
-yes | rm /usr/bin/tofuenv || true
-yes | rm /usr/bin/xeol || true
-
-exit # return back to normal user
-```
-
-To verify we are now in good shape, list the contains of `/usr/local/bin` and `/usr/bin`
-
-```sh
-ls -lah /usr/local/bin
-ls -lah /usr/bin
-```
-
-No IAC, Golang, nor Python (3.x) binaries or directories should be listed.
-
-Finally, execute the installation process.
-
-```sh
-./libs/bash/install.sh
-source ~/.bashrc
-```
-
-With that the upgrade process is complete. Tools managed by Aqua should be available globally and at the version defined in `.aqua.yaml`.
-
 
 ## Options
 
@@ -175,7 +77,7 @@ Environmental variable overrides:
 - WL_GC_TOOLCHAIN_AQUA_SKIP=true skip this section of the install process (may have unintended side effects)
 - WL_GC_TOOLCHAIN_IAC_SKIP4=true skip this section of the install process (may have unintended side effects)
 - WL_GC_TOOLCHAIN_LANGUAGE_TOOLS_SKIP=true skip this section of the install process (may have unintended side effects)
-- WL_GC_TOOLCHAIN_ROOT_OVERRIDE=true allows for intalling the Toolchain as the root user
+- WL_GC_TOOLCHAIN_ROOT_OVERRIDE=true allows for installing the Toolchain as the root user
 - WL_GC_TOOLCHAIN_SYSTEM_TOOLS_SKIP=true skip this section of the install process (may have unintended side effects)
 
 ## Versioning

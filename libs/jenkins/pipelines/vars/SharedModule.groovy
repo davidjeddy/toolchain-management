@@ -1,11 +1,11 @@
 #!groovy
-/* groovylint-disable CompileStatic, GStringExpressionWithinString, LineLength, NestedBlockDepth, UnusedImport */
+/* groovylint-disable CompileStatic, DuplicateMapLiteral, DuplicateStringLiteral, GStringExpressionWithinString, LineLength, MethodReturnTypeRequired, MethodSize, NestedBlockDepth, NoDef, ParameterCount, UnusedImport */
 
 //- Library Imports
 
 // https://stackoverflow.com/questions/61106044/condition-in-jenkins-pipeline-on-the-triggers-directive
-def runCron(cronSchedule) {
-    if( env.BRANCH_NAME == 'main' ) {
+def runCron(String cronSchedule) {
+    if ( env.BRANCH_NAME == 'main' ) {
         return cronSchedule
     }
 
@@ -76,7 +76,7 @@ def call(
                 )
                 // do not archive toolchain-management
                 // archiveArtifacts artifacts: "./.tmp/junit-*.xml", excludes: "./.tmp/toolchain-management/**", fingerprint: true
-                junit allowEmptyResults: true, testResults: "./.tmp/junit-*.xml"
+                junit allowEmptyResults: true, testResults: './.tmp/junit-*.xml'
                 // publishHTML([
                 //     allowMissing: true,
                 //     alwaysLinkToLastBuild: true,
@@ -113,7 +113,6 @@ def call(
                             slackMsgSourceAcct,
                             env.JOB_NAME + 'Build FIXED.\n${env.BUILD_URL}console',
                             ':tada:'
-                            
                         )
                     }
                 }
@@ -137,22 +136,22 @@ def call(
                             credentialsId:  gitlabApiPat,
                             variable:       'gitlabPAT'
                         )]) {
-                        sh('''#!/bin/bash -l
-                            set -eo pipefail
+                            sh('''#!/bin/bash -l
+                                set -eo pipefail
 
-                            if [[ $LOG_LEVEL == "TRACE" ]]
-                            then 
-                                set -x
-                            fi
+                                if [[ $LOG_LEVEL == "TRACE" ]]
+                                then
+                                    set -x
+                                fi
 
-                            source "$HOME/.bashrc"
+                                source "$HOME/.bashrc"
 
-                            curl \
-                                --form "note=# Build Pipeline\n\nNumber: ${BUILD_NUMBER}\n\nUrl: ${BUILD_URL}console" \
-                                --header "PRIVATE-TOKEN: $GITLAB_CREDENTIALSID" \
-                                --request POST \
-                                "https://${GITLAB_HOST}/api/v4/projects/''' + gitlabProjectId + '''/repository/commits/${GIT_COMMIT}/comments"
-                        ''')
+                                curl \
+                                    --form "note=# Build Pipeline\n\nNumber: ${BUILD_NUMBER}\n\nUrl: ${BUILD_URL}console" \
+                                    --header "PRIVATE-TOKEN: $GITLAB_CREDENTIALSID" \
+                                    --request POST \
+                                    "https://${GITLAB_HOST}/api/v4/projects/''' + gitlabProjectId + '''/repository/commits/${GIT_COMMIT}/comments"
+                            ''')
                         }
                     }
                 }
@@ -163,7 +162,7 @@ def call(
                         set -eo pipefail
 
                         if [[ $LOG_LEVEL == "TRACE" ]]
-                        then 
+                        then
                             set -x
                         fi
 
@@ -171,36 +170,21 @@ def call(
 
                         echo "INFO: Printing ENV VARs"
                         printenv | sort
+
+                        echo "INFO: Project name: ''' + gitlabProjectName + '''"
                     ''')
                 }
             }
             stage('Git Checkout') {
                 steps {
-                    echo "Checkout main branch for compliance, sast, tagging operations"
+                    echo 'Checkout main branch for compliance, sast, tagging operations'
                     git branch: 'main',
                         credentialsId: gitlabGitSa,
                         url: env.GIT_URL
-                    echo "Checkout feature branch for pipeline execution"
+                    echo 'Checkout feature branch for pipeline execution'
                     git branch: env.BRANCH_NAME,
                         credentialsId: gitlabGitSa,
                         url: env.GIT_URL
-                }
-            }
-            stage('Install Dependencies') {
-                steps {
-                        sh('''#!/bin/bash -l
-                            set -eo pipefail
-
-                            if [[ $LOG_LEVEL == "TRACE" ]]
-                            then 
-                                set -x
-                            fi
-
-                            source "$HOME/.bashrc"
-
-                        ${WORKSPACE}/libs/bash/install.sh ''' + params.TOOLCHAIN_BRANCH + '''
-                        source $HOME/.bashrc
-                    ''')
                 }
             }
             stage('Compliance & SAST') {
@@ -210,12 +194,12 @@ def call(
                             set -eo pipefail
 
                             if [[ $LOG_LEVEL == "TRACE" ]]
-                            then 
+                            then
                                 set -x
                             fi
 
                             source "$HOME/.bashrc"
-                            
+
                             ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/iac_publish.sh
 
                             # urlencoding using CURL https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736
@@ -247,12 +231,12 @@ def call(
                                     set -eo pipefail
 
                                     if [[ $LOG_LEVEL == "TRACE" ]]
-                                    then 
+                                    then
                                         set -x
                                     fi
 
                                     source "$HOME/.bashrc"
-                                    
+
                                     ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/sem_ver_release_tagging.sh
                                 ''')
                             }

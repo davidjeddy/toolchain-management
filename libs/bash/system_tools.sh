@@ -74,45 +74,84 @@ function apt_systems() {
 function dnf_systems() {
     printf "INFO: Updating and installing system tools via dnf.\n"
 
-    # Fedora 38, 39, 40
-    sudo dnf update -y
-    sudo dnf install -y \
-        ca-certificates \
-        curl \
-        git \
-        git-lfs \
-        gnupg \
-        gnupg2 \
-        htop \
-        parallel \
-        patch \
-        podman \
-        skopeo \
-        tk-devel \
-        tree \
-        unzip
+    if [[ $(cat /eta/*release) == "Fedora"* ]]
+    then
+        # Fedora 38, 39, 4x
+        sudo dnf update -y
+        sudo dnf install -y \
+            ca-certificates \
+            curl \
+            git \
+            git-lfs \
+            gnupg \
+            gnupg2 \
+            htop \
+            parallel \
+            patch \
+            podman \
+            skopeo \
+            tk-devel \
+            tree \
+            unzip
 
-    # Only for compiling Python
-    sudo dnf install -y \
-        automake \
-        bzip2 \
-        bzip2-devel \
-        gcc \
-        gcc-c++ \
-        kernel-devel \
-        libffi-devel \
-        lzma \
-        make \
-        ncurses \
-        openssl \
-        openssl-devel \
-        readline \
-        readline-devel \
-        sqlite \
-        sqlite-devel \
-        sqlite3 \
-        xz-devel \
-        zlib-devel
+        # Only for compiling Python
+        sudo dnf install -y \
+            automake \
+            bzip2 \
+            bzip2-devel \
+            gcc \
+            gcc-c++ \
+            kernel-devel \
+            libffi-devel \
+            lzma \
+            make \
+            ncurses \
+            openssl \
+            openssl-devel \
+            readline \
+            readline-devel \
+            sqlite3 \
+            sqlite \
+            sqlite-devel \
+            xz-devel \
+            zlib-devel
+    elif [[ $(cat /eta/*release) == "Amazon"* ]]
+    then
+        # Amazon Linux until Fedora 4x is running
+        sudo dnf update -y
+        sudo dnf install -y \
+            ca-certificates \
+            git \
+            git-lfs \
+            gnupg \
+            htop \
+            parallel \
+            patch \
+            tk-devel \
+            tree \
+            unzip
+
+        # Only for compiling Python
+        sudo dnf install -y \
+            automake \
+            bzip2 \
+            bzip2-devel \
+            gcc \
+            gcc-c++ \
+            kernel-devel \
+            libffi-devel \
+            lzma \
+            make \
+            ncurses \
+            openssl \
+            openssl-devel \
+            readline \
+            readline-devel \
+            sqlite \
+            sqlite-devel \
+            xz-devel \
+            zlib-devel
+    fi
 }
 
 # DEPRECATED 2024-03-11

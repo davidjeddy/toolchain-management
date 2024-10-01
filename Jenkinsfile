@@ -1,5 +1,5 @@
 #!groovy
-/* groovylint-disable CompileStatic, GStringExpressionWithinString, LineLength, NestedBlockDepth, UnusedImport */
+/* groovylint-disable CompileStatic, DuplicateMapLiteral, DuplicateStringLiteral, GStringExpressionWithinString, LineLength, NestedBlockDepth, UnnecessaryGString, UnusedImport */
 
 //- Library Imports
 @Library('jenkins-pipeline-lib')
@@ -16,10 +16,10 @@ String gitlabConnectionName = 'gitlab.kazan.myworldline.com'
 String gitlabGitSa          = 'cicd-technical-user'
 String gitlabProjectId      = 78445
 String gitTargetBranch      = 'main'
+String jenkinsNodeLabels    = 'ec2 && fedora && toolchain'
 String numToKeepStr         = '7'
 String slackChannel         = 'nl-pros-centaurus-squad-releases'
 String slackMsgSourceAcct   = ':jenkins:'
-String workerNode           = 'bambora-aws-slave-terraform'
 
 // global scope container vars
 
@@ -31,7 +31,10 @@ String workerNode           = 'bambora-aws-slave-terraform'
 
 pipeline {
     agent { // https://digitalvarys.com/jenkins-declarative-pipeline-with-examples/
-        node workerNode
+        // node workerNode
+        node {
+            label jenkinsNodeLabels
+        }
     }
     environment {
         GITLAB_CREDENTIALSID = credentials("${gitlabApiPat}")
@@ -78,7 +81,6 @@ pipeline {
                         slackMsgSourceAcct,
                         env.JOB_NAME + 'Build FIXED.\n${env.BUILD_URL}console',
                         ':tada:'
-                        
                     )
                 }
             }
@@ -102,8 +104,15 @@ pipeline {
                         credentialsId:  gitlabApiPat,
                         variable:       'gitlabPAT'
                     )]) {
-                        sh('''#!/bin/bash -l
+                        sh('''#!/bin/bash
                             set -eo pipefail
+                            # shellcheck disable=SC1091
+                            source "$HOME/.bashrc" || exit 1
+
+                            if [[ $LOG_LEVEL == "TRACE" ]]
+                            then
+                                set -x
+                            fi
 
                             curl \
                                 --form "note=# Build Pipeline\n\nNumber: ${BUILD_NUMBER}\n\nUrl: ${BUILD_URL}console" \
@@ -122,11 +131,16 @@ pipeline {
         }
         stage('System ENV VARs') {
             steps {
-                sh('''#!/bin/bash -l
+                sh('''#!/bin/bash
                     set -eo pipefail
-                    source $HOME/.bashrc
+                    # shellcheck disable=SC1091
+                    source "$HOME/.bashrc" || exit 1
 
-                    echo "INFO: Printing ENV VARs"
+                    if [[ $LOG_LEVEL == "TRACE" ]]
+                    then
+                        set -x
+                    fi
+
                     printenv | sort
                 ''')
             }
@@ -143,61 +157,54 @@ pipeline {
                     url: env.GIT_URL
             }
         }
-        stage('Install Dependencies') {
-            steps {
-                sh('''#!/bin/bash -l
-                        set -eo pipefail
-
-                        ${WORKSPACE}/libs/bash/install.sh ''' + params.TOOLCHAIN_BRANCH + '''
-                        source $HOME/.bashrc
-                ''')
-            }
-        }
-        // Typical direct re/install
-        stage('Execute toolchain re/install') {
-            steps {
-                sh('''#!/bin/bash -l
-                    set -eo pipefail
-                    source $HOME/.bashrc
-
-                    ${WORKSPACE}/libs/bash/install.sh
-                    source $HOME/.bashrc
-                ''')
-            }
-        }
-        stage('Execute Aqua install/update') {
-            steps {
-                sh('''#!/bin/bash -l
-                    set -eo pipefail
-                    source $HOME/.bashrc 
-
-                    aqua install
-                ''')
-            }
-        }
-        // if pipeline is running the main branch, tag a new release using changes content of CHANGLOG.md
-        stage('Tagging') {
+        // Project specific stages
+        stage('Reset Host') {
             steps {
                 script {
-                    withCredentials([string(
-                        credentialsId:  gitlabApiPat,
-                        variable:       'gitlabPAT'
-                    )]) {
-                        if (env.BRANCH_NAME == gitTargetBranch) {
-                            sh('''#!/bin/bash -l
-                                set -eo pipefail
-                                source $HOME/.bashrc
+                    if (env.BRANCH_NAME == 'main') { // re/install only if on main branch
+                        sh('''#!/bin/bash
+                            set -eo pipefail
+                            # shellcheck disable=SC1091
+                            source "$HOME/.bashrc" || exit 1
 
-                                ./libs/bash/common/sem_ver_release_tagging.sh
+                            if [[ $LOG_LEVEL == "TRACE" ]]
+                            then
+                                set -x
+                            fi
+
+                            ${WORKSPACE}/libs/bash/reset.sh
+                        ''')
+                    }
+                }
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    if (env.BRANCH_NAME == 'main') { // re/install only if on main branch
+                        withCredentials([
+                            gitUsernamePassword(credentialsId: gitlabGitSa)
+                        ]) {
+                            sh('''#!/bin/bash
+                                set -eo pipefail
+                                # shellcheck disable=SC1091
+                                source "$HOME/.bashrc" || exit 1
+
+                                if [[ $LOG_LEVEL == "TRACE" ]]
+                                then
+                                    set -x
+                                fi
+
+                                ${WORKSPACE}/libs/bash/install.sh ''' + params.TOOLCHAIN_BRANCH + '''
                             ''')
                         }
                     }
                 }
             }
         }
-    }
+   }
     triggers {
-        cron(env.BRANCH_NAME == gitTargetBranch ?  'H 0 * * 1-5' : '')      // Run during the midnight hour Mon-Fri
-        pollSCM(env.BRANCH_NAME == gitTargetBranch ? 'H 23 * * 1-5' : '')   // Check branch status during the 2300 hour Mon-Fri daily
+        cron(env.BRANCH_NAME == gitTargetBranch ?  'H 3 * * 1-5' : '')
+        pollSCM(env.BRANCH_NAME == gitTargetBranch ? 'H 3 * * 1-5' : '')
     }
 }

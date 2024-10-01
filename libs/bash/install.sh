@@ -1,200 +1,115 @@
 #!/bin/bash -l
 
-## configuration
-
+# set -exo pipefail # when debuggin
 set -eo pipefail
+
+# Enforce the session load like an interactive user
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
     set -x
 fi
 
-declare OLD_PWD
-OLD_PWD="$(pwd)"
-printf "INFO: OLD_PWD: %s\n" "${OLD_PWD}"
+# usage ./libs/bash/install.sh (optional) branch_name
+# example ./libs/bash/install.sh fix/ICON-39280/connect_preprod_module_revert_to_0_36_7_due_to_kms_permissions
 
-## Preflight checks
+# Version: 0.8.2  - 2024-10-01 - ADD logic to skip tooling install if executed on a CI pipeline host
+# Version: 0.8.1  - 2024-07-16 - ADD logic to copy latest from toolchain to local project
+# Version: 0.8.0  - 2024-06-19 - UPDATED `git lfs` to less error prone `git-lfs`. Ensure non-interactive sessions act like interactive sessions.
+# Version: 0.7.0  - 2024-06-19 - UPDATED Toolchain source URL post migration to https://gitlab.kazan.myworldline.com/ SCM hosting
+# Version: 0.6.0  - 2024-05-24 - UPDATED Git hook symlink creation - David J Eddy
+# Version: 0.5.11 - 2024-05-06 - ADD Git feature checks - David J Eddy
+# Version: 0.5.10 - 2024-04-22
+# Version: 0.5.8  - 2024-03-19
 
-if [[ ! $HOME || $HOME == "" ]]
+## vars
+
+### Configure required ENV VAR
+
+if [[ ! $WORKSPACE ]]
 then
-    printf "ERR: HOME EN VAR must be set"
-    exit 1
+    declare WORKSPACE
+    WORKSPACE=$(git rev-parse --show-toplevel)
+    export WORKSPACE
+fi
+printf "INFO: WORKSPACE %s\n" "${WORKSPACE}"
+
+declare WL_GC_TOOLCHAIN_BRANCH
+WL_GC_TOOLCHAIN_BRANCH="main"
+if [[ "$1" != "" ]]
+then
+    WL_GC_TOOLCHAIN_BRANCH="${1}"
+fi
+export WL_GC_TOOLCHAIN_BRANCH
+printf "INFO: Toolchain branch is %s\n" "$WL_GC_TOOLCHAIN_BRANCH"
+
+## functions
+
+## logic
+
+# Comment this section to develop locally w/o wiping the toolchain downstream project on every run
+printf "INFO: Removing existing .tmp if exists.\n"
+rm -rf "$WORKSPACE/.tmp" || exit 1
+printf "INFO: Clone toolchain-management project locally into %s/.tmp\n" "$(pwd)"
+git clone --quiet https://gitlab.kazan.myworldline.com/cicd/terraform/tools/toolchain-management.git "$WORKSPACE/.tmp/toolchain-management"
+
+# Even if main, checkout anyways
+cd "$WORKSPACE/.tmp/toolchain-management"
+git checkout "$WL_GC_TOOLCHAIN_BRANCH" --force
+cd "$WORKSPACE" || exit 1
+
+# Troubleshooting reminder
+if [[ ! $BUILD_URL && $(whoami) == "jenkins" ]]
+then
+    printf "WARN: Are you logged in as the Jenkins user trying to troubleshoot the pipeline? You MUST 'export BUILD_URL=\"some_value\"' to emulate a automated pipeline execution.\n"
+    exit 0
+fi
+if [[ ! $CI_JOB_URL && $(whoami) == "gitlab" ]]
+then
+    printf "WARN: Are you logged in as the Jenkins user trying to troubleshoot the pipeline? You MUST 'export CI_JOB_URL=\"some_value\"' to emulate a automated pipeline execution.\n"
+    exit 0
 fi
 
-if [[ "$EUID" -eq 0 && ! "${WL_GC_TOOLCHAIN_ROOT_OVERRIDE}" ]]
+# DO NOT execute the install process if running in CI pipeline.
+# BUILD_URL is for Jenkins, (CI_JOB_URL)[] is for (GitLab)[https://docs.gitlab.com/ee/ci/variables/predefined_variables.html]
+if [[ ! $BUILD_URL && ! $CI_JOB_URL ]]
 then
-  echo "Do not run the install script as root."
-  exit 1
+    printf "INFO: Execute toolchain-management tooling installer...\n"
+    "$WORKSPACE/.tmp/toolchain-management/libs/bash/install.sh" "$@"
 fi
 
-# load ENV configuration
+# create symlink for each hook found
+declare GIT_HOOKS
+GIT_HOOKS=$(find "$WORKSPACE/.tmp/toolchain-management/libs/bash/git/hooks" -maxdepth 1 -type f | sed "s/.*\///")
+for HOOK in $GIT_HOOKS
+do
+    printf "INFO: Installing Git %s hook.\n" "${HOOK}"
+    rm -rf "$WORKSPACE/.git/hooks/${HOOK}" || true
+    ln -sfn "$WORKSPACE/.tmp/toolchain-management/libs/bash/git/hooks/${HOOK}" "$WORKSPACE/.git/hooks/${HOOK}"
+done
 
-# shellcheck disable=SC1091
-source "$HOME/.bashrc" || exit 1
-
-# execute
-
-# First, determinr runtime VARS
-
-declare WL_GC_TM_WORKSPACE
-WL_GC_TM_WORKSPACE=$(git rev-parse --show-toplevel)
-if [[ "$(ps -o args= $PPID)" == *"install.sh"* ]]
+# Git features
+if [[ -f .gitattributes ]]
 then
-    # If this script is called by another install.sh script; we expect this project to be inside the $(pwd)/.tmp dir
-    # https://stackoverflow.com/questions/20572934/get-the-name-of-the-caller-script-in-bash-script
-    WL_GC_TM_WORKSPACE="$(pwd)/.tmp/toolchain-management"
-fi
-export WL_GC_TM_WORKSPACE
-printf "INFO: WL_GC_TM_WORKSPACE is %s\n" "${WL_GC_TM_WORKSPACE}"
-cd "${WL_GC_TM_WORKSPACE}" || exit 1
-
-# Non-login shell - https://serverfault.com/questions/146745/how-can-i-check-in-bash-if-a-shell-is-running-in-interactive-mode
-declare SESSION_SHELL
-SESSION_SHELL="${HOME}/.bashrc"
-if [[ $- == *i* ]]
-then
-    SESSION_SHELL="$HOME/.bashrc"
-
-    if [[ ! -f "$SESSION_SHELL" ]]
-    then
-        printf "INFO: SESSION_SHELL file not found, creating.\n"
-        touch "${SESSION_SHELL}"
-    fi
-fi
-printf "INFO: SESSION_SHELL is %s\n" "${SESSION_SHELL}"
-export SESSION_SHELL
-
-# Remove configurations from start line to end line (inclusive)
-# While this removes only one instance per run, eventually the empty blocks will all be removed
-## < 0.55.0 strings
-sed -i '/# WL GC Toolchain Management Starting/,/# WL GC Toolchain Management Ending/d' "$HOME/.bashrc"
-## > 0.55.0 strings
-sed -i '/# WL - GC - Centaurus - Toolchain Management Starting/,/# WL - GC - Centaurus - Toolchain Management Ending/d' "$HOME/.bashrc"
-
-# Put an indicator of where the toolchain configurations start
-echo "# WL - GC - Centaurus - Toolchain Management Starting" >> $SESSION_SHELL
-
-# shellcheck disable=SC1090,SC1091
-source "${SESSION_SHELL}" || exit 1
-printf "INFO: PATH is %s\n" "$PATH"
-
-# Second, install tools and language interpreters not yet in aqua's standard registry
-
-# shellcheck disable=SC1090,SC1091
-source "versions.sh" || exit 1
-
-# Skip system tools if ENV VAR is set
-if [[ ! "${WL_GC_TOOLCHAIN_SYSTEM_TOOLS_SKIP}" ]]
-then
-    # shellcheck disable=SC1090,SC1091
-    source "./libs/bash/system_tools.sh" || exit 1
+    printf "INFO: Configure Git LFS.\n"
+    which git
+    git --version
+    which git-lfs
+    git-lfs --version
+    git-lfs track "*.iso"
+    git-lfs track "*.zip"
+    git-lfs track "*.gz"
 fi
 
-# Skip language tools if ENV VAR is set
-if [[ ! "${WL_GC_TOOLCHAIN_LANGUAGE_TOOLS_SKIP}" ]]
+if [[ -f .gitsubmodules ]]
 then
-    # shellcheck disable=SC1090,SC1091
-    source "./libs/bash/language_runtimes.sh" || exit 1
+    printf "INFO: Sync Git submodules.\n"
+    git submodule update --init --recursive
 fi
 
-# Skip additional tools if ENV VAR is set
-if [[ ! "${WL_GC_TOOLCHAIN_ADDITIONAL_TOOLS_SKIP}" ]]
-then
-    # shellcheck disable=SC1090,SC1091
-    source "./libs/bash/additional_tools.sh" || exit 1
-fi
+# Post-flight resets
+cd "$WORKSPACE" || exit 1
 
-# Third, now we can trigger Aqua to install all the other toolings
-
-if [[ ! "${WL_GC_TOOLCHAIN_AQUA_SKIP}" ]]
-then
-    if [[ ! $(which aqua) ||  $(aqua version) != *"aqua version $AQUA_VER"* ]]
-    then
-        printf "INFO: Install Aqua tool management\n"
-        # https://aquaproj.github.io/docs/products/aqua-installer#shell-script
-        export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH"
-        curl -sSfL -O https://raw.githubusercontent.com/aquaproj/aqua-installer/v3.0.1/aqua-installer
-        echo "fb4b3b7d026e5aba1fc478c268e8fbd653e01404c8a8c6284fdba88ae62eda6a  aqua-installer" | sha256sum -c
-
-        chmod +x aqua-installer
-        ./aqua-installer
-    fi
-
-    # shellcheck disable=SC2143
-    if [[ -f ${SESSION_SHELL} && ! $(grep "aquaproj-aqua" "${SESSION_SHELL}") ]]
-    then
-        printf "INFO: Adding Aqua to PATH in %s.\n" "${SESSION_SHELL}"
-        echo "export PATH=${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-~/.local/share}/aquaproj-aqua}/bin:$PATH" >> "${SESSION_SHELL}"
-    fi
-
-    # shellcheck disable=SC2143
-    if [[ -f ${SESSION_SHELL} && ! $(grep "AQUA_GLOBAL_CONFIG" "${SESSION_SHELL}") ]]
-    then
-        printf "INFO: Setting global baseline aqua.yaml location in %s.\n" "${SESSION_SHELL}"
-        echo "export AQUA_GLOBAL_CONFIG=~/.aqua/aqua.yaml" >> "${SESSION_SHELL}"
-    fi
-
-    # shellcheck disable=SC1090,SC1091
-    source "${SESSION_SHELL}" || exit 1
-
-    # shellcheck disable=SC1090,SC1091
-    printf "INFO: AQUA_GLOBAL_CONFIG is %s\n" "$AQUA_GLOBAL_CONFIG"
-    printf "INFO: PATH is %s\n" "$PATH"
-
-    # Global baseline tool versions - always reset on every run
-    # https://aquaproj.github.io/docs/reference/config/#configuration-file-path
-    rm -rf ~/.aqua || true
-    mkdir -p ~/.aqua
-    # shellcheck disable=SC2088
-    cp -rf "aqua.yaml" ~/.aqua/aqua.yaml || exit 1
-
-    which aqua
-    aqua --version
-    aqua update-checksum
-    aqua install
-fi
-
-# Forth, use *env tools to per-directory IAC tool default versions
-
-if [[ ! "${WL_GC_TOOLCHAIN_IAC_SKIP}" ]]
-then
-    printf "INFO: Setting CLI *env tool versions.\n"
-
-    # shellcheck disable=SC2046
-    tfenv install "$(cat .terraform-version)"
-
-    # shellcheck disable=SC2046
-    tfenv use "$(cat .terraform-version)"
-
-    # shellcheck disable=SC2046
-    tgenv install "$(cat .terragrunt-version)"
-
-    mkdir -p "$HOME/.local/share/aquaproj-aqua/pkgs/github_archive/github.com/tgenv/tgenv/v$(cat .terragrunt-version)/tgenv-$(cat .terragrunt-version)" || exit 1
-    cat .terragrunt-version > "$HOME/.local/share/aquaproj-aqua/pkgs/github_archive/github.com/tgenv/tgenv/v$(cat .terragrunt-version)/tgenv-$(cat .terragrunt-version)/version"
-    tgenv use "$(cat .terragrunt-version)"
-
-    # shellcheck disable=SC2046
-    tofuenv install "$(cat .tofu-version)"
-
-    # shellcheck disable=SC2046
-    tofuenv use "$(cat .tofu-version)"
-
-    if [[ ! -f ~/.aws/credentials && $(whoami) != 'jenkins' ]]
-    then
-        printf "INFO: Looks like you do not yet have a ~/.aws/credentials configured, pleaes run the AWS configuration process as detailed here https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html.\n"
-    fi
-
-    if [[ ! -f ~/.terraformrc && $(whoami) != 'jenkins' ]]
-    then
-        printf "INFO: Looks like you do not yet have a ~/.terraformrc credentials configuration, please follow https://confluence.worldline-solutions.com/display/PPSTECHNO/Using+Shared+Modules+from+GitLab+Private+Registry before attempting to use Terraform or OpenTofu.\n"
-    fi
-fi
-
-# Put an indicator of where the toolchain configurations end
-echo "# WL - GC - Centaurus - Toolchain Management Ending" >> $SESSION_SHELL
-
-# Lastly, Wrap up and exit
-
-cd "$OLD_PWD" || exit 1
-
-printf "INFO: Done. Please reload your shell by running the following command: \"source $SESSION_SHELL\".\n"
+printf "INFO: Done. Please reload your shell by running the following command: \"source ~/.bashrc\".\n"
