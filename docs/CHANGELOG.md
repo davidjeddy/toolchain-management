@@ -12,6 +12,30 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.58.1] - 2024-10-01
+
+### ADD
+
+- ADD logic to skip tooling install if executed on a CI pipeline host
+
+### FIX
+
+- Jenkinsfile can now uninstall all tools via `./libs/bash/reset.sh` on non-GI_* hosts
+- Jenkinsfile syntax clean up for both this project and SharedModules.groovy
+- Installer updated to version 0.8.2
+  - No longer triggers tool install when Toolchain is installed on automation hosts
+
+### REMOVED
+
+- README section dealing with reset of hosts using <= 0.50.0 of the Toolchain
+
+## [0.58.0] - 2024-09-30
+
+### FIX
+
+- Project pipeline now runs daily on EC2 based Jenkins agents to manage tool versions. Downstream projects no longe are required to do tool checks
+  - Note: This only applies to EC2 hosts. ECS hosts continue to get a new image build to make changes
+
 ## [0.57.5] - 2024-09-26
 
 ### ADD

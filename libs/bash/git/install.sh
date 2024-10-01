@@ -15,6 +15,7 @@ fi
 # usage ./libs/bash/install.sh (optional) branch_name
 # example ./libs/bash/install.sh fix/ICON-39280/connect_preprod_module_revert_to_0_36_7_due_to_kms_permissions
 
+# Version: 0.8.2  - 2024-10-01 - ADD logic to skip tooling install if executed on a CI pipeline host
 # Version: 0.8.1  - 2024-07-16 - ADD logic to copy latest from toolchain to local project
 # Version: 0.8.0  - 2024-06-19 - UPDATED `git lfs` to less error prone `git-lfs`. Ensure non-interactive sessions act like interactive sessions.
 # Version: 0.7.0  - 2024-06-19 - UPDATED Toolchain source URL post migration to https://gitlab.kazan.myworldline.com/ SCM hosting
@@ -59,8 +60,25 @@ cd "$WORKSPACE/.tmp/toolchain-management"
 git checkout "$WL_GC_TOOLCHAIN_BRANCH" --force
 cd "$WORKSPACE" || exit 1
 
-printf "INFO: Execute toolchain-management installer...\n"
-"$WORKSPACE/.tmp/toolchain-management/libs/bash/install.sh" "$@"
+# Troubleshooting reminder
+if [[ ! $BUILD_URL && $(whoami) == "jenkins" ]]
+then
+    printf "WARN: Are you logged in as the Jenkins user trying to troubleshoot the pipeline? You MUST 'export BUILD_URL=\"some_value\"' to emulate a automated pipeline execution.\n"
+    exit 0
+fi
+if [[ ! $CI_JOB_URL && $(whoami) == "gitlab" ]]
+then
+    printf "WARN: Are you logged in as the Jenkins user trying to troubleshoot the pipeline? You MUST 'export CI_JOB_URL=\"some_value\"' to emulate a automated pipeline execution.\n"
+    exit 0
+fi
+
+# DO NOT execute the install process if running in CI pipeline.
+# BUILD_URL is for Jenkins, (CI_JOB_URL)[] is for (GitLab)[https://docs.gitlab.com/ee/ci/variables/predefined_variables.html]
+if [[ ! $BUILD_URL && ! $CI_JOB_URL ]]
+then
+    printf "INFO: Execute toolchain-management tooling installer...\n"
+    "$WORKSPACE/.tmp/toolchain-management/libs/bash/install.sh" "$@"
+fi
 
 # create symlink for each hook found
 declare GIT_HOOKS
@@ -90,10 +108,6 @@ then
     printf "INFO: Sync Git submodules.\n"
     git submodule update --init --recursive
 fi
-
-# Reported as not working, but why not?
-# printf "INFO: Updating in-project installer.\n"
-# cp --force "$WORKSPACE/.tmp/toolchain-management/libs/bash/git/install.sh" "$WORKSPACE/libs/bash/install.sh"
 
 # Post-flight resets
 cd "$WORKSPACE" || exit 1
