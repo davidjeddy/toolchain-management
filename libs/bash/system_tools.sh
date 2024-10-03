@@ -74,7 +74,7 @@ function apt_systems() {
 function dnf_systems() {
     printf "INFO: Updating and installing system tools via dnf.\n"
 
-    if [[ $(cat /eta/*release) == "Fedora"* ]]
+    if [[ $(cat /etc/*release) == "Fedora"* ]]
     then
         # Fedora 38, 39, 4x
         sudo dnf update -y
@@ -115,7 +115,7 @@ function dnf_systems() {
             sqlite-devel \
             xz-devel \
             zlib-devel
-    elif [[ $(cat /eta/*release) == "Amazon"* ]]
+    elif [[ $(cat /etc/*release) == "Amazon"* ]]
     then
         # Amazon Linux until Fedora 4x is running
         sudo dnf update -y

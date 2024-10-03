@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.58.3] - 2024-10-03
+
+### FIX
+
+- `cat /eta/*release` should be `/etc/*release` when checking OS
+
 ## [0.58.2] - 2024-10-02
 
 ### FIX
