@@ -187,6 +187,21 @@ def call(
                         url: env.GIT_URL
                 }
             }
+            stage('Install Dependencies') {
+                steps {
+                    sh('''#!/bin/bash -l
+                            set -eo pipefail
+
+                            if [[ $LOG_LEVEL == "TRACE" ]]
+                            then
+                                set -x
+                            fi
+
+                            ${WORKSPACE}/libs/bash/install.sh ''' + params.TOOLCHAIN_BRANCH + '''
+                            source ~/.bashrc
+                    ''')
+                }
+            }
             stage('Compliance & SAST') {
                 steps {
                     script {

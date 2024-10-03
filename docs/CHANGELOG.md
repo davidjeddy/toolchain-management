@@ -12,6 +12,13 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.58.2] - 2024-10-02
+
+### FIX
+
+- REVERT changes to `./libs/bash/install.sh`. Only `./libs/bash/git/install.sh` should have been changed in the last release
+- REVERT changes to `./libs/jenkins/SharedModule.groovy`, still want to clone the Toolchain into .tmp during pipeline execution
+
 ## [0.58.1] - 2024-10-01
 
 ### ADD
