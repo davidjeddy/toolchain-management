@@ -18,10 +18,10 @@ function install_java_tools() {
 
     if [[ ! $(which mvn) || $(mvn --version) != *${MAVEN_VER}* ]]
     then
-        if [[ $(cat "$SESSION_SHELL") != *"$HOME/.local/bin/maven/bin"*  ]]
+        if [[ $(cat "$SESSION_SHELL") != *"$HOME_USER_BIN/maven/bin"* ]]
         then
             printf "INFO: Maven bin location not in PATH, adding...\n"
-            echo "export PATH=\"$HOME/.local/bin/maven/bin:\$PATH\"" >> "${SESSION_SHELL}"
+            echo "export PATH=\"$HOME_USER_BIN/maven/bin:\$PATH\"" >> "${SESSION_SHELL}"
             # shellcheck disable=SC1090
             source "${SESSION_SHELL}"
         fi
@@ -48,7 +48,7 @@ function install_java_tools() {
 
         # Not impressed that Maven does not have a pre-compiled binary
         tar xvzf "apache-maven-${MAVEN_VER}-bin.tar.gz"
-        mv --force "apache-maven-${MAVEN_VER}" "$HOME/.local/bin/maven"
+        mv --force "apache-maven-${MAVEN_VER}" "$HOME_USER_BIN/maven"
         rm -rf apache*
 
         which mvn
@@ -76,10 +76,10 @@ function install_java_tools() {
             fi
         fi
 
-        if [[ $(cat "$SESSION_SHELL") != *"$HOME/.local/bin/sonar-scanner/bin"*  ]]
+        if [[ $(cat "$SESSION_SHELL") != *"$HOME_USER_BIN/sonar-scanner/bin"*  ]]
         then
             printf "INFO: sonar-scanner bin location not in PATH, adding...\n"
-            echo "export PATH=\"$HOME/.local/bin/sonar-scanner/bin:\$PATH\"" >> "${SESSION_SHELL}"
+            echo "export PATH=\"$HOME_USER_BIN/sonar-scanner/bin:\$PATH\"" >> "${SESSION_SHELL}"
             # shellcheck disable=SC1090
             source "${SESSION_SHELL}"
         fi
@@ -106,7 +106,7 @@ function install_java_tools() {
 
         # Not impressed that Maven does not have a pre-compiled binary
         unzip "sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip"
-        mv --force "sonar-scanner-${SONARQUBE_SCANNER_VER}-linux" "$HOME/.local/bin/sonar-scanner"
+        mv --force "sonar-scanner-${SONARQUBE_SCANNER_VER}-linux" "$HOME_USER_BIN/sonar-scanner"
         rm -rf sonar-scanner-*
 
         which sonar-scanner

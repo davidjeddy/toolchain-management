@@ -67,6 +67,15 @@ then
 fi
 export SESSION_SHELL
 
+declare HOME_USER_BIN
+HOME_USER_BIN="${HOME}/.local/bin"
+if [[ ! -d "$HOME_USER_BIN" ]]
+then
+    printf "INFO: %s does not exist, creating.\n" "$HOME_USER_BIN"
+    mkdir -p "$HOME_USER_BIN"
+fi
+export HOME_USER_BIN
+
 # Remove configurations from start line to end line (inclusive)
 # While this removes only one instance per run, eventually the empty blocks will all be removed
 ## < 0.55.0 strings
