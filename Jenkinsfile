@@ -17,7 +17,7 @@ String gitlabGitSa          = 'cicd-technical-user'
 String gitlabProjectId      = 78445
 String gitTargetBranch      = 'main'
 // String jenkinsNodeLabels    = 'ec2 && fedora && toolchain'
-String jenkinsNodeLabels    = 'aws && cicd && bambora && iac'
+String workerNode           = 'bambora-aws-slave-terraform'
 String numToKeepStr         = '7'
 String slackChannel         = 'nl-pros-centaurus-squad-releases'
 String slackMsgSourceAcct   = ':jenkins:'
@@ -32,10 +32,10 @@ String slackMsgSourceAcct   = ':jenkins:'
 
 pipeline {
     agent { // https://digitalvarys.com/jenkins-declarative-pipeline-with-examples/
-        // node workerNode
-        node {
-            label jenkinsNodeLabels
-        }
+        node workerNode
+        // node {
+        //     label jenkinsNodeLabels
+        // }
     }
     environment {
         GITLAB_CREDENTIALSID = credentials("${gitlabApiPat}")
@@ -148,11 +148,11 @@ pipeline {
         }
         stage('Git Checkout') {
             steps {
-                echo "Checkout main branch for compliance, sast, tagging operations"
+                echo 'Checkout main branch for compliance, sast, tagging operations'
                 git branch: 'main',
                     credentialsId: gitlabGitSa,
                     url: env.GIT_URL
-                echo "Checkout feature branch for pipeline execution"
+                echo 'Checkout feature branch for pipeline execution'
                 git branch: env.BRANCH_NAME,
                     credentialsId: gitlabGitSa,
                     url: env.GIT_URL
@@ -173,7 +173,13 @@ pipeline {
                                 set -x
                             fi
 
-                            ${WORKSPACE}/libs/bash/reset.sh
+                            # RHEL (aws-bambora node) - TODO Remove after RHEL nodes destroyed
+                            if [[ $(cat /etc/*release) != "Red Hat Enterprise Linux Server 7.9"* ]]
+                            then
+                                cp ~/.bashrc.bckp ~/.bashrc
+                            else
+                                ${WORKSPACE}/libs/bash/reset.sh
+                            fi
                         ''')
                     }
                 }

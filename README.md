@@ -5,6 +5,7 @@
 - [Toolchain Management](#toolchain-management)
   - [Table of Contents](#table-of-contents)
   - [Description](#description)
+  - [Important Notes](#important-notes)
   - [Purpose](#purpose)
   - [Requirements / Supported Platforms](#requirements--supported-platforms)
   - [Tools List](#tools-list)
@@ -21,6 +22,10 @@
 ## Description
 
 Collection of resources and tools used to manage IAC projects.
+
+## Important Notes
+
+This projects manipulates the $HOME/.bashrc of the login user. It is recommended to move all custom configurations into `~/.bashrc.d/*.sh` and reference it in `~/.bashrc`.
 
 ## Purpose
 
@@ -73,12 +78,18 @@ Environmental variable overrides:
 
 - LOG_LEVEL="TRACE" Enable BASH shell command outputting to see every command being executed
 - SESSION_SHELL="$HOME/.some_shell_config" allows for overriding .bashrc as the default session shell configuration
-- WL_GC_TOOLCHAIN_ADDITIONAL_TOOLS_SKIP=true skip this section of the install process (may have unintended side effects)
-- WL_GC_TOOLCHAIN_AQUA_SKIP=true skip this section of the install process (may have unintended side effects)
-- WL_GC_TOOLCHAIN_IAC_SKIP4=true skip this section of the install process (may have unintended side effects)
-- WL_GC_TOOLCHAIN_LANGUAGE_TOOLS_SKIP=true skip this section of the install process (may have unintended side effects)
-- WL_GC_TOOLCHAIN_ROOT_OVERRIDE=true allows for installing the Toolchain as the root user
-- WL_GC_TOOLCHAIN_SYSTEM_TOOLS_SKIP=true skip this section of the install process (may have unintended side effects)
+
+Skip this section of the install process (may have unintended side effects):
+
+- WL_GC_TOOLCHAIN_AQUA_SKIP=true
+- WL_GC_TOOLCHAIN_AQUA_TOOLS_SKIP=true
+- WL_GC_TOOLCHAIN_GOLANG_SKIP=true
+- WL_GC_TOOLCHAIN_IAC_SKIP=true
+- WL_GC_TOOLCHAIN_JAVA_TOOLS_SKIP=true
+- WL_GC_TOOLCHAIN_PIP_SKIP=true
+- WL_GC_TOOLCHAIN_PYTHON_SKIP=true
+- WL_GC_TOOLCHAIN_ROOT_OVERRIDE=true
+- WL_GC_TOOLCHAIN_SYSTEM_TOOLS_SKIP=true
 
 ## Versioning
 
@@ -101,3 +112,4 @@ Additional labels for pre-release and build metadata are available as extensions
 - Adding visual aids to any / all the above sections above is recommended.
 - Based on [README Maturity Model](https://github.com/LappleApple/feedmereadmes/blob/master/README-maturity-model.md); strive for a Level 5 `Product-oriented README`.
 - Additional documentation available in [./docs/](./docs/).
+

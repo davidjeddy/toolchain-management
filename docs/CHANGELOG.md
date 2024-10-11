@@ -12,6 +12,22 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.59.0] - 2024-10-07
+
+### FIX
+
+- AWS Session Manager plugin moved to `system_tools.sh`
+- Extracted `pip` logic to its own script
+- Extracted Java tooling install logic to its own script
+- Renamed `process_goenv()` to `install_golang_via_goenv`
+- Renamed `process_pyenv()` to `install_python_via_pyenv`
+- Split Golang, IaC, Java, and Python tools into separate installers to assist in building container based images
+
+### REMOVE
+
+- `additional_tools.sh` as no longer needed
+- The requirement of `sudo` permissions outside of `system_tools.sh` to better support containerized hosts
+
 ## [0.58.3] - 2024-10-03
 
 ### FIX
@@ -84,6 +100,13 @@ Action Keywords:
 - `curl` invocation argument `--verbose` with `--show-error`
 - `sonar-scanner --version` no longer outputs on QEMU hosts due to error
 - Stop reinstalling the AWS CLI `session-manager-plugin` on every execution
+
+## [0.57.2] - 2024-10-07
+
+### FIX
+
+- Missing package management for `dmidecode`
+- ShellCheck warnings in `./libs/bash/*.sh`
 
 ## [0.57.1] - 2024-09-05
 
