@@ -4,8 +4,8 @@
 
 set -eo pipefail
 
-# shellcheck disable=SC1091
-source "$HOME/.bashrc" || exit 1
+# shellcheck disable=SC1090
+# source "$SESSION_SHELL" || exit 1 # do not need nor want to do this here. Kept for alignment
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
@@ -31,8 +31,8 @@ fi
 printf "INFO: Starting...\n"
 
 printf "INFO: Resetting .bashrc from init provided by (Fedora) host.\n"
-rm $HOME/.bashrc
-cp /etc/skel/.bashrc $HOME/.bashrc
+rm "$HOME/.bashrc"
+cp /etc/skel/.bashrc "$HOME/.bashrc"
 
 printf "INFO: Remove OS package manager packages\n"
 sudo dnf remove -y  session-manager-plugin
@@ -56,7 +56,12 @@ yes | sudo rm -rf "$HOME/.terraform.d/plugin-cache" || true
 
 printf "INFO: Removing all Toolchain managed tool binaries\n"
 
-# For >= 0.56.0
+# For 0.59.0
+yes | sudo rm -rf "$HOME/.local/bin/mavenn" || true
+yes | sudo rm -rf "$HOME/.local/bin/session-manager-plugin" || true
+yes | sudo rm -rf "$HOME/.local/bin/sonar-scanner" || true
+
+# For 0.56.0
 yes | sudo rm -rf /usr/bin/maven || true
 yes | sudo rm -rf /usr/bin/mvn || true
 yes | sudo rm -rf /usr/bin/pip3* || true
