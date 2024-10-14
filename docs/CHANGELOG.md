@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.58.1] - 2024-10-10
+
+### FIX
+
+- Better handle situation where the end-user has multiple entries in `~/.terraformrc`
+
 ## [0.59.0] - 2024-10-07
 
 ### FIX
