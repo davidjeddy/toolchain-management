@@ -24,9 +24,11 @@ fi
 ## Functions
 
 function autoUpdate() {
+    printf "INFO: starting autoUpdate()\n"
+
     # GitLab Pat token from ~/.terraformrc
     local GITLAB_TOKEN
-    GITLAB_TOKEN=$(grep -A 1 'gitlab' ~/.terraformrc | sed -n '2 p' | awk '{print $3}' | jq -rM '.')
+    GITLAB_TOKEN=$(grep -A 1 'gitlab.kazan.myworldline.com' ~/.terraformrc | sed -n '2 p' | awk '{print $3}' | jq -rM '.')
 
     # Check if remote is avaiable
     declare GL_HTTP_RES
@@ -49,20 +51,20 @@ function autoUpdate() {
         --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
         --location \
         --silent \
-        "https://gitlab.kazan.myworldline.com/api/v4/projects/78445/repository/tags" \
-        | jq -rM .[0].name)
-    if [[ "$VER_IN_GL" != 200 ]]
+        "https://gitlab.kazan.myworldline.com/api/v4/projects/78445/repository/tags")
+    if [[ "$VER_IN_GL" != 200 || "$VER_IN_GL" == *"Unauthorized"* ]]
     then
-        printf "WARN: Unable to check local version of Toolchain. Skipping automatic update process.\n"
+        printf "WARN: Response from GitLab not satisfactory. Skipping automatic update process.\n%s.\n" "$VER_IN_GL"
         return 0
     fi
+    VER_IN_GL=$(echo "$VER_IN_GL" | jq -rM .[0].name)
 
     # Version of toolchain on Localhost via tags
     local VER_IN_LH
-    cd $WORKSPACE/.tmp/toolchain-management || exit 1
+    cd "$WORKSPACE/.tmp/toolchain-management" || exit 1
     git fetch --tag
     VER_IN_LH=$(git describe --tags --abbrev=0)
-    cd $WORKSPACE || exit 1
+    cd "$WORKSPACE" || exit 1
 
     # If not equal, time to update
     if [[ "$VER_IN_LH" != "$VER_IN_GL" ]]
