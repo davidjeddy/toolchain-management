@@ -43,7 +43,7 @@ function install_pip_localstack() {
 function install_pip_packages() {
     {
         printf "INFO: Install Python modules via PIP package manager using requirements.txt\n"
-        echo "export PATH=/home/david/.local/bin:$PATH" >> "${SESSION_SHELL}"
+        echo "export PATH=$HOME_USER_BIN:$PATH" >> "${SESSION_SHELL}"
 
         python -m ensurepip --upgrade
         pip install --upgrade pip

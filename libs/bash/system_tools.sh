@@ -182,10 +182,10 @@ function install_aws_session_manager_plugin() {
     printf "INFO: Processing AWS session-manager-plugin.\n"
 
     # >= 0.56.0 required
-    if [[ -d "$HOME/.local/bin/session-manager-plugin" ]]
+    if [[ -d "$HOME_USER_BIN/session-manager-plugin" ]]
     then
         printf "WARN: Removing AWS session-manager-plugin from old location.\n"
-        rm "$HOME/.local/bin/session-manager-plugin"
+        rm "$HOME_USER_BIN/session-manager-plugin"
     fi
 
     # shellcheck disable=SC2126

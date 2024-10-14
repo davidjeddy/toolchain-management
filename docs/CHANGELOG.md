@@ -12,6 +12,13 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.59.2] - 2024-10-10
+
+### FIX
+
+- Create dir path `$HOME_BIN_DIR` if not exists
+- Replace static `$HOME/.local/bin` with `$HOME_BIN_DIR`
+
 ## [0.58.1] - 2024-10-10
 
 ### FIX
