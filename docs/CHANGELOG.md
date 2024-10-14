@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.59.3] - 2024-10-14
+
+### FIX
+
+- `./libs/bash/git/install.sh` error `./versions.sh not found` error
+
 ## [0.59.2] - 2024-10-10
 
 ### FIX
