@@ -56,10 +56,8 @@ yes | sudo rm -rf "$HOME/.terraform.d/plugin-cache" || true
 
 printf "INFO: Removing all Toolchain managed tool binaries\n"
 
-# For 0.59.0
-yes | sudo rm -rf "$HOME/.local/bin/mavenn" || true
-yes | sudo rm -rf "$HOME/.local/bin/session-manager-plugin" || true
-yes | sudo rm -rf "$HOME/.local/bin/sonar-scanner" || true
+# For 0.59.6
+yes | sudo rm -rf "$HOME/.local/share/aquaproj-aqua" || true
 
 # For 0.56.0
 yes | sudo rm -rf /usr/bin/maven || true

@@ -38,7 +38,7 @@ function install_python_via_pyenv() {
         ./libs/bash/assets/pyenv.sh || exit 1
 
         # shellcheck disable=SC2143
-        if [[ -f ${SESSION_SHELL} && ! $(grep "export PYENV_ROOT" "${SESSION_SHELL}") ]]
+        if [[ ! $(grep "export PYENV_ROOT" "${SESSION_SHELL}") ]]
         then
             printf "INFO: Add pyenv bin dir to PATH via %s.\n" "${SESSION_SHELL}"
             # shellcheck disable=SC2016

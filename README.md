@@ -39,7 +39,7 @@ Engineer commits change to localhost git project -> toolchain triggered (pre-com
 
 - [Fedora](https://fedoraproject.org/)(recommended) or [RHEL](https://en.wikipedia.org/wiki/Red_Hat_Enterprise_Linux)(second option) based systems are the only distributions currently actively supported
   - UTM / [Installing Fedora Workstation 39 QEMU via UTM on DWS Apple M2 MacBook Pro](https://confluence.worldline-solutions.com/display/PPSTECHNO/Installing+Fedora+Workstation+38+on+DWS+Apple+M2+MacBook+Pro)
-  - VirtualBox / [Installing Fedora Workstation 38 Virtual Machine on DWS Workstation](https://confluence.techno.ingenico.com/display/PPS/Installing+Fedora+Workstatio+38+Virtual+Machine+on+DWS+Workstation)
+  - [Windows WSL](https://learn.microsoft.com/en-us/windows/wsl/install)
 - [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) >= 5.x
 - [Git](https://git-scm.com/) >= 2.x
 
