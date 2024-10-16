@@ -13,7 +13,7 @@ then
 fi
 
 function install_java_tools() {
-    printf "INFO: Processing Maven.\n"
+    printf "INFO: Processing Java Tools.\n"
     # [Maven](https://maven.apache.org/)
 
     if [[ ! $(which mvn) || $(mvn --version) != *${MAVEN_VER}* ]]

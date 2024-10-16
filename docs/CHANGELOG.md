@@ -12,6 +12,25 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.59.4] - 2024-10-14
+
+## ADD
+
+- Wrapped IaC KICS library in a function call
+- `keyring` PIP package
+
+## FIX
+
+- pip binary location is not explicitly set to `$HOME/.local`; similar to maven and sonar-scanner
+- `pip uninstall` now executed before install to ensure packages go into the correct location
+- Reference to Oracle VirtualBox to Windows WSL due to licensing issues with Oracle
+- Replaced `~/` with `$HOME` to better align with best practices
+- Aqua processes now better isolated between install of the tool and  install of the packages
+
+## REMOVE
+
+- `-f ${SESSION_SHELL} &&` from *env install logic as repetitive
+
 ## [0.59.3] - 2024-10-14
 
 ### FIX
