@@ -116,4 +116,4 @@ fi
 # Post-flight resets
 cd "$WORKSPACE" || exit 1
 
-printf "INFO: Done. Please reload your shell by running the following command: \"source %s\".\n" "$HOME/.bashrc"
+printf "INFO: Done. Please reload your shell by running the following command: \"source ~/.bashrc\".\n"

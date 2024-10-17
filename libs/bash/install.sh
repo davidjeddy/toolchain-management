@@ -131,17 +131,7 @@ if [[ ! "${WL_GC_TOOLCHAIN_AQUA_SKIP}" ]]
 then
     printf "INFO: Install Aqua tool management\n"
     # https://aquaproj.github.io/docs/products/aqua-installer#shell-script
-    # shellcheck disable=SC2143
-    if [[ ! $(grep "aquaproj-aqua" "${SESSION_SHELL}") ]]
-    then
-        printf "INFO: Add aquaproj-aqua bin dir to PATH via %s.\n" "${SESSION_SHELL}"
-        # shellcheck disable=SC2016
-        echo 'export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH"' >> "${SESSION_SHELL}"
-        # shellcheck disable=SC1090,SC1091
-        source "${SESSION_SHELL}" || exit 1
-        printf "INFO: PATH is %s\n" "$PATH"
-    fi
-
+    export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH"
     curl -sSfL -O https://raw.githubusercontent.com/aquaproj/aqua-installer/v3.0.1/aqua-installer
     echo "fb4b3b7d026e5aba1fc478c268e8fbd653e01404c8a8c6284fdba88ae62eda6a  aqua-installer" | sha256sum -c
 
@@ -152,23 +142,25 @@ fi
 if [[ ! "${WL_GC_TOOLCHAIN_AQUA_TOOLS_SKIP}" ]]
 then
     # shellcheck disable=SC2143
-    if [[ ! $(grep "AQUA_GLOBAL_CONFIG" "${SESSION_SHELL}") ]]
+    if [[ -f ${SESSION_SHELL} && ! $(grep "AQUA_GLOBAL_CONFIG" "${SESSION_SHELL}") ]]
     then
         printf "INFO: Setting global baseline aqua.yaml location in %s.\n" "${SESSION_SHELL}"
-        echo "export AQUA_GLOBAL_CONFIG=$HOME/.aqua/aqua.yaml" >> "${SESSION_SHELL}"
-        # shellcheck disable=SC1090,SC1091
-        source "${SESSION_SHELL}" || exit 1
-        # shellcheck disable=SC1090,SC1091
-        printf "INFO: AQUA_GLOBAL_CONFIG is %s\n" "$AQUA_GLOBAL_CONFIG"
+        echo "export AQUA_GLOBAL_CONFIG=~/.aqua/aqua.yaml" >> "${SESSION_SHELL}"
     fi
 
-    {
-        mkdir -p "$HOME/.aqua"
-        cp -rf "${WL_GC_TM_WORKSPACE}/aqua.yaml" "$HOME/.aqua/aqua.yaml"
-    } || {
-        printf "ERR: Failed copying Aqua configuration to user home.\n"
-        exit 1
-    }
+    # shellcheck disable=SC1090,SC1091
+    source "${SESSION_SHELL}" || exit 1
+
+    # shellcheck disable=SC1090,SC1091
+    printf "INFO: AQUA_GLOBAL_CONFIG is %s\n" "$AQUA_GLOBAL_CONFIG"
+    printf "INFO: PATH is %s\n" "$PATH"
+
+    # Global baseline tool versions - always reset on every run
+    # https://aquaproj.github.io/docs/reference/config/#configuration-file-path
+    rm -rf ~/.aqua || true
+    mkdir -p ~/.aqua
+    # shellcheck disable=SC2088
+    cp -rf "${WL_GC_TM_WORKSPACE}/aqua.yaml" ~/.aqua/aqua.yaml || exit 1
 
     which aqua
     aqua --version
@@ -182,17 +174,20 @@ then
 
     # shellcheck disable=SC2046
     tfenv install "$(cat .terraform-version)"
+
     # shellcheck disable=SC2046
     tfenv use "$(cat .terraform-version)"
 
     # shellcheck disable=SC2046
     tgenv install "$(cat .terragrunt-version)"
+
     mkdir -p "$HOME/.local/share/aquaproj-aqua/pkgs/github_archive/github.com/tgenv/tgenv/v$(cat .terragrunt-version)/tgenv-$(cat .terragrunt-version)" || exit 1
     cat .terragrunt-version > "$HOME/.local/share/aquaproj-aqua/pkgs/github_archive/github.com/tgenv/tgenv/v$(cat .terragrunt-version)/tgenv-$(cat .terragrunt-version)/version"
     tgenv use "$(cat .terragrunt-version)"
 
     # shellcheck disable=SC2046
     tofuenv install "$(cat .tofu-version)"
+
     # shellcheck disable=SC2046
     tofuenv use "$(cat .tofu-version)"
 
@@ -200,20 +195,56 @@ then
     source "./libs/bash/iac_tools.sh" || exit 1
 fi
 
+# wrap up
+
+# credentials configuration
+if [[ ! -f ~/.aws/credentials && $(whoami) != 'jenkins' ]]
+then
+    printf "INFO: Looks like you do not yet have a ~/.aws/credentials configured, pleaes run the AWS configuration process as detailed here https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html.\n"
+fi
+
+if [[ ! -f ~/.terraformrc && $(whoami) != 'jenkins' ]]
+then
+    printf "INFO: Looks like you do not yet have a ~/.terraformrc credentials configuration, please follow https://confluence.worldline-solutions.com/display/PPSTECHNO/Using+Shared+Modules+from+GitLab+Private+Registry before attempting to use Terraform or OpenTofu.\n"
+fi
+
+# Third, use *env tools to per-directory IAC tool default versions
+
+printf "INFO: Setting CLI *env tool versions.\n"
+
+# shellcheck disable=SC2046
+tfenv install "$(cat .terraform-version)"
+
+# shellcheck disable=SC2046
+tfenv use "$(cat .terraform-version)"
+
+# shellcheck disable=SC2046
+tgenv install "$(cat .terragrunt-version)"
+
+mkdir -p "$HOME/.local/share/aquaproj-aqua/pkgs/github_archive/github.com/tgenv/tgenv/v$(cat .terragrunt-version)/tgenv-$(cat .terragrunt-version)" || exit 1
+cat .terragrunt-version > "$HOME/.local/share/aquaproj-aqua/pkgs/github_archive/github.com/tgenv/tgenv/v$(cat .terragrunt-version)/tgenv-$(cat .terragrunt-version)/version"
+tgenv use "$(cat .terragrunt-version)"
+
+# shellcheck disable=SC2046
+tofuenv install "$(cat .tofu-version)"
+
+# shellcheck disable=SC2046
+tofuenv use "$(cat .tofu-version)"
+
 # Put an indicator of where the toolchain configurations end
 echo "# WL - GC - Centaurus - Toolchain Management Ending" >> "$SESSION_SHELL"
 
 # Return to origina location
 cd "$OLD_PWD" || exit 1
 
-if [[ ! -f $HOME/.aws/credentials && $(whoami) != 'jenkins' ]]
+if [[ ! -f ~/.aws/credentials && $(whoami) != 'jenkins' ]]
 then
-    printf "INFO: Looks like you do not yet have a %s configured, pleaes run the AWS configuration process as detailed here https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html.\n" "$HOME/.aws/credentials"
+    printf "INFO: Looks like you do not yet have a ~/.aws/credentials configured, pleaes run the AWS configuration process as detailed here https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html.\n"
 fi
 
-if [[ ! -f $HOME/.terraformrc && $(whoami) != 'jenkins' ]]
+if [[ ! -f ~/.terraformrc && $(whoami) != 'jenkins' ]]
 then
-    printf "INFO: Looks like you do not yet have a %s credentials configuration, pleaes follow https://confluence.worldline-solutions.com/display/PPSTECHNO/Using+Shared+Modules+from+GitLab+Private+Registry before attempting to use Terraf.\n" "$HOME/.terraformrc"
+    printf "INFO: Looks like you do not yet have a ~/.terraformrc credentials configuration, pleaes follow https://confluence.worldline-solutions.com/display/PPSTECHNO/Using+Shared+Modules+from+GitLab+Private+Registry before attempting to use Terraf.\n"
 fi
 
 printf "INFO: Done. Please reload your shell by running the following command: \"source %s\".\n" "$SESSION_SHELL"
