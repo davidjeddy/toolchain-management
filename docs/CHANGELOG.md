@@ -12,6 +12,13 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.60.0] - 2024-10-17
+
+## FIX
+
+- Restore the project to the last stable version (0.59.3) of revision number: 3eab9686b34704ca44cf6b6eeed9249a24bca3d6 
+- This restores all the files other than CHANGELOG.md, git history is not rewritten for this purpose
+
 ## [0.59.4] - 2024-10-14
 
 ## ADD

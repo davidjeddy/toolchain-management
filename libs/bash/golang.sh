@@ -25,7 +25,7 @@ function install_golang_via_goenv() {
         git clone --quiet "https://github.com/go-nv/goenv.git" "$HOME/.goenv"
 
         # shellcheck disable=SC2143
-        if [[ ! $(grep "export GOENV_ROOT" "${SESSION_SHELL}") ]]
+        if [[ -f ${SESSION_SHELL} && ! $(grep "export GOENV_ROOT" "${SESSION_SHELL}") ]]
         then
             printf "INFO: Add goenv bin dir to PATH via %s.\n" "${SESSION_SHELL}"
             # shellcheck disable=SC2016
@@ -78,6 +78,8 @@ function install_golang_via_goenv() {
         printf "ERR: Failed to install Golang via goenv.\n"
         exit 1
     fi
+
+    # -----
 
     which goenv
     goenv version
