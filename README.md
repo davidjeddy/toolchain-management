@@ -10,7 +10,6 @@
   - [Requirements / Supported Platforms](#requirements--supported-platforms)
   - [Tools List](#tools-list)
   - [Usage](#usage)
-    - [WARNING](#warning)
     - [Install](#install)
     - [Pipeline](#pipeline)
     - [Update](#update)
@@ -21,37 +20,34 @@
 
 ## Description
 
-Collection of resources and tools used to manage IAC projects.
+Collection of packages and tools used to manage projects.
 
 ## Important Notes
 
-This projects manipulates the $HOME/.bashrc of the login user. It is recommended to move all custom configurations into `~/.bashrc.d/*.sh` and reference it in `~/.bashrc`.
+- Language versions (Python, Golang, etc) are managed via the system package manager (>= 0.60.0)
+  - We do NOT want to abstract this to a *env helper. Replace the host, not the language version.
+- This projects manipulates the `$HOME/.bashrc` configuration file significantly. It is recommended to move all custom configurations into `~/.bashrc.d/*.sh`.
+- If you are running on Windows using WSL2:
+  - You MUST clone the project from INSIDE the WSL instance. NOT from the host Windows.
+  - SHOULD run `pip install keyring 25.4.1 && pip install keyrings.alt 5.0.2` to install a supported credentials backend for use with OneLogin
 
 ## Purpose
 
 To ensure compliance with community and security best practices via the shift-left pattern. This enables the presenting violations regarding organizational auditing, linting, security, and style guides as soon as an engineer attempts to save code. Additionally, toolchain has to ability to enforce the version of the tools installed. Ensure the engineering teams can stay up to date without messing around updating each to individually.
 
-Currently only localhost Fedora VM/QEMU and Jenkins RHEL pipeline tools are supported.
-
-Engineer commits change to localhost git project -> toolchain triggered (pre-commit hook) -> scanning tools execute -> if violations are found, the save is aborted
-
 ## Requirements / Supported Platforms
 
 - [Fedora](https://fedoraproject.org/)(recommended) or [RHEL](https://en.wikipedia.org/wiki/Red_Hat_Enterprise_Linux)(second option) based systems are the only distributions currently actively supported
   - UTM / [Installing Fedora Workstation 39 QEMU via UTM on DWS Apple M2 MacBook Pro](https://confluence.worldline-solutions.com/display/PPSTECHNO/Installing+Fedora+Workstation+38+on+DWS+Apple+M2+MacBook+Pro)
-  - VirtualBox / [Installing Fedora Workstation 38 Virtual Machine on DWS Workstation](https://confluence.techno.ingenico.com/display/PPS/Installing+Fedora+Workstatio+38+Virtual+Machine+on+DWS+Workstation)
+  - [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install)
 - [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) >= 5.x
 - [Git](https://git-scm.com/) >= 2.x
 
 ## Tools List
 
-For a complete list of tools provided please view ./aqua.yml, ./libs/bash/additional_tools.sh, ./libs/bash/language_runtimes.sh, ./libs/bash/system_tools.sh, and ./versions.sh
+For a complete list of tools provided please view the .*-version- files.
 
 ## Usage
-
-### WARNING
-
-- System packages managed by `apt`, `dnf`, or `yum` will be installed / updated to the  version listed in `versions.sh` or `libs/bash/*.sh` configurations.
 
 ### Install
 
@@ -60,7 +56,7 @@ cd /path/to/projects
 git clone ...
 cd toolchain-management
 ./libs/bash/install.sh
-source ~/.bashrc
+# start new shell session
 ```
 
 ### Pipeline
@@ -70,7 +66,7 @@ source ~/.bashrc
 
 ### Update
 
-Unlike the <= 0.50.0 release family of this project, it is no longer needed to pass CLI arguments to update the tools. Simply change the desired version number in `aqua.yaml`, `.*-version` or `VERSIONS.sh`. Then re-run the `./libs/bash/install.sh` to update tooling.
+Simply change the desired version number in the .*-version- file and re-run the install script.
 
 ## Options
 
@@ -81,13 +77,11 @@ Environmental variable overrides:
 
 Skip this section of the install process (may have unintended side effects):
 
-- WL_GC_TOOLCHAIN_AQUA_SKIP=true
-- WL_GC_TOOLCHAIN_AQUA_TOOLS_SKIP=true
-- WL_GC_TOOLCHAIN_GOLANG_SKIP=true
-- WL_GC_TOOLCHAIN_IAC_SKIP=true
+- WL_GC_TOOLCHAIN_ASDF_SKIP=true
+- WL_GC_TOOLCHAIN_ASDF_TOOLS_SKIP=true
+- WL_GC_TOOLCHAIN_IAC_TOOLS_SKIP=true
 - WL_GC_TOOLCHAIN_JAVA_TOOLS_SKIP=true
 - WL_GC_TOOLCHAIN_PIP_SKIP=true
-- WL_GC_TOOLCHAIN_PYTHON_SKIP=true
 - WL_GC_TOOLCHAIN_ROOT_OVERRIDE=true
 - WL_GC_TOOLCHAIN_SYSTEM_TOOLS_SKIP=true
 

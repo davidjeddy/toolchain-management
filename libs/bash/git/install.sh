@@ -1,9 +1,10 @@
 #!/bin/bash -l
 
+# preflight
+
 # set -exo pipefail # when debuggin
 set -eo pipefail
 
-# Enforce the session load like an interactive user
 # shellcheck disable=SC1091
 source "$HOME/.bashrc" || exit 1
 
@@ -15,19 +16,15 @@ fi
 # usage ./libs/bash/install.sh (optional) branch_name
 # example ./libs/bash/install.sh fix/ICON-39280/connect_preprod_module_revert_to_0_36_7_due_to_kms_permissions
 
-# Version: 0.8.3  - 2024-10-14 - FIX ./version/sh not found when running install process
+# Version: 0.8.3  - 2024-10-30 - Now possible to set WL_GC_TOOLCHAIN_BRANCH as an ENV VAR in additiona to providing the value as argument 1
+# Version: 0.8.3  - 2024-10-30 - De-coupling project install process and Toolchain install
 # Version: 0.8.2  - 2024-10-01 - ADD logic to skip tooling install if executed on a CI pipeline host
 # Version: 0.8.1  - 2024-07-16 - ADD logic to copy latest from toolchain to local project
 # Version: 0.8.0  - 2024-06-19 - UPDATED `git lfs` to less error prone `git-lfs`. Ensure non-interactive sessions act like interactive sessions.
 # Version: 0.7.0  - 2024-06-19 - UPDATED Toolchain source URL post migration to https://gitlab.kazan.myworldline.com/ SCM hosting
 # Version: 0.6.0  - 2024-05-24 - UPDATED Git hook symlink creation - David J Eddy
-# Version: 0.5.11 - 2024-05-06 - ADD Git feature checks - David J Eddy
-# Version: 0.5.10 - 2024-04-22
-# Version: 0.5.8  - 2024-03-19
 
-## vars
-
-### Configure required ENV VAR
+## config
 
 if [[ ! $WORKSPACE ]]
 then
@@ -35,10 +32,15 @@ then
     WORKSPACE=$(git rev-parse --show-toplevel)
     export WORKSPACE
 fi
+export WORKSPACE
 printf "INFO: WORKSPACE %s\n" "${WORKSPACE}"
 
-declare WL_GC_TOOLCHAIN_BRANCH
-WL_GC_TOOLCHAIN_BRANCH="main"
+if [[ ! $WL_GC_TOOLCHAIN_BRANCH ]]
+then
+    declare WL_GC_TOOLCHAIN_BRANCH
+    WL_GC_TOOLCHAIN_BRANCH="main"
+fi
+
 if [[ "$1" != "" ]]
 then
     WL_GC_TOOLCHAIN_BRANCH="${1}"
@@ -56,35 +58,36 @@ rm -rf "$WORKSPACE/.tmp" || exit 1
 printf "INFO: Clone toolchain-management project locally into %s/.tmp\n" "$(pwd)"
 git clone --quiet https://gitlab.kazan.myworldline.com/cicd/terraform/tools/toolchain-management.git "$WORKSPACE/.tmp/toolchain-management"
 
-# Even if main, checkout anyways
-cd "$WORKSPACE/.tmp/toolchain-management"
-git checkout "$WL_GC_TOOLCHAIN_BRANCH" --force
-cd "$WORKSPACE" || exit 1
+if [[ $WL_GC_TOOLCHAIN_BRANCH != "main" ]]
+then
+    cd "$WORKSPACE/.tmp/toolchain-management"
+    git checkout "$WL_GC_TOOLCHAIN_BRANCH" --force
+    cd "$WORKSPACE" || exit 1
+fi
 
 # Troubleshooting reminder
 if [[ ! $BUILD_URL && $(whoami) == "jenkins" ]]
 then
-    printf "WARN: Are you logged in as the Jenkins user trying to troubleshoot the pipeline? You MUST 'export BUILD_URL=\"some_value\"' to emulate a automated pipeline execution.\n"
-    exit 0
+    printf "WARN: Are you logged in as the Jenkins user trying to troubleshoot the pipeline? You MUST 'export BUILD_URL=\"some_value\"' to emulate an automated pipeline execution.\n"
+    exit 1
 fi
 if [[ ! $CI_JOB_URL && $(whoami) == "gitlab" ]]
 then
-    printf "WARN: Are you logged in as the Jenkins user trying to troubleshoot the pipeline? You MUST 'export CI_JOB_URL=\"some_value\"' to emulate a automated pipeline execution.\n"
-    exit 0
+    printf "WARN: Are you logged in as the GitLab user trying to troubleshoot the pipeline? You MUST 'export CI_JOB_URL=\"some_value\"' to emulate an automated pipeline execution.\n"
+    exit 1
 fi
 
-# DO NOT execute the install process if running in CI pipeline.
-# BUILD_URL is for Jenkins, (CI_JOB_URL)[] is for (GitLab)[https://docs.gitlab.com/ee/ci/variables/predefined_variables.html]
+# For convience we allow projects to also trigger the TC install process only if NOT on an automation host
+# BUILD_URL indicates (Jenkins)[]
+# CI_JOB_URL indicates (GitLab)[https://docs.gitlab.com/ee/ci/variables/predefined_variables.html]
+# Do not allow in either case; we are de-coupling the TC project from downstream projects
 if [[ ! $BUILD_URL && ! $CI_JOB_URL ]]
 then
     printf "INFO: Execute toolchain-management tooling installer...\n"
-    cd "$WORKSPACE/.tmp/toolchain-management"
-    # We want to be inside the toolchain to support local dir dependencies
-    ./libs/bash/install.sh "$@"
-    cd "$WORKSPACE"
+    "$WORKSPACE/.tmp/toolchain-management/libs/bash/install.sh" "$@"
 fi
 
-# create symlink for each hook found
+# create symlink for each Git hook found
 declare GIT_HOOKS
 GIT_HOOKS=$(find "$WORKSPACE/.tmp/toolchain-management/libs/bash/git/hooks" -maxdepth 1 -type f | sed "s/.*\///")
 for HOOK in $GIT_HOOKS
@@ -116,4 +119,4 @@ fi
 # Post-flight resets
 cd "$WORKSPACE" || exit 1
 
-printf "INFO: Done. Please reload your shell by running the following command: \"source ~/.bashrc\".\n"
+printf "INFO: Done. Please reload your shell by running the following command: %s\n" "source ~/.bashrc"

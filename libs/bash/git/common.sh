@@ -26,9 +26,9 @@ fi
 function autoUpdate() {
     printf "INFO: starting autoUpdate()\n"
 
-    # GitLab Pat token from ~/.terraformrc
+    # GitLab Pat token from $HOME/.terraformrc
     local GITLAB_TOKEN
-    GITLAB_TOKEN=$(grep -A 1 'gitlab.kazan.myworldline.com' ~/.terraformrc | sed -n '2 p' | awk '{print $3}' | jq -rM '.')
+    GITLAB_TOKEN=$(grep -A 1 'gitlab.kazan.myworldline.com' $HOME/.terraformrc | sed -n '2 p' | awk '{print $3}' | jq -rM '.')
 
     # Check if remote is avaiable
     declare GL_HTTP_RES
@@ -322,7 +322,7 @@ function iacCompliance() {
                 --output-name "junit-kics" \
                 --output-path ".tmp" \
                 --path "$filesToScan" \
-                --queries-path ~/.kics-installer/target_query_libs/terraform/aws/ \
+                --queries-path "$HOME/.kics-installer/target_query_libs/terraform/aws/" \
                 --report-formats "junit" \
                 --type "Terraform" \
                 --verbose \
@@ -336,7 +336,7 @@ function iacCompliance() {
                 --output-name "junit-kics" \
                 --output-path ".tmp" \
                 --path "$filesToScan" \
-                --queries-path ~/.kics-installer/target_query_libs/terraform/aws/ \
+                --queries-path "$HOME/.kics-installer/target_query_libs/terraform/aws/" \
                 --report-formats "junit" \
                 --type "Terraform" \
                 --verbose \

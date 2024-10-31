@@ -1,45 +1,34 @@
 #!groovy
 /* groovylint-disable CompileStatic, DuplicateMapLiteral, DuplicateStringLiteral, GStringExpressionWithinString, LineLength, NestedBlockDepth, UnnecessaryGString, UnusedImport */
 
-//- Library Imports
-@Library('jenkins-pipeline-lib')
-import com.ingenico.epayments.ci.common.Slack
-
 // configuration vars
 
 Number jobTimeout           = 30
 String artifactNumToKeepStr = '7'
-// Intentionally left blank
 String githubPat            = 'GH_PAT'
 String gitlabApiPat         = 'gitlab-kazan-technical-api-token'
 String gitlabConnectionName = 'gitlab.kazan.myworldline.com'
 String gitlabGitSa          = 'cicd-technical-user'
 String gitlabProjectId      = 78445
 String gitTargetBranch      = 'main'
-// String jenkinsNodeLabels    = 'ec2 && fedora && toolchain'
-String workerNode           = 'bambora-aws-slave-terraform'
+String jenkinsNodeLabels    = 'aws && ec2 && fedora && toolchain'
 String numToKeepStr         = '7'
+String shellPreamble        = 'set -eo pipefail; if [[ $LOG_LEVEL == "TRACE" ]]; then set -x; fi; if [[ -f "$HOME/.bashrc" ]]; then source "$HOME/.bashrc"; fi;'
 String slackChannel         = 'nl-pros-centaurus-squad-releases'
-String slackMsgSourceAcct   = ':jenkins:'
+String slackWebhook         = 'SlackWebhook'
 
-// global scope container vars
-
-// No need to edit below this line
-
-// helper functions
-
-// execution
+// logic
 
 pipeline {
     agent { // https://digitalvarys.com/jenkins-declarative-pipeline-with-examples/
-        node workerNode
-        // node {
-        //     label jenkinsNodeLabels
-        // }
+        node {
+            label jenkinsNodeLabels
+        }
     }
     environment {
-        GITLAB_CREDENTIALSID = credentials("${gitlabApiPat}")
-        GITHUB_TOKEN = credentials("${githubPat}")
+        GITHUB_TOKEN            = credentials("${githubPat}")
+        GITLAB_CREDENTIALSID    = credentials("${gitlabApiPat}")
+        SLACK_WEBHOOK           = credentials("${slackWebhook}")
     }
     options { // https://www.jenkins.io/doc/book/pipeline/syntax/#options
         ansiColor('xterm')
@@ -53,51 +42,46 @@ pipeline {
     parameters { // https://www.jenkins.io/doc/book/pipeline/syntax/#parameters
         string(name: 'TOOLCHAIN_BRANCH', defaultValue: 'main')
     }
-    post {
-        // always, changed, fixed, regression, aborted, failure, success, unstable, unsuccessful, and cleanup
+    post { // always, changed, fixed, regression, aborted, failure, success, unstable, unsuccessful, and cleanup
         failure {
             script {
                 if (env.gitlabBranch == gitTargetBranch) {
-                    // if main, send to nl-pros-equad-releases
-                    object slack = new Slack(this.steps, this.env)
-                    slack.slackNotification(
-                        slackChannel,
-                        slackMsgSourceAcct,
-                        env.JOB_NAME + 'Build FAILED.\n${env.BUILD_URL}console',
-                        ':tada:'
-                    )
+                    sh(shellPreamble + '''
+                        curl \
+                            --data "channel=''' + slackChannel + '''" \
+                            --data "emoji=:pipeline-failed: " \
+                            --data "text=''' + env.JOB_NAME + ''' build FAILED.\n''' + env.BUILD_URL + '''console." \
+                            --header "Authorization: Bearer ''' + env.SLACK_WEBHOOK + '''" \
+                            --request POST "https://slack.com/api/chat.postMessage"
+                    ''')
                 }
             }
-            // https://www.jenkins.io/doc/pipeline/steps/gitlab-plugin/
-            /* groovylint-disable-next-line DuplicateMapLiteral, DuplicateStringLiteral */
             updateGitlabCommitStatus name: 'build', state: 'failed'
         }
         fixed {
             script {
                 if (env.gitlabBranch == gitTargetBranch) {
-                    // if main, send to nl-pros-equad-releases
-                    object slack = new Slack(this.steps, this.env)
-                    slack.slackNotification(
-                        slackChannel,
-                        slackMsgSourceAcct,
-                        env.JOB_NAME + 'Build FIXED.\n${env.BUILD_URL}console',
-                        ':tada:'
-                    )
+                    sh(shellPreamble + '''
+                        curl \
+                            --data "channel=''' + slackChannel + '''" \
+                            --data "emoji=:tada: " \
+                            --data "text=''' + env.JOB_NAME + ''' build FIXED.\n''' + env.BUILD_URL + '''console." \
+                            --header "Authorization: Bearer ''' + env.SLACK_WEBHOOK + '''" \
+                            --request POST "https://slack.com/api/chat.postMessage"
+                    ''')
                 }
             }
-            /* groovylint-disable-next-line DuplicateMapLiteral, DuplicateStringLiteral */
             updateGitlabCommitStatus name: 'build', state: 'success'
         }
         success {
-            /* groovylint-disable-next-line DuplicateStringLiteral */
             updateGitlabCommitStatus name: 'build', state: 'success'
         }
         unstable {
-            /* groovylint-disable-next-line DuplicateMapLiteral, DuplicateStringLiteral */
             updateGitlabCommitStatus name: 'build', state: 'failed'
         }
     }
     stages {
+        // Generic stages, used on most pipelines
         stage('Notification') {
             steps {
                 script {
@@ -105,16 +89,7 @@ pipeline {
                         credentialsId:  gitlabApiPat,
                         variable:       'gitlabPAT'
                     )]) {
-                        sh('''#!/bin/bash
-                            set -eo pipefail
-                            # shellcheck disable=SC1091
-                            source "$HOME/.bashrc" || exit 1
-
-                            if [[ $LOG_LEVEL == "TRACE" ]]
-                            then
-                                set -x
-                            fi
-
+                        sh(shellPreamble + '''
                             curl \
                                 --form "note=# Build Pipeline\n\nNumber: ${BUILD_NUMBER}\n\nUrl: ${BUILD_URL}console" \
                                 --header "PRIVATE-TOKEN: ''' +  env.gitlabPAT + '''" \
@@ -130,7 +105,7 @@ pipeline {
                 cleanWs()
             }
         }
-        stage('System ENV VARs') {
+        stage('ENV VARs') {
             steps {
                 sh('''#!/bin/bash
                     set -eo pipefail
@@ -158,50 +133,26 @@ pipeline {
                     url: env.GIT_URL
             }
         }
-        // Project specific stages
-        stage('Reset Host') {
+        // Project specific stages, special logic for this project
+        stage('Reset') {
             steps {
                 script {
-                    if (env.BRANCH_NAME == 'main') { // re/install only if on main branch
-                        sh('''#!/bin/bash
-                            set -eo pipefail
-                            # shellcheck disable=SC1091
-                            source "$HOME/.bashrc" || exit 1
-
-                            if [[ $LOG_LEVEL == "TRACE" ]]
-                            then
-                                set -x
-                            fi
-
-                            # RHEL (aws-bambora node) - TODO Remove after RHEL nodes destroyed
-                            if [[ $(cat /etc/*release) != "Red Hat Enterprise Linux Server 7.9"* ]]
-                            then
-                                cp ~/.bashrc.bckp ~/.bashrc
-                            else
-                                ${WORKSPACE}/libs/bash/reset.sh
-                            fi
+                    if (env.BRANCH_NAME == 'main') { // only if on main branch
+                        sh(shellPreamble + '''
+                            ${WORKSPACE}/libs/bash/reset.sh
                         ''')
                     }
                 }
             }
         }
-        stage('Install Dependencies') {
+        stage('Install') {
             steps {
                 script {
-                    if (env.BRANCH_NAME == 'main') { // re/install only if on main branch
+                    if (env.BRANCH_NAME == 'main') { // only if on main branch
                         withCredentials([
                             gitUsernamePassword(credentialsId: gitlabGitSa)
                         ]) {
-                            sh('''#!/bin/bash
-                                set -eo pipefail
-                                # shellcheck disable=SC1091
-                                source "$HOME/.bashrc" || exit 1
-
-                                if [[ $LOG_LEVEL == "TRACE" ]]
-                                then
-                                    set -x
-                                fi
-
+                            sh(shellPreamble + '''
                                 ${WORKSPACE}/libs/bash/install.sh ''' + params.TOOLCHAIN_BRANCH + '''
                             ''')
                         }
@@ -209,9 +160,9 @@ pipeline {
                 }
             }
         }
-   }
+    }
     triggers {
-        cron(env.BRANCH_NAME == gitTargetBranch ?  'H 3 * * 1-5' : '')
-        pollSCM(env.BRANCH_NAME == gitTargetBranch ? 'H 3 * * 1-5' : '')
+        cron(env.BRANCH_NAME == gitTargetBranch ?  'H 8 30 * 1-5' : '')
+        pollSCM(env.BRANCH_NAME == gitTargetBranch ? 'H 8 25 * 1-5' : '')
     }
 }

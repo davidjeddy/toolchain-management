@@ -12,38 +12,10 @@ then
     set -x
 fi
 
-function install_pip_localstack() {
-    # DO NOT INSTALL LocalStack on RHEL 7 machines
-    if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
-    then
-        printf "WARN: NOT installing LocalStack on Red Hat hosts to unsupported host OS.\n"
-        return 0
-    fi
-
-    # Check for valid user
-    if [[ $(whoami) == "jenkins" || $(whoami) == "root" ]]
-    then
-
-
-        # Different install configuration depending on host type
-        if [[ $(cat /etc/*release) == *"Cloud Edition"* || $(cat /etc/*release) == *"Workstation Edition"* ]]
-        then
-            printf "INFO: Install localstack on Cloud or Workstation host.\n"
-            pip install --user localstack
-        elif [[ $(cat /etc/*release) == *"Container Edition"* ]]
-        then
-            printf "INFO: Install localstack in Container host. This can take a LONG time.\n"
-            pip install --user localstack[runtime]
-        else
-            printf "WARN: Unable to determine host type. Skipping Localstack install.\n"
-        fi
-    fi
-}
-
 function install_pip_packages() {
     {
         printf "INFO: Install Python modules via PIP package manager using requirements.txt\n"
-        echo "export PATH=$HOME_USER_BIN:$PATH" >> "${SESSION_SHELL}"
+        echo "export PATH=$HOME_USER_BIN:\$PATH" >> "${SESSION_SHELL}"
 
         python -m ensurepip --upgrade
         pip install --upgrade pip
@@ -53,9 +25,25 @@ function install_pip_packages() {
         exit 1
     }
 
+    # localstack installs differently for bare metal VS container install
+    # TODO deploy localstack as a stand alone service in the ECS cluster
+    # pipeline -> launch localstack (stand alone) task w/ TTL of 1hr -> destroy on pipeline exit
+    if [[ $(whoami) == "jenkins" || $(whoami) == "root" ]]
+    then
+        declare LS_VER
+        LS_VER=""
+
+        if [[ $(cat /etc/*release) == *"Container Edition"* ]]
+        then
+            printf "INFO: Install localstack in Container host. This can take a LONG time.\n"
+            LS_VER="[runtime]"
+        fi
+
+        pip install --user localstack"$LS_VER"
+    fi
+
     which pip
     pip --version
 }
 
 install_pip_packages
-install_pip_localstack

@@ -41,19 +41,19 @@ fi
 # Execution
 
 {
-    for DIR in $(pwd)/*/ # list directories in the form "/tmp/dirname/"
+    for DIR in $(pwd)
     do
         DIR=${DIR%*/} # remove the trailing "/"
         printf "INFO: Processing directory %s\n" "${DIR##*/}" # print everything after the final "/"
 
         printf "INFO: Changing into %s\n" "$DIR"
-        cd $DIR || exit 1
+        cd "$DIR" || exit 1
 
         rm -rf .terra*
         terraform init
         terraform plan
 
-        if [[ $TF_APPLY == "true"]]
+        if [[ $TF_APPLY == "true" ]]
         then
             terraform apply --auto-approve
         fi
