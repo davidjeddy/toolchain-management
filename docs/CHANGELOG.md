@@ -12,6 +12,16 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.1] - 2024-10-30
+
+### FIX
+
+- `$HOME_USER_BIN` should not be escaped when used in the path for sonar-scanner
+
+### REMOVE
+
+- Regarding ENV VAR `TF_PLUGIN_CACHE_DIR` we do not put trailing slashes in paths
+
 ## [0.61.0] - 2024-10-25
 
 ### ADD
