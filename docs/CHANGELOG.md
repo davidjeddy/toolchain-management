@@ -12,6 +12,32 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.0] - 2024-10-25
+
+### ADD
+
+- `asdf` as the user space package manager
+- `jenkins_user_patches` as a place to hold CI/CD/CR user specific configurations
+- Podman configuration now includes enables lingering sessions and registry configuration
+
+### FIX
+
+- `./libs/bash/git/install.sh` informational outputs updated to reflect effort to decouple TC from downstream install processes
+- `Jenkinsfile` now has a `shellPreamble` to abstract commonly used setup commands
+- AWS Session Manager plugin now installed via `curl` and `dnf`, no more `rpm` dependency
+- IaC related helper scripts to `./libs/iac/*.sh`
+
+### REMOVE
+
+- `./libs/bash/python.sh` as no longer used, Python3 installed via `dnf`
+- `apt` system package management from `system_tools.sh` as no longer supported
+- `aqua` as the user space package manager due to incompatibility with egress Network firewall and TLS session management
+- `pip3` to `pip` symlinking as no longer supported, use `pip3` directly
+- `python3` to `python` symlinking as no longer supported, use `python3` directly
+- `yum` system package management from `system_tools.sh` as no longer supported
+- Dependency on the `jenkins-pipeline-lib` as the slack notification no longer works as expected; using raw `curl` instead
+- RedHat Linux 7* support as no longer supported
+
 ## [0.60.0] - 2024-10-17
 
 ## FIX
@@ -598,7 +624,7 @@ Action Keywords:
 
 ### FIX
 
-- Missing execution permission on `libs/bash/common/publish_iac_module_version.sh`
+- Missing execution permission on `libs/bash/iac/publish_iac_module_version.sh`
 
 ## [0.51.17] - 2024-05-14
 

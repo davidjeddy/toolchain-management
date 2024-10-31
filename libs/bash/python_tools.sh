@@ -1,0 +1,71 @@
+#!/bin/bash -l
+
+## configuration
+
+set -eo pipefail
+
+# shellcheck disable=SC1090
+source "$SESSION_SHELL" || exit 1
+
+if [[ $LOG_LEVEL == "TRACE" ]]
+then 
+    set -x
+fi
+
+# pre-lfight
+
+# logic
+
+function install_python_tools_package_localstack() {
+    # Check for valid user
+    {
+        if [[ $(whoami) == "jenkins" || $(whoami) == "root" ]]
+        then
+            # Different install configuration depending on host type
+            if [[ $(cat /etc/*release) == *"Cloud Edition"* || $(cat /etc/*release) == *"Workstation Edition"* ]]
+            then
+                printf "INFO: Install localstack on Cloud or Workstation host.\n"
+                pip install \
+                    --prefix "$HOME/.local" \
+                    localstack
+            elif [[ $(cat /etc/*release) == *"Container Edition"* ]]
+            then
+                printf "INFO: Install localstack in Container host. This can take a LONG time.\n"
+                pip install \
+                    --prefix "$HOME/.local" \
+                    localstack[runtime]
+            else
+                printf "WARN: Unable to determine host type. Skipping Localstack install.\n"
+            fi
+        fi
+    } || {
+        printf "WARN: Unable to determine host type. Skipping Localstack install.\n"
+        exit 1
+    }
+}
+
+function install_python_tools_packages() {
+    {
+        printf "INFO: Install Python modules via pip package manager using requirements.txt\n"
+        echo "export PATH=$HOME_USER_BIN:\$PATH" >> "${SESSION_SHELL}"
+
+        pip install \
+            --prefer-binary \
+            --prefix "$HOME/.local" \
+            --requirement requirements.txt
+    } || {
+        printf "ERR: Failed to install pip packages\n"
+        exit 1
+    }
+}
+
+
+sudo dnf reinstall -y python3-pip
+
+which pip
+pip --version
+
+install_python_tools_package_localstack
+install_python_tools_packages
+
+pip list --verbose

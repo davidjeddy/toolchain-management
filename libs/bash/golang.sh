@@ -31,7 +31,7 @@ function install_golang_via_goenv() {
             # shellcheck disable=SC2016
             {
                 echo 'export GOENV_ROOT="$HOME/.goenv"'
-                echo 'export PATH="$GOENV_ROOT/bin:$GOENV_ROOT/shims:$PATH"'
+                echo 'export PATH="$GOENV_ROOT/bin:$GOENV_ROOT/shims:\$PATH"'
                 echo 'eval "$(goenv init -)"'
             } >> "${SESSION_SHELL}"
         fi

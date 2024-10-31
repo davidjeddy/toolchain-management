@@ -12,55 +12,15 @@ then
     set -x
 fi
 
+# pre-lfight
+
+# logic
+
 function install_java_tools() {
-    printf "INFO: Processing Maven.\n"
-    # [Maven](https://maven.apache.org/)
-
-    if [[ ! $(which mvn) || $(mvn --version) != *${MAVEN_VER}* ]]
-    then
-        if [[ $(cat "$SESSION_SHELL") != *"$HOME_USER_BIN/maven/bin"* ]]
-        then
-            printf "INFO: Maven bin location not in PATH, adding...\n"
-            echo "export PATH=\"$HOME_USER_BIN/maven/bin:\$PATH\"" >> "${SESSION_SHELL}"
-            # shellcheck disable=SC1090
-            source "${SESSION_SHELL}"
-        fi
-
-        curl \
-            --location \
-            --output "apache-maven-${MAVEN_VER}-bin.tar.gz" \
-            --show-error \
-            "https://downloads.apache.org/maven/maven-3/${MAVEN_VER}/binaries/apache-maven-${MAVEN_VER}-bin.tar.gz"
-        curl \
-            --location \
-            --output "apache-maven-${MAVEN_VER}-bin.tar.gz.sha512" \
-            --show-error \
-            "https://downloads.apache.org/maven/maven-3/${MAVEN_VER}/binaries/apache-maven-${MAVEN_VER}-bin.tar.gz.sha512"
-
-        declare CALCULATED_CHECKSUM
-        CALCULATED_CHECKSUM=$(sha512sum "apache-maven-${MAVEN_VER}-bin.tar.gz" | awk '{print $1}')
-        # shellcheck disable=SC2143
-        if [[ $(grep -q "${CALCULATED_CHECKSUM}" "apache-maven-${MAVEN_VER}-bin.tar.gz.sha512") ]]
-        then
-            printf "ERR: Calculated checksum not found in provided list. Possible tampering with the archive. Aborting Maven install.\n"
-            exit 1
-        fi
-
-        # Not impressed that Maven does not have a pre-compiled binary
-        tar xvzf "apache-maven-${MAVEN_VER}-bin.tar.gz"
-        mv --force "apache-maven-${MAVEN_VER}" "$HOME_USER_BIN/maven"
-        rm -rf apache*
-
-        which mvn
-        mvn --version
-    fi
-
-    # -----
-
     printf "INFO: Processing SonarQube Scanner.\n"
     # [SonarQube Scanner](https://docs.sonarsource.com/sonarqube/latest/)
 
-    if [[ ! $(which sonar-scanner) || $(sonar-scanner --version) != *${SONARQUBE_SCANNER_VER}* ]]
+    if [[ ! $(which sonar-scanner) || $(sonar-scanner --version) != *$(cat "$WL_GC_TM_WORKSPACE"/.sonarqube-scanner-version)* ]]
     then
         # sonar-scanner does not like QEMU (Linux/Unix KVM) hosts
         # https://unix.stackexchange.com/questions/89714/easy-way-to-determine-the-virtualization-technology-of-a-linux-machine
@@ -76,42 +36,48 @@ function install_java_tools() {
             fi
         fi
 
+        # Remove existing dir if exists
+        rm -rf "$HOME_USER_BIN/sonar-scanner" || true
+
         if [[ $(cat "$SESSION_SHELL") != *"$HOME_USER_BIN/sonar-scanner/bin"*  ]]
         then
             printf "INFO: sonar-scanner bin location not in PATH, adding...\n"
-            echo "export PATH=\"$HOME_USER_BIN/sonar-scanner/bin:\$PATH\"" >> "${SESSION_SHELL}"
+            echo "export PATH=\$HOME_USER_BIN/sonar-scanner/bin:\$PATH" >> "${SESSION_SHELL}"
             # shellcheck disable=SC1090
             source "${SESSION_SHELL}"
         fi
 
         curl \
             --location \
-            --output "sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip" \
+            --output "sonar-scanner-cli-$(cat "$WL_GC_TM_WORKSPACE"/.sonarqube-scanner-version)-linux.zip" \
             --show-error \
-            "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip"
+            "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$(cat "$WL_GC_TM_WORKSPACE"/.sonarqube-scanner-version)-linux.zip"
         curl \
             --location \
-            --output "sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip.sha256" \
+            --output "sonar-scanner-cli-$(cat "$WL_GC_TM_WORKSPACE"/.sonarqube-scanner-version)-linux.zip.sha256" \
             --show-error \
-            "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip.sha256"
+            "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$(cat "$WL_GC_TM_WORKSPACE"/.sonarqube-scanner-version)-linux.zip.sha256"
 
         declare CALCULATED_CHECKSUM
-        CALCULATED_CHECKSUM=$(sha512sum "sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip" | awk '{print $1}')
+        CALCULATED_CHECKSUM=$(sha512sum "sonar-scanner-cli-$(cat "$WL_GC_TM_WORKSPACE"/.sonarqube-scanner-version)-linux.zip" | awk '{print $1}')
         # shellcheck disable=SC2143
-        if [[ $(grep -q "${CALCULATED_CHECKSUM}" "sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip.sha256") ]]
+        if [[ $(grep -q "${CALCULATED_CHECKSUM}" "sonar-scanner-cli-$(cat "$WL_GC_TM_WORKSPACE"/.sonarqube-scanner-version)-linux.zip.sha256") ]]
         then
             printf "ERR: Calculated checksum not found in provided list. Possible tampering with the archive. Aborting sonar-scanner install.\n"
             exit 1
         fi
 
         # Not impressed that Maven does not have a pre-compiled binary
-        unzip "sonar-scanner-cli-${SONARQUBE_SCANNER_VER}-linux.zip"
-        mv --force "sonar-scanner-${SONARQUBE_SCANNER_VER}-linux" "$HOME_USER_BIN/sonar-scanner"
+        unzip "sonar-scanner-cli-$(cat "$WL_GC_TM_WORKSPACE"/.sonarqube-scanner-version)-linux.zip"
+        mv --force "sonar-scanner-$(cat "$WL_GC_TM_WORKSPACE"/.sonarqube-scanner-version)-linux" "$HOME_USER_BIN/sonar-scanner"
         rm -rf sonar-scanner-*
 
         which sonar-scanner
         sonar-scanner --version
     fi
 }
+
+which java
+java --version
 
 install_java_tools

@@ -39,10 +39,10 @@ NOW_TIME=$(date +%s)
 printf "INFO: Processing branchs...\n"
 
 # `for/do` loops words, `while/read` loops lines. We want to loop per line
-printf "$BRANCHES" | while read -r BRANCH
+printf "%s" "$BRANCHES" | while read -r BRANCH
 do
     declare BRANCH_NAME
-    BRANCH_NAME=$(echo $BRANCH | awk '{print $2}')
+    BRANCH_NAME=$(echo "$BRANCH" | awk '{print $2}')
     # printf 'BRANCH_NAME: %s\n' "$BRANCH_NAME"
 
     if [[ $BRANCH_NAME ==  'main' || $BRANCH_NAME == 'master' ]]
@@ -52,7 +52,7 @@ do
     fi
 
     declare BRANCH_TIME 
-    BRANCH_TIME=$(echo $BRANCH | awk '{print $1}')
+    BRANCH_TIME=$(echo "$BRANCH" | awk '{print $1}')
     # printf 'BRANCH_TIME: %s\n' "$BRANCH_TIME"
 
     declare TIME_DIFF

@@ -23,7 +23,7 @@ declare TOKEN
 
 if [[ ! $1 ]]
 then
-  printf "FATAL: Expecting argument one to be account name from ~/.onelogin-aws.config. Exiting.\n"
+  printf "FATAL: Expecting argument one to be account name from %s. Exiting.\n" "$HOME/.onelogin-aws.config"
   exit 1
 fi
 OLI_PROFILE="$1"
