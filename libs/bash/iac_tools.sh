@@ -126,8 +126,8 @@ function install_kics_query_library() {
     then
         # source https://www.tailored.cloud/devops/cache-terraform-providers/
         printf "INFO: Configuring Terraform provider shared cache.\n"
-        mkdir -p "$HOME/.terraform.d/plugin-cache/" || true
-        echo "export TF_PLUGIN_CACHE_DIR=$HOME/.terraform.d/plugin-cache/" >> "${SESSION_SHELL}"
+        mkdir -p "$HOME/.terraform.d/plugin-cache" || true
+        echo "export TF_PLUGIN_CACHE_DIR=$HOME/.terraform.d/plugin-cache" >> "${SESSION_SHELL}"
     fi
 
     # WARNs

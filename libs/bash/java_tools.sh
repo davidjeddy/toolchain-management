@@ -42,7 +42,7 @@ function install_java_tools() {
         if [[ $(cat "$SESSION_SHELL") != *"$HOME_USER_BIN/sonar-scanner/bin"*  ]]
         then
             printf "INFO: sonar-scanner bin location not in PATH, adding...\n"
-            echo "export PATH=\$HOME_USER_BIN/sonar-scanner/bin:\$PATH" >> "${SESSION_SHELL}"
+            echo "export PATH=$HOME_USER_BIN/sonar-scanner/bin:\$PATH" >> "${SESSION_SHELL}"
             # shellcheck disable=SC1090
             source "${SESSION_SHELL}"
         fi
