@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-## configuration
+# preflight
 
 set -eo pipefail
 
@@ -12,9 +12,9 @@ then
     set -x
 fi
 
-# pre-lfight
+# configuration
 
-# logic
+# functions
 
 function asdf_tools_install() {
     # Since we use this CLI invocatin we can not (currently) have comments in the source file so here is what we would have
@@ -28,6 +28,8 @@ function asdf_tools_install() {
     asdf install
     asdf reshim
 }
+
+# logic
 
 asdf_tools_install
 

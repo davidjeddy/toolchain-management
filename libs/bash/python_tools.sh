@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-## configuration
+# preflight
 
 set -eo pipefail
 
@@ -12,9 +12,9 @@ then
     set -x
 fi
 
-# pre-lfight
+# configuration
 
-# logic
+# functions
 
 function install_python_tools_package_localstack() {
     # Check for valid user
@@ -28,18 +28,21 @@ function install_python_tools_package_localstack() {
                 pip install \
                     --prefix "$HOME/.local" \
                     localstack
-            elif [[ $(cat /etc/*release) == *"Container Edition"* ]]
+            elif [[ $(cat /etc/*release) == *"Container Image"* ]]
             then
                 printf "INFO: Install localstack in Container host. This can take a LONG time.\n"
                 pip install \
                     --prefix "$HOME/.local" \
                     localstack[runtime]
+                # pip install \
+                #     --prefix "$HOME/.local" \
+                #     --requirements ./libs/bash/localstack_runtime_requirements.txt \
             else
-                printf "WARN: Unable to determine host type. Skipping Localstack install.\n"
+                printf "WARN: Unable to determine host type. Skipping localstack install.\n"
             fi
         fi
     } || {
-        printf "WARN: Unable to determine host type. Skipping Localstack install.\n"
+        printf "ERR: Unable to install localstack.\n"
         exit 1
     }
 }
@@ -59,8 +62,7 @@ function install_python_tools_packages() {
     }
 }
 
-
-sudo dnf reinstall -y python3-pip
+# logic
 
 which pip
 pip --version

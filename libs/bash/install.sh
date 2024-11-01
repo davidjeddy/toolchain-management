@@ -2,18 +2,17 @@
 
 # preflight
 
-# set -exo pipefail # when debuggin
 set -eo pipefail
 
-# shellcheck disable=SC1091
-source "$HOME/.bashrc" || exit 1
+# shellcheck disable=SC1090
+# source "$SESSION_SHELL" || exit 1 # We can not yet do this. See line #49
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
     set -x
 fi
 
-# preflight
+# configuration
 
 declare OLD_PWD
 OLD_PWD="$(pwd)"
@@ -66,15 +65,19 @@ fi
 export HOME_USER_BIN
 printf "INFO: HOME_USER_BIN is %s\n" "${HOME_USER_BIN}"
 
-## functions
+# functions
 
-## logic
+# logic
+
+### system packages
 
 if [[ ! "${WL_GC_TOOLCHAIN_SYSTEM_TOOLS_SKIP}" ]]
 then
     # shellcheck disable=SC1090,SC1091
     source "./libs/bash/system_tools.sh" || exit 1
 fi
+
+### language packages
 
 if [[ ! "${WL_GC_TOOLCHAIN_JAVA_TOOLS_SKIP}" ]]
 then
@@ -88,7 +91,7 @@ then
     source "./libs/bash/python_tools.sh" || exit 1
 fi
 
-# User space packages
+### user packages
 
 if [[ ! "${WL_GC_TOOLCHAIN_ASDF_SKIP}" ]]
 then
@@ -113,4 +116,4 @@ fi
 # Return to origina location
 cd "$OLD_PWD" || exit 1
 
-printf "INFO: Done. Please reload your shell by openning a new session.\n"
+printf "INFO: Done. Please reload your shell session.\n"

@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-## configuration
+# preflight
 
 set -eo pipefail
 
@@ -11,6 +11,10 @@ if [[ $LOG_LEVEL == "TRACE" ]]
 then 
     set -x
 fi
+
+# configuration
+
+# functions
 
 function install_additional_iac_tools() {
     printf "INFO: starting install_additional_tools()\n"
@@ -141,6 +145,8 @@ function install_kics_query_library() {
         printf "INFO: Looks like you do not yet have a %s credentials configuration, pleaes follow https://confluence.worldline-solutions.com/display/PPSTECHNO/Using+Shared+Modules+from+GitLab+Private+Registry before attempting to use Terraf.\n" "$HOME/.terraformrc"
     fi
 }
+
+# logic
 
 install_additional_iac_tools
 install_kics_query_library

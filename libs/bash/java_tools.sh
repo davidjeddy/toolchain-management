@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-## configuration
+# preflight
 
 set -eo pipefail
 
@@ -12,9 +12,9 @@ then
     set -x
 fi
 
-# pre-lfight
+# configuration
 
-# logic
+# functions
 
 function install_java_tools() {
     printf "INFO: Processing SonarQube Scanner.\n"
@@ -76,6 +76,8 @@ function install_java_tools() {
         sonar-scanner --version
     fi
 }
+
+# logic
 
 which java
 java --version
