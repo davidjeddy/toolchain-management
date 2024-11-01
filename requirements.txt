@@ -1,4 +1,4 @@
-# DO NOT install localstack via PIP; use language_runtimes.sh to control what hosts recieve the packages
+# DO NOT install localstack via PIP; use python_tools.sh to control what host type receives the correct package type
 # https://github.com/localstack/localstack
 # localstack==3.6.0
 # https://pypi.org/project/onelogin-aws-cli/

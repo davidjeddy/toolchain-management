@@ -1,16 +1,18 @@
 #!/bin/bash -l
 
-## configuration
+# preflight
 
 set -eo pipefail
 
 # shellcheck disable=SC1090
-# source "$SESSION_SHELL" || exit 1 # Not needed in this context, kept for alignment to other scirpts
+source "$SESSION_SHELL" || exit 1
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
     set -x
 fi
+
+# configuration
 
 # documentation
 
@@ -21,7 +23,7 @@ fi
 # version 0.1.0 - FIX to only support Fedora hosts and reset .bashrc from source - David Eddy
 # version 0.0.1 - David Eddy
 
-# execution
+# logic
 
 printf "INFO: Starting...\n"
 

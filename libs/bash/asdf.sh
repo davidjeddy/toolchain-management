@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-## configuration
+# preflight
 
 set -eo pipefail
 
@@ -12,9 +12,9 @@ then
     set -x
 fi
 
-# pre-lfight
+# configuration
 
-# logic
+# functions
 
 function asdf_install() {
     printf "INFO: starting asdf_install().\n"
@@ -46,5 +46,7 @@ function asdf_install() {
     which asdf
     asdf version
 }
+
+# logic
 
 asdf_install

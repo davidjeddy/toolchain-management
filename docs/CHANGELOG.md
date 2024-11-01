@@ -12,6 +12,17 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.2] - 2024-10-30
+
+### FIX
+
+- Permissions when reconfiguring Podman
+
+### REMOVE
+
+- Unused `./libs/bash/golang.sh`
+- Unused `./libs/bash/pip.sh`
+
 ## [0.61.1] - 2024-10-30
 
 ### FIX

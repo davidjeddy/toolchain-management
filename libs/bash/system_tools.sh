@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-## configuration
+# preflight
 
 set -eo pipefail
 
@@ -12,9 +12,9 @@ then
     set -x
 fi
 
-# pre-lfight
+# configuration
 
-# logic
+# functions
 
 function dnf_systems() {
     # Note: We want to version pin these; but need to push everyone to the same major release of Fedora core; but this is not possible as we support every version the vendor supports
@@ -27,6 +27,7 @@ function dnf_systems() {
         ca-certificates \
         curl \
         dmidecode \
+        fuse-overlayfs \
         git \
         git-lfs \
         gnupg2 \
@@ -68,12 +69,12 @@ function jenkins_user_patches() {
     # Fixes problem w/ created users sessions not properly setting XDG_RUNTIME_DIR ENV VAR
     echo "export XDG_RUNTIME_DIR=/run/user/$(id -u)" >> "$HOME/.bashrc"
     
-    cp /etc/containers/registries.conf /etc/containers/registries.conf."$(date +%s)".bckp || exit 1
+    sudo cp /etc/containers/registries.conf /etc/containers/registries.conf."$(date +%s)".bckp || exit 1
     # allow pulling from cicd-build-prod (eu-west-1), AWS ECR Public Gallery, Quay, then Docker Hub if registry is not provided as part of the image name
-  echo "[registries.search]
+    echo "[registries.search]
 registries = [\"891377244928.dkr.ecr.eu-west-1.amazonaws.com\", \"public.ecr.aws\", \"quay.io\", \"docker.io\"]
-short-name-mode = \"enforcing\"" > /etc/containers/registries.conf
-  cat /etc/containers/registries.conf
+short-name-mode = \"enforcing\"" | sudo tee /etc/containers/registries.conf
+    cat /etc/containers/registries.conf
 
     # enable innvocation of `podman` as a bianry replacement for `docker` due to the jenkins-pipeline-lib requiring `docker` all over the place
     if [[ ! -f "/usr/bin/docker" ]]
@@ -86,6 +87,8 @@ short-name-mode = \"enforcing\"" > /etc/containers/registries.conf
     # https://github.com/containers/buildah/issues/5464
     loginctl enable-linger "$(id -u)"
 }
+
+# logic
 
 dnf_systems
 jenkins_user_patches
