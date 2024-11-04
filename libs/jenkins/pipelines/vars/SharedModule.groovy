@@ -1,7 +1,7 @@
 #!groovy
 /* groovylint-disable CompileStatic, DuplicateMapLiteral, DuplicateStringLiteral, GStringExpressionWithinString, LineLength, MethodReturnTypeRequired, MethodSize, NestedBlockDepth, NoDef, ParameterCount, UnusedImport */
 
-//- Library Imports
+// Library Imports
 
 // https://stackoverflow.com/questions/61106044/condition-in-jenkins-pipeline-on-the-triggers-directive
 def runCron(String cronSchedule) {
@@ -138,7 +138,7 @@ def call(
                 steps {
                     script {
                         sh(shellPreamble + '''
-                            ${WORKSPACE}/.tmp/toolchain-management/libs/bash/common/compliance_and_security_scanning.sh
+                            ${WORKSPACE}/.tmp/toolchain-management/libs/bash/iac/compliance_and_security_scanning.sh
                             # urlencoding using CURL https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736
                             # Send payload via GitLab API https://docs.gitlab.com/ee/api/commits.html#post-comment-to-commit
                             curl \

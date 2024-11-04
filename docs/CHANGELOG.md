@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.3] - 2024-10-30
+
+### FIX
+
+- Incorrect path to `compliance_and_security_scanning.sh` in `./libs/jenkins/pipelines/vars/SharedModule.groovy`
+
 ## [0.61.2] - 2024-10-30
 
 ### FIX
