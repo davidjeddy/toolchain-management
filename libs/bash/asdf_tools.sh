@@ -1,11 +1,8 @@
-#!/bin/bash -l
+#!/bin/false
 
 # preflight
 
 set -eo pipefail
-
-# shellcheck disable=SC1090
-source "$SESSION_SHELL" || exit 1
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 

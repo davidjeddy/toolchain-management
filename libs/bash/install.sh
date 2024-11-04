@@ -4,9 +4,6 @@
 
 set -eo pipefail
 
-# shellcheck disable=SC1090
-# source "$SESSION_SHELL" || exit 1 # We can not yet do this. See line #49
-
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
     set -x
@@ -45,12 +42,14 @@ export WL_GC_TM_WORKSPACE
 printf "INFO: WL_GC_TM_WORKSPACE is %s\n" "${WL_GC_TM_WORKSPACE}"
 cd "${WL_GC_TM_WORKSPACE}" || exit 1
 
+source './libs/bash/common/utils.sh'
+
 # Non-login shell - https://serverfault.com/questions/146745/how-can-i-check-in-bash-if-a-shell-is-running-in-interactive-mode
 declare SESSION_SHELL
-SESSION_SHELL="${HOME}/.bashrc"
+SESSION_SHELL="${HOME}/.toolchainrc"
 if [[ $- == *i* ]]
 then
-    SESSION_SHELL="$HOME/.bashrc"
+    SESSION_SHELL="$HOME/.toolchainrc"
 fi
 export SESSION_SHELL
 
@@ -73,7 +72,6 @@ printf "INFO: HOME_USER_BIN is %s\n" "${HOME_USER_BIN}"
 
 if [[ ! "${WL_GC_TOOLCHAIN_SYSTEM_TOOLS_SKIP}" ]]
 then
-    # shellcheck disable=SC1090,SC1091
     source "./libs/bash/system_tools.sh" || exit 1
 fi
 
@@ -81,13 +79,11 @@ fi
 
 if [[ ! "${WL_GC_TOOLCHAIN_JAVA_TOOLS_SKIP}" ]]
 then
-    # shellcheck disable=SC1090,SC1091
     source "./libs/bash/java_tools.sh" || exit 1
 fi
 
 if [[ ! "${WL_GC_TOOLCHAIN_PYTHON_TOOLS_SKIP}" ]]
 then
-    # shellcheck disable=SC1090,SC1091
     source "./libs/bash/python_tools.sh" || exit 1
 fi
 
@@ -95,25 +91,31 @@ fi
 
 if [[ ! "${WL_GC_TOOLCHAIN_ASDF_SKIP}" ]]
 then
-    # shellcheck disable=SC1090,SC1091
     source "./libs/bash/asdf.sh" || exit 1
 fi
 
 if [[ ! "${WL_GC_TOOLCHAIN_ASDF_TOOLS_SKIP}" ]]
 then
-    # shellcheck disable=SC1090,SC1091
     source "./libs/bash/asdf_tools.sh" || exit 1
 fi
 
 if [[ ! "${WL_GC_TOOLCHAIN_IAC_TOOLS_SKIP}" ]]
 then
-    # shellcheck disable=SC1090,SC1091
     source "./libs/bash/iac_tools.sh" || exit 1
 fi
 
+# initialize environment
+
+if ! [ -f "$HOME/.bashrc" ]
+then
+  touch "$HOME/.bashrc"
+fi
+append_if 'source ~/.toolchainrc' "$HOME/.bashrc"
+printf 'You may want to source ~/.bashrc from ~/.bash_profile or ~/.bash_login\n'
+
 # wrap up
 
-# Return to origina location
+# Return to original location
 cd "$OLD_PWD" || exit 1
 
 printf "INFO: Done. Please reload your shell session.\n"

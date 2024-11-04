@@ -1,11 +1,8 @@
-#!/bin/bash -l
+#!/bin/false
 
 # preflight
 
 set -eo pipefail
-
-# shellcheck disable=SC1090
-source "$SESSION_SHELL" || exit 1
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
@@ -67,7 +64,7 @@ function dnf_systems() {
 
 function jenkins_user_patches() {
     # Fixes problem w/ created users sessions not properly setting XDG_RUNTIME_DIR ENV VAR
-    echo "export XDG_RUNTIME_DIR=/run/user/$(id -u)" >> "$HOME/.bashrc"
+    append_if "export XDG_RUNTIME_DIR=/run/user/$(id -u)" "$HOME/.bashrc"
     
     sudo cp /etc/containers/registries.conf /etc/containers/registries.conf."$(date +%s)".bckp || exit 1
     # allow pulling from cicd-build-prod (eu-west-1), AWS ECR Public Gallery, Quay, then Docker Hub if registry is not provided as part of the image name

@@ -1,11 +1,8 @@
-#!/bin/bash -l
+#!/bin/false
 
 # preflight
 
 set -eo pipefail
-
-# shellcheck disable=SC1090
-source "$SESSION_SHELL" || exit 1
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
@@ -33,35 +30,36 @@ function install_additional_iac_tools() {
         CGO_ENABLED=0 go build \
             -a -installsuffix cgo \
             -o bin/kics cmd/console/main.go
-        echo "export PATH=$HOME/.kics/bin:\$PATH" >> "$HOME/.bashrc"
+        append_add_path "~/.kics/bin" "${SESSION_SHELL}"
+        add_path "$HOME/.kics/bin"
         printf "INFO: Kics build and install completed.\n"
 
         rm -rf "$HOME/.tfenv" || true
         git clone --depth 1 --branch "$(cat "$WL_GC_TM_WORKSPACE"/.tfsec-version)" "https://github.com/tfutils/tfenv.git" "$HOME/.tfenv"
-        echo "export PATH=$HOME/.tfenv/bin:\$PATH" >> "$HOME/.bashrc"
+        append_add_path "~/.tfenv/bin" "${SESSION_SHELL}"
+        add_path "$HOME/.tfenv/bin"
         printf "INFO: tfenv install completed.\n"
 
         rm -rf "$HOME/.tgenv" || true
         git clone --depth 1 --branch "$(cat "$WL_GC_TM_WORKSPACE"/.tgenv-version)" "https://github.com/tgenv/tgenv.git" "$HOME/.tgenv"
-        echo "export PATH=$HOME/.tgenv/bin:\$PATH" >> "$HOME/.bashrc"
+        append_add_path "~/.tgenv/bin" "${SESSION_SHELL}"
+        add_path "$HOME/.tgenv/bin"
         printf "INFO: tgenv install completed.\n"
 
         rm -rf "$HOME/.tofuenv" || true
         git clone --depth 1 --branch "$(cat "$WL_GC_TM_WORKSPACE"/.tofuenv-version)" "https://github.com/tofuutils/tofuenv.git" "$HOME/.tofuenv"
-        echo "export PATH=$HOME/.tofuenv/bin:\$PATH" >> "$HOME/.bashrc"
+        append_add_path "~/.tofuenv/bin" "${SESSION_SHELL}"
+        add_path "$HOME/.tofuenv/bin"
         printf "INFO: tofuenv install completed.\n"
 
         rm -rf "$HOME/.xeol" || true
         git clone --depth 1 --branch "$(cat "$WL_GC_TM_WORKSPACE"/.xeol-version)" "https://github.com/xeol-io/xeol.git" "$HOME/.xeol"
         cd "$HOME/.xeol" || exit
         ./install.sh
-        echo "export PATH=$HOME/.xeol/bin:\$PATH" >> "$HOME/.bashrc"
+        cd -
+        append_add_path "~/.xeol/bin" "${SESSION_SHELL}"
+        add_path "HOME/.xeol/bin"
         printf "INFO: xeol install completed.\n"
-
-        cd "$WL_GC_TM_WORKSPACE"
-
-        # shellcheck disable=SC1090
-        source "$SESSION_SHELL" || exit 1
 
         # shellcheck disable=SC2046
         tfenv install "$(cat "$WL_GC_TM_WORKSPACE"/.terraform-version)"
@@ -131,7 +129,8 @@ function install_kics_query_library() {
         # source https://www.tailored.cloud/devops/cache-terraform-providers/
         printf "INFO: Configuring Terraform provider shared cache.\n"
         mkdir -p "$HOME/.terraform.d/plugin-cache" || true
-        echo "export TF_PLUGIN_CACHE_DIR=$HOME/.terraform.d/plugin-cache" >> "${SESSION_SHELL}"
+        append_if "export TF_PLUGIN_CACHE_DIR=$HOME/.terraform.d/plugin-cache" "${SESSION_SHELL}"
+        export TF_PLUGIN_CACHE_DIR=$HOME/.terraform.d/plugin-cache
     fi
 
     # WARNs

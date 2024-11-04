@@ -1,11 +1,8 @@
-#!/bin/bash -l
+#!/bin/false
 
 # preflight
 
 set -eo pipefail
-
-# shellcheck disable=SC1090
-source "$SESSION_SHELL" || exit 1
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
@@ -39,13 +36,8 @@ function install_java_tools() {
         # Remove existing dir if exists
         rm -rf "$HOME_USER_BIN/sonar-scanner" || true
 
-        if [[ $(cat "$SESSION_SHELL") != *"$HOME_USER_BIN/sonar-scanner/bin"*  ]]
-        then
-            printf "INFO: sonar-scanner bin location not in PATH, adding...\n"
-            echo "export PATH=$HOME_USER_BIN/sonar-scanner/bin:\$PATH" >> "${SESSION_SHELL}"
-            # shellcheck disable=SC1090
-            source "${SESSION_SHELL}"
-        fi
+        append_add_path "$HOME_USER_BIN/sonar-scanner/bin" "${SESSION_SHELL}"
+        add_path ":$HOME_USER_BIN/sonar-scanner/bin:"
 
         curl \
             --location \
