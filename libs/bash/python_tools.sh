@@ -1,11 +1,8 @@
-#!/bin/bash -l
+#!/bin/false
 
 # preflight
 
 set -eo pipefail
-
-# shellcheck disable=SC1090
-source "$SESSION_SHELL" || exit 1
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
@@ -50,7 +47,8 @@ function install_python_tools_package_localstack() {
 function install_python_tools_packages() {
     {
         printf "INFO: Install Python modules via pip package manager using requirements.txt\n"
-        echo "export PATH=$HOME_USER_BIN:\$PATH" >> "${SESSION_SHELL}"
+        append_add_path "$HOME_USER_BIN" "${SESSION_SHELL}"
+        add_path "$HOME_USER_BIN"
 
         pip install \
             --prefer-binary \

@@ -12,6 +12,14 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.4] - 2024-11-04
+
+### FIX
+
+- Decouple toolchain rc file from .bashrc
+- Prevent re-adding same path to the PATH environment variable
+- Make sourced scripts non-executable
+
 ## [0.61.3] - 2024-10-30
 
 ### FIX
