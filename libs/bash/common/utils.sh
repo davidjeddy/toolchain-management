@@ -28,7 +28,19 @@ function append_if() {
 function append_add_path() {
   local path="$1"
   local file="$2"
-  append_if "[[ \":\$PATH:\" != *\":$path:\"* ]] && export PATH=\"$path:\$PATH\"" "$file"
+  delete_line "[[ \":\$PATH:\" != *\":$path:\"* ]] && export PATH=\"$path:\$PATH\"" "$file"
+  append_if "if [[ \":\$PATH:\" != *\":$path:\"* ]]; then export PATH=\"$path:\$PATH\"; fi" "$file"
+}
+
+# Delete line from file
+#
+# $1 Line to be deleted
+# $2 File to be stripped from the line
+function delete_line() {
+  local line="$1"
+  local file="$2"
+  grep -vxF "$line" "$file" > "$file.$$"
+  mv "$file.$$" "$file"
 }
 
 # Conditional add to the PATH

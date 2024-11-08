@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.6] - 2024-11-08
+
+### FIX
+
+- `append_add_path` was revamped to avoid generating code which may change exit status
+
 ## [0.61.5] - 2024-11-06
 
 ### ADD
