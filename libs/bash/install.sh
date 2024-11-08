@@ -9,9 +9,6 @@ then
     set -x
 fi
 
-# shellcheck disable=SC1091
-source './libs/bash/common/utils.sh'
-
 # configuration
 
 declare OLD_PWD
@@ -44,6 +41,9 @@ fi
 export WL_GC_TM_WORKSPACE
 printf "INFO: WL_GC_TM_WORKSPACE is %s\n" "${WL_GC_TM_WORKSPACE}"
 cd "${WL_GC_TM_WORKSPACE}" || exit 1
+
+# shellcheck disable=SC1091
+source "${WL_GC_TM_WORKSPACE}/libs/bash/common/utils.sh" || exit 1
 
 # Non-login shell - https://serverfault.com/questions/146745/how-can-i-check-in-bash-if-a-shell-is-running-in-interactive-mode
 declare SESSION_SHELL

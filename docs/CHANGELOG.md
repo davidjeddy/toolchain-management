@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.7] - 2024-11-08
+
+### FIX
+
+- Use `WL_GC_TM_WORKSPACE` when sourcing common/utils.sh else will get `file not found` when building images
+
 ## [0.61.6] - 2024-11-08
 
 ### FIX
