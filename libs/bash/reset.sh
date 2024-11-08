@@ -5,7 +5,7 @@
 set -eo pipefail
 
 # shellcheck disable=SC1090
-source "$SESSION_SHELL" || exit 1
+# source "$SESSION_SHELL" || exit 1 # We do not need to source the shell before force resetting the system
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
@@ -15,6 +15,11 @@ fi
 # configuration
 
 # documentation
+
+# DO NOT USE THIS unless you are 110% sure you want to hard reset your localhost.
+# This DELETES many programs.
+# This DELETES .bashrc
+# This DELETES .toolchainrc
 
 # example sudo ./libs/bash/reset.sh
 # usage sudo ./libs/bash/reset.sh
@@ -58,8 +63,10 @@ then
 fi
 
 # 0.61.0
-rm -rf /home/david/.local/lib/python3.12/site-packages || true
+yes | sudo rm -f "$HOME/.tool-versions " || true
+yes | sudo rm -f "$HOME/.toolchainrc" || true
 yes | sudo rm -rf "$HOME/.asdf/" || true
+yes | sudo rm -rf "$HOME/.local/lib/python3.12/site-packages" || true
 yes | sudo rm /usr/bin/docker || true
 
 # 0.59.0

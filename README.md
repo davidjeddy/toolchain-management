@@ -26,10 +26,9 @@ Collection of packages and tools used to manage projects.
 
 - Language versions (Python, Golang, etc) are managed via the system package manager (>= 0.60.0)
   - We do NOT want to abstract this to a *env helper. Replace the host, not the language version.
-- This projects manipulates the `$HOME/.bashrc` configuration file significantly. It is recommended to move all custom configurations into `~/.bashrc.d/*.sh`.
-- If you are running on Windows using WSL2:
+- If you are running on [Windows using WSL2](https://confluence.worldline-solutions.com/display/PPSTECHNO/WSL2+Host):
   - You MUST clone the project from INSIDE the WSL instance. NOT from the host Windows.
-  - SHOULD run `pip install keyring 25.4.1 && pip install keyrings.alt 5.0.2` to install a supported credentials backend for use with OneLogin
+  - AFTER the Toolchain installation completes successfully, also execute the following to enable onelogin usage: `pip install keyring 25.4.1 && pip install keyrings.alt 5.0.2` 
 
 ## Purpose
 
@@ -81,7 +80,7 @@ Skip this section of the install process (may have unintended side effects):
 - WL_GC_TOOLCHAIN_ASDF_TOOLS_SKIP=true
 - WL_GC_TOOLCHAIN_IAC_TOOLS_SKIP=true
 - WL_GC_TOOLCHAIN_JAVA_TOOLS_SKIP=true
-- WL_GC_TOOLCHAIN_PIP_SKIP=true
+- WL_GC_TOOLCHAIN_PYTHON_TOOLS_SKIP=true
 - WL_GC_TOOLCHAIN_ROOT_OVERRIDE=true
 - WL_GC_TOOLCHAIN_SYSTEM_TOOLS_SKIP=true
 

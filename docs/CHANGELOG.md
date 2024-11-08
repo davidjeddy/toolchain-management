@@ -12,6 +12,25 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.5] - 2024-11-06
+
+### ADD
+
+- `requirements_localstack_runtime.txt` to version pin for `localstack[runtime]` install process
+
+### FIX
+
+- Allow upper case A-Z in branch names via `validateBranchName()`
+- Check for QEMU host to prevent sonar-scanner install as needed
+- ENV VAR `GOROOT` value when building kics binary
+- Functions calls now occur in `./lib/bash/install.sh` for tool groups as the sourced files are no longer executable resources
+- Separated iac_tools into smaller logic blocks to allow a single tool to fail, not the entire group
+
+### REMOVE
+
+- `install_kics_query_library()` as no longer needed
+- Symlink of KICS query library, now uses from `$HOME/.kics/assets/queries/*`
+
 ## [0.61.4] - 2024-11-04
 
 ### FIX
@@ -748,7 +767,7 @@ Action Keywords:
 
 - `git-lfs`, `jq`, and `yq` now managed by Aqua
 - Golang moved up to version 1.21
-- KICS query library now available via `~/.kics-installer/target_query_libs` symlink to whatever version is installed
+- KICS query library now available via `~/.kics/assets/queries` symlink to whatever version is installed
 - Pyenv installer moved from `./libs/bash/installers/` to `./libs/bash/assets/` to stop messing with [TAB] autocomplete when trying to get to install.sh
 
 ## [0.51.5] - 2024-04-23

@@ -24,13 +24,13 @@ fi
 # shellcheck disable=SC1091
 source "${WORKSPACE}/.tmp/toolchain-management/libs/bash/git/common.sh"
 
-# Toolchain autoUpdate
-if [[ "${WL_GC_TOOLCHAIN_UPDATE_OVERRIDE}" != "" ]]
-then 
-    printf "WARN: Toolchain Management automatic updates disabled.\n"
-else
-    autoUpdate
-fi
+# Toolchain autoUpdate - Do not auto-update right before doing compliance scanning
+# if [[ ! "${WL_GC_TOOLCHAIN_UPDATE_OVERRIDE}" ]]
+# then
+#     printf "INFO: Toolchain Management automatic updates skipped due to override flag being provided.\n"
+# else
+#     autoUpdate
+# fi
 
 # Logic
 

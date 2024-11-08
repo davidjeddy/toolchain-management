@@ -31,6 +31,7 @@ function dnf_systems() {
         golang \
         htop \
         jq \
+        libvirt-devel \
         parallel \
         patch \
         podman \
@@ -40,6 +41,9 @@ function dnf_systems() {
         tk-devel \
         unzip \
         yq
+
+    # Dunno why we have to reinstall pip every time but if this is not done the we get the `bash: pip: command not found` error
+    sudo dnf reinstall -y python3-pip
 
     # Install if missing
     if [[ ! -f "/usr/local/bin/session-manager-plugin" ]]
@@ -64,7 +68,7 @@ function dnf_systems() {
 
 function jenkins_user_patches() {
     # Fixes problem w/ created users sessions not properly setting XDG_RUNTIME_DIR ENV VAR
-    append_if "export XDG_RUNTIME_DIR=/run/user/$(id -u)" "$HOME/.bashrc"
+    append_if "export XDG_RUNTIME_DIR=/run/user/$(id -u)" "${SESSION_SHELL}"
     
     sudo cp /etc/containers/registries.conf /etc/containers/registries.conf."$(date +%s)".bckp || exit 1
     # allow pulling from cicd-build-prod (eu-west-1), AWS ECR Public Gallery, Quay, then Docker Hub if registry is not provided as part of the image name
@@ -82,10 +86,5 @@ short-name-mode = \"enforcing\"" | sudo tee /etc/containers/registries.conf
     # Allow non-root users to execute Podman commands that require lingering shell sessions
     # Podman uses `buildah`
     # https://github.com/containers/buildah/issues/5464
-    loginctl enable-linger "$(id -u)"
+    sudo loginctl enable-linger "$(id -u)"
 }
-
-# logic
-
-dnf_systems
-jenkins_user_patches

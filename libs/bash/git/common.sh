@@ -26,9 +26,19 @@ fi
 function autoUpdate() {
     printf "INFO: starting autoUpdate()\n"
 
-    # GitLab Pat token from $HOME/.terraformrc
-    local GITLAB_TOKEN
-    GITLAB_TOKEN=$(grep -A 1 'gitlab.kazan.myworldline.com' $HOME/.terraformrc | sed -n '2 p' | awk '{print $3}' | jq -rM '.')
+    local GITLAB_HOST
+    GITLAB_HOST="gitlab.kazan.myworldline.com"
+
+    local GITLAB_PROJECT_ID
+    GITLAB_PROJECT_ID="78445"
+
+    # automation is always jenkins, credentials store provides ENV VAR values
+    if [[ $(whoami) != "jenkins" ]]
+    then
+        # GitLab Pat token from $HOME/.terraformrc
+        local GITLAB_TOKEN
+        GITLAB_TOKEN=$(grep -A 1 "$GITLAB_HOST" "$HOME/.terraformrc" | sed -n '2 p' | awk '{print $3}' | jq -rM '.')
+    fi
 
     # Check if remote is avaiable
     declare GL_HTTP_RES
@@ -37,7 +47,7 @@ function autoUpdate() {
         --output /dev/null \
         --silent \
         --write-out "%{http_code}\n" \
-        "https://gitlab.kazan.myworldline.com")
+        "https://$GITLAB_HOST")
     if [[ "$GL_HTTP_RES" != 200 ]]
     then
         printf "WARN: Unable to check remote version of Toolchain. Skipping automatic update process.\n"
@@ -51,12 +61,8 @@ function autoUpdate() {
         --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
         --location \
         --silent \
-        "https://gitlab.kazan.myworldline.com/api/v4/projects/78445/repository/tags")
-    if [[ "$VER_IN_GL" != 200 || "$VER_IN_GL" == *"Unauthorized"* ]]
-    then
-        printf "WARN: Response from GitLab not satisfactory. Skipping automatic update process.\n%s.\n" "$VER_IN_GL"
-        return 0
-    fi
+        "https://$GITLAB_HOST/api/v4/projects/$GITLAB_PROJECT_ID/repository/tags")
+
     VER_IN_GL=$(echo "$VER_IN_GL" | jq -rM .[0].name)
 
     # Version of toolchain on Localhost via tags
@@ -70,7 +76,7 @@ function autoUpdate() {
     if [[ "$VER_IN_LH" != "$VER_IN_GL" ]]
     then
         # execute installer
-        $WORKSPACE/libs/bash/install.sh
+        "$WORKSPACE"/libs/bash/install.sh
     fi
 }
 
@@ -79,6 +85,7 @@ function rebaseFromOriginMain() {
     git fetch origin main
     # Why does the different git subcommands reference remote branches differently?
     git rebase origin/main
+    # shellcheck disable=SC2181
     if [[ "$?" != 0 ]]
     then
         printf "ERR: Looks like we are not able to cleanly rebase from origin/main. This would cause exessice work and possible merge conflicts.\n"
@@ -322,7 +329,7 @@ function iacCompliance() {
                 --output-name "junit-kics" \
                 --output-path ".tmp" \
                 --path "$filesToScan" \
-                --queries-path "$HOME/.kics-installer/target_query_libs/terraform/aws/" \
+                --queries-path "$HOME/.kics/assets/queries/terraform/aws/" \
                 --report-formats "junit" \
                 --type "Terraform" \
                 --verbose \
@@ -336,7 +343,7 @@ function iacCompliance() {
                 --output-name "junit-kics" \
                 --output-path ".tmp" \
                 --path "$filesToScan" \
-                --queries-path "$HOME/.kics-installer/target_query_libs/terraform/aws/" \
+                --queries-path "$HOME/.kics/assets/queries/terraform/aws/" \
                 --report-formats "junit" \
                 --type "Terraform" \
                 --verbose \
@@ -500,7 +507,7 @@ function validateBranchName() {
 
     # {action}/{ticket}/{description}
     local THIS_REGEX
-    THIS_REGEX="^(add|fix|remove)\/([A-Z]{1,10})(\-)?([X0-9]{1,10})\/([a-z0-9_]){8,256}"
+    THIS_REGEX="^(add|fix|remove)\/([A-Z]{1,10})(\-)?([X0-9]{1,10})\/([A-Za-z0-9_]){8,256}"
 
     if [[ ! $THIS_BRANCH_NAME =~ $THIS_REGEX ]]
     then
@@ -576,7 +583,7 @@ function blastRadiusConstraintsPreventMultipleDeploymentChangeSets() {
     # extract the deployment path
     local DEPLOYMENT_PREFIX
     # TODO better way to extract the first 5 segments from a path?
-    DEPLOYMENT_PREFIX=$(echo ${1} | cut -d/ -f1)"/"$(echo ${1} | cut -d/ -f2)"/"$(echo ${1} | cut -d/ -f3)"/"$(echo ${1} | cut -d/ -f4)"/"$(echo ${1} | cut -d/ -f5)
+    DEPLOYMENT_PREFIX="$(echo "${1}" | cut -d/ -f1)/$(echo "${1}" | cut -d/ -f2)/$(echo "${1}" | cut -d/ -f3)/$(echo "${1}" | cut -d/ -f4)/$(echo "${1}" | cut -d/ -f5)"
 
     if [[ $DEPLOYMENT_PREFIX == "././././." ]]
     then

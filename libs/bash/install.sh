@@ -9,6 +9,9 @@ then
     set -x
 fi
 
+# shellcheck disable=SC1091
+source './libs/bash/common/utils.sh'
+
 # configuration
 
 declare OLD_PWD
@@ -42,16 +45,27 @@ export WL_GC_TM_WORKSPACE
 printf "INFO: WL_GC_TM_WORKSPACE is %s\n" "${WL_GC_TM_WORKSPACE}"
 cd "${WL_GC_TM_WORKSPACE}" || exit 1
 
-source './libs/bash/common/utils.sh'
-
 # Non-login shell - https://serverfault.com/questions/146745/how-can-i-check-in-bash-if-a-shell-is-running-in-interactive-mode
 declare SESSION_SHELL
 SESSION_SHELL="${HOME}/.toolchainrc"
-if [[ $- == *i* ]]
-then
-    SESSION_SHELL="$HOME/.toolchainrc"
+if [[ ! -f "$SESSION_SHELL" ]]
+then 
+    printf "INFO: Creating missing %s\n" "$SESSION_SHELL"
+    touch "$SESSION_SHELL"
 fi
+printf "INFO: SESSION_SHELL is %s\n" "$SESSION_SHELL"
 export SESSION_SHELL
+
+# Just in case, for some reason, the bashrc does not yet exist
+if [[ ! -f "$HOME/.bashrc" ]]
+then
+  touch "$HOME/.bashrc"
+fi
+
+# This MUST be the "$HOME/.bashrc". This is the link between our tooling and the OS shell configuration.
+append_if "source $SESSION_SHELL" "$HOME/.bashrc"
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
 
 # For use by java_tools and python_tools
 declare HOME_USER_BIN
@@ -72,50 +86,67 @@ printf "INFO: HOME_USER_BIN is %s\n" "${HOME_USER_BIN}"
 
 if [[ ! "${WL_GC_TOOLCHAIN_SYSTEM_TOOLS_SKIP}" ]]
 then
+    # shellcheck disable=SC1091
     source "./libs/bash/system_tools.sh" || exit 1
+    dnf_systems
+    jenkins_user_patches
 fi
 
 ### language packages
 
 if [[ ! "${WL_GC_TOOLCHAIN_JAVA_TOOLS_SKIP}" ]]
 then
+    # shellcheck disable=SC1091
     source "./libs/bash/java_tools.sh" || exit 1
+    install_java_tools
 fi
 
 if [[ ! "${WL_GC_TOOLCHAIN_PYTHON_TOOLS_SKIP}" ]]
 then
+    # shellcheck disable=SC1091
     source "./libs/bash/python_tools.sh" || exit 1
+    install_python_tools_package_localstack
+    install_python_tools_packages
 fi
 
 ### user packages
 
 if [[ ! "${WL_GC_TOOLCHAIN_ASDF_SKIP}" ]]
 then
+    # shellcheck disable=SC1091
     source "./libs/bash/asdf.sh" || exit 1
+    asdf_install
 fi
 
 if [[ ! "${WL_GC_TOOLCHAIN_ASDF_TOOLS_SKIP}" ]]
 then
+    # shellcheck disable=SC1091
     source "./libs/bash/asdf_tools.sh" || exit 1
+    asdf_tools_install
 fi
 
 if [[ ! "${WL_GC_TOOLCHAIN_IAC_TOOLS_SKIP}" ]]
 then
+    # shellcheck disable=SC1091
     source "./libs/bash/iac_tools.sh" || exit 1
+    install_additional_iac_tools
 fi
-
-# initialize environment
-
-if ! [ -f "$HOME/.bashrc" ]
-then
-  touch "$HOME/.bashrc"
-fi
-append_if 'source ~/.toolchainrc' "$HOME/.bashrc"
-printf 'You may want to source ~/.bashrc from ~/.bash_profile or ~/.bash_login\n'
 
 # wrap up
 
 # Return to original location
 cd "$OLD_PWD" || exit 1
 
-printf "INFO: Done. Please reload your shell session.\n"
+# Load up everything before exit outputs
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
+
+# Note: Keep this list in this order as the most relavent packages/tools are listed closest to the end of execution
+dnf list --installed
+pip list --verbose
+asdf list
+
+tail "$HOME/.bashrc"
+cat "$SESSION_SHELL"
+
+printf "INFO: Done. Restart your shell.\n"

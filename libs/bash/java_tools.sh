@@ -17,27 +17,16 @@ function install_java_tools() {
     printf "INFO: Processing SonarQube Scanner.\n"
     # [SonarQube Scanner](https://docs.sonarsource.com/sonarqube/latest/)
 
+    if [[ ! -f "/lib64/ld-linux-x86-64.so.2" ]]
+    then
+        printf "WARN: QEMU based host detected based on missing %s, skipping sonar-scanner install.\n" "/lib64/ld-linux-x86-64.so.2"
+        return 0
+    fi
+    
     if [[ ! $(which sonar-scanner) || $(sonar-scanner --version) != *$(cat "$WL_GC_TM_WORKSPACE"/.sonarqube-scanner-version)* ]]
     then
-        # sonar-scanner does not like QEMU (Linux/Unix KVM) hosts
-        # https://unix.stackexchange.com/questions/89714/easy-way-to-determine-the-virtualization-technology-of-a-linux-machine
-        if [[ $(which sudo) ]]
-        then
-            # Sudo not found, assume we are in a container. If the VM is QEMU hosted, skip sonar-scanner
-            if [[ $(sudo dmidecode -s system-product-name) == "QEMU"* ]]
-            then
-                # Do not install sonar-scanner on QEMU hosts
-                printf "WARN: Running in QEMU host, sonar-scanner will not function. This is a issue with sonar-scanner, not the host.\n"
-                # Return to the calling ./install.sh without throwing an error
-                return 0
-            fi
-        fi
-
         # Remove existing dir if exists
         rm -rf "$HOME_USER_BIN/sonar-scanner" || true
-
-        append_add_path "$HOME_USER_BIN/sonar-scanner/bin" "${SESSION_SHELL}"
-        add_path ":$HOME_USER_BIN/sonar-scanner/bin:"
 
         curl \
             --location \
@@ -63,15 +52,12 @@ function install_java_tools() {
         unzip "sonar-scanner-cli-$(cat "$WL_GC_TM_WORKSPACE"/.sonarqube-scanner-version)-linux.zip"
         mv --force "sonar-scanner-$(cat "$WL_GC_TM_WORKSPACE"/.sonarqube-scanner-version)-linux" "$HOME_USER_BIN/sonar-scanner"
         rm -rf sonar-scanner-*
+        append_add_path "$HOME_USER_BIN/sonar-scanner/bin" "$SESSION_SHELL"
+        
+        # shellcheck disable=SC1090
+        source "$SESSION_SHELL" || exit 
 
         which sonar-scanner
         sonar-scanner --version
     fi
 }
-
-# logic
-
-which java
-java --version
-
-install_java_tools
