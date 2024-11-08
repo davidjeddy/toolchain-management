@@ -13,30 +13,19 @@ fi
 
 # functions
 
+# This is needed until we are able to start, use, and destroy ephemeral instances of localstack per app/service/pipeline execution
 function install_python_tools_package_localstack() {
-    # Check for valid user
     {
-        if [[ $(whoami) == "jenkins" || $(whoami) == "root" ]]
+        # Only allow install of localstack[runtime] if doing so for automation
+        # and only if in a container build context of a fedora base image
+        if [[ ($(whoami) == "jenkins" || $(whoami) == "root") && $(cat /etc/*release) == *"Container Image"* ]]
         then
-            # Different install configuration depending on host type
-            if [[ $(cat /etc/*release) == *"Cloud Edition"* || $(cat /etc/*release) == *"Workstation Edition"* ]]
-            then
-                printf "INFO: Install localstack on Cloud or Workstation host.\n"
-                pip install \
-                    --prefix "$HOME/.local" \
-                    localstack
-            elif [[ $(cat /etc/*release) == *"Container Image"* ]]
-            then
-                printf "INFO: Install localstack in Container host. This can take a LONG time.\n"
-                pip install \
-                    --prefix "$HOME/.local" \
-                    localstack[runtime]
-                # pip install \
-                #     --prefix "$HOME/.local" \
-                #     --requirements ./libs/bash/localstack_runtime_requirements.txt \
-            else
-                printf "WARN: Unable to determine host type. Skipping localstack install.\n"
-            fi
+            printf "INFO: Install localstack in Container host. This can take a LONG time.\n"
+            pip install \
+                --prefer-binary \
+                --prefix "$HOME/.local" \
+                --requirement requirements_localstack_runtime.txt \
+                localstack[runtime]
         fi
     } || {
         printf "ERR: Unable to install localstack.\n"
@@ -59,13 +48,3 @@ function install_python_tools_packages() {
         exit 1
     }
 }
-
-# logic
-
-which pip
-pip --version
-
-install_python_tools_package_localstack
-install_python_tools_packages
-
-pip list --verbose

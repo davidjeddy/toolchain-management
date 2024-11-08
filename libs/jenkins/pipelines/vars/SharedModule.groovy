@@ -133,6 +133,18 @@ def call(
                         url: env.GIT_URL
                 }
             }
+            stage('Install Dependencies') {
+                steps {
+                    withCredentials([
+                        gitUsernamePassword(credentialsId: gitlabGitSa)
+                    ]) {
+                        sh(shellPreamble + '''
+                            # We only CLONE the TC so we can execute helper scripts like IAC compliance scanning, module tag publishing, etc
+                            git clone --single-branch --branch "''' + TOOLCHAIN_BRANCH + '''" https://gitlab.kazan.myworldline.com/cicd/terraform/tools/toolchain-management.git .tmp/toolchain-management
+                        ''')
+                    }
+                }
+            }
             // Project specific stages, special logic for this project
             stage('Compliance & SAST') {
                 steps {

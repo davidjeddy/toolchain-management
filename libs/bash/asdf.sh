@@ -33,8 +33,8 @@ function asdf_install() {
         printf "INFO: asdf package manager is not in PATH, adding...\n"
         append_if "source ~/.asdf/asdf.sh" "${SESSION_SHELL}"
         append_if "source ~/.asdf/completions/asdf.bash" "${SESSION_SHELL}"
-        source $HOME/.asdf/asdf.sh
-        source $HOME/.asdf/completions/asdf.bash
+        # shellcheck disable=SC1090
+        source "${SESSION_SHELL}" || exit 1
     fi
 
     printf "INFO: Copy asdf-vm .tool-versions to user \$HOME to prevent \"No version is set ...\" error\n."
@@ -43,7 +43,3 @@ function asdf_install() {
     which asdf
     asdf version
 }
-
-# logic
-
-asdf_install

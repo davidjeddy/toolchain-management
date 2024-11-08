@@ -25,9 +25,3 @@ function asdf_tools_install() {
     asdf install
     asdf reshim
 }
-
-# logic
-
-asdf_tools_install
-
-asdf list
