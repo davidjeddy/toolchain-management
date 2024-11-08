@@ -48,7 +48,7 @@ function install_java_tools() {
             exit 1
         fi
 
-        # Not impressed that Maven does not have a pre-compiled binary
+        # Not impressed that sonar-scanner does not have a pre-compiled binary
         unzip "sonar-scanner-cli-$(cat "$WL_GC_TM_WORKSPACE"/.sonarqube-scanner-version)-linux.zip"
         mv --force "sonar-scanner-$(cat "$WL_GC_TM_WORKSPACE"/.sonarqube-scanner-version)-linux" "$HOME_USER_BIN/sonar-scanner"
         rm -rf sonar-scanner-*
