@@ -41,8 +41,10 @@ function delete_line() {
   local file="$2"
   # DO NOT exit 1 if grep or mv fails
   {
-    grep -vxF "$line" "$file" > "$file.$$"
-    mv "$file.$$" "$file"
+    if grep -qxF "$line" "$file"; then
+      grep -vxF "$line" "$file" > "$file.$$"
+      mv "$file.$$" "$file"
+    fi
   } || {
     return 0
   }
