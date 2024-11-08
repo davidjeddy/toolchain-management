@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.8] - 2024-11-08
+
+### FIX
+
+- Do not exit non-zero from utils `delete_line()` if the old line is not found
+
 ## [0.61.7] - 2024-11-08
 
 ### FIX

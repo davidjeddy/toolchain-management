@@ -39,8 +39,13 @@ function append_add_path() {
 function delete_line() {
   local line="$1"
   local file="$2"
-  grep -vxF "$line" "$file" > "$file.$$"
-  mv "$file.$$" "$file"
+  # DO NOT exit 1 if grep or mv fails
+  {
+    grep -vxF "$line" "$file" > "$file.$$"
+    mv "$file.$$" "$file"
+  } || {
+    return 0
+  }
 }
 
 # Conditional add to the PATH
