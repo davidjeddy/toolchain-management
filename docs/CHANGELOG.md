@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.9] - 2024-11-08
+
+### FIX
+
+- Fix logic of `delete_line` to delete only if line matched
+
 ## [0.61.8] - 2024-11-08
 
 ### FIX
