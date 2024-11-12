@@ -19,8 +19,8 @@ function dnf_systems() {
     # - this should be the primary process to control package versions
     # - use `asdf` version manager only as an alternative OR for user-space specical programs
     # - this forces us to stay current with security patching as prior patch version are removed when new patches are released
-    sudo dnf update -y
-    sudo dnf install -y \
+    sudo dnf update --assumeyes
+    sudo dnf install --assumeyes \
         ca-certificates \
         curl \
         dmidecode \
@@ -43,7 +43,7 @@ function dnf_systems() {
         yq
 
     # Dunno why we have to reinstall pip every time but if this is not done the we get the `bash: pip: command not found` error
-    sudo dnf reinstall -y python3-pip
+    sudo dnf reinstall --assumeyes python3-pip
 
     # Install if missing
     if [[ ! -f "/usr/local/bin/session-manager-plugin" ]]

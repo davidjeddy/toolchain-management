@@ -36,6 +36,11 @@ source "${WORKSPACE}/.tmp/toolchain-management/libs/bash/git/common.sh"
 
 declare DIFF_LOGIC
 DIFF_LOGIC="git diff HEAD~1 --name-only"
+if [[ $GITLAB_HOST || $JENKINS_URL ]]
+then
+    printf "INFO: Pipeline execution detected.\n"
+    DIFF_LOGIC="git diff main --name-only"
+fi
 printf "INFO: DIFF_LOGIC %s\n" "${DIFF_LOGIC}"
 
 declare DIFF_LIST

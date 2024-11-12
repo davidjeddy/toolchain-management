@@ -12,6 +12,15 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.10] - 2024-11-12
+
+### FIX
+
+- `./libs/bash/jenkins/SharedModule.groovy` usage of TOOLCHAIN_BRANCH, should be params.TOOLCHAIN_BRANCH
+- `dnf .. -y` to `dnf .. --assumeyes` to be more explicit
+- Added logic to `./libs/bash/iac/compliance_and_security_scanning.sh` to scan against main branch when in a pipeline. this will ensure all changes in a feature branch are scanned, not only the changes in the most recent commit.
+- Allow middle dash character (-) in branch names
+
 ## [0.61.9] - 2024-11-08
 
 ### FIX
