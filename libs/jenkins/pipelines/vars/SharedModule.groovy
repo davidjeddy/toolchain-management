@@ -140,7 +140,7 @@ def call(
                     ]) {
                         sh(shellPreamble + '''
                             # We only CLONE the TC so we can execute helper scripts like IAC compliance scanning, module tag publishing, etc
-                            git clone --single-branch --branch "''' + TOOLCHAIN_BRANCH + '''" https://gitlab.kazan.myworldline.com/cicd/terraform/tools/toolchain-management.git .tmp/toolchain-management
+                            git clone --single-branch --branch "''' + params.TOOLCHAIN_BRANCH + '''" https://gitlab.kazan.myworldline.com/cicd/terraform/tools/toolchain-management.git .tmp/toolchain-management
                         ''')
                     }
                 }

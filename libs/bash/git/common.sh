@@ -507,7 +507,7 @@ function validateBranchName() {
 
     # {action}/{ticket}/{description}
     local THIS_REGEX
-    THIS_REGEX="^(add|fix|remove)\/([A-Z]{1,10})(\-)?([X0-9]{1,10})\/([A-Za-z0-9_]){8,256}"
+    THIS_REGEX="^(add|fix|remove)\/([A-Z]{1,10})(\-)?([X0-9]{1,10})\/([A-Za-z0-9_-]){8,256}"
 
     if [[ ! $THIS_BRANCH_NAME =~ $THIS_REGEX ]]
     then
