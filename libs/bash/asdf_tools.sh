@@ -14,7 +14,7 @@ fi
 # functions
 
 function asdf_tools_install() {
-    # Since we use this CLI invocatin we can not (currently) have comments in the source file so here is what we would have
+    # Since we use this CLI invocation we can not (currently) have comments in the source file so here is what we would have
     # https://asdf-vm.com/manage/configuration.html
     # Provided by well-known plugin short list
     # https://github.com/asdf-vm/asdf-plugins

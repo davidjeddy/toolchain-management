@@ -128,7 +128,7 @@ pipeline {
         stage('Reset') {
             steps {
                 script {
-                    if (env.BRANCH_NAME == 'main') { // only if on main branch
+                    if (env.BRANCH_NAME == gitTargetBranch) { // only if on main branch
                         sh(shellPreamble + '''
                             ${WORKSPACE}/libs/bash/reset.sh
                         ''')
@@ -139,12 +139,32 @@ pipeline {
         stage('Install') {
             steps {
                 script {
-                    if (env.BRANCH_NAME == 'main') { // only if on main branch
+                    if (env.BRANCH_NAME == gitTargetBranch) { // only if on main branch
                         withCredentials([
                             gitUsernamePassword(credentialsId: gitlabGitSa)
                         ]) {
                             sh(shellPreamble + '''
                                 ${WORKSPACE}/libs/bash/install.sh ''' + params.TOOLCHAIN_BRANCH + '''
+                            ''')
+                        }
+                    }
+                }
+            }
+        }
+        // if on the main branch and docs/CHANGELOG.md diff
+        // extract version number and message from docs/CHANGELOG.md
+        // create tag with message, push to origin
+        // push tag to commit in GL
+        stage('Tagging') {
+            steps {
+                script {
+                    if (env.BRANCH_NAME == gitTargetBranch) {
+                        withCredentials([string(
+                            credentialsId:  gitlabApiPat,
+                            variable:       'gitlabPAT'
+                        )]) {
+                            sh(shellPreamble + '''
+                                ${WORKSPACE}/.tmp/toolchain-management/libs/bash/iac/sem_ver_release_tagging.sh
                             ''')
                         }
                     }
