@@ -17,10 +17,11 @@ function dnf_systems() {
     # Note: We want to version pin these; but need to push everyone to the same major release of Fedora core; but this is not possible as we support every version the vendor supports
     # - this is similar to the Containerfile for wl-gc-* container based nodes
     # - this should be the primary process to control package versions
-    # - use `asdf` version manager only as an alternative OR for user-space specical programs
+    # - use `asdf` version manager only as an alternative OR for user-space special programs
     # - this forces us to stay current with security patching as prior patch version are removed when new patches are released
     sudo dnf update --assumeyes
     sudo dnf install --assumeyes \
+        awscli \
         ca-certificates \
         curl \
         dmidecode \
@@ -61,7 +62,7 @@ function dnf_systems() {
             --output "session-manager-plugin.rpm" \
             --show-error \
             "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_$ARCH/session-manager-plugin.rpm"
-        sudo dnf install session-manager-plugin.rpm
+        sudo dnf install --assumeyes session-manager-plugin.rpm
         rm session-manager-plugin*
     fi
 }

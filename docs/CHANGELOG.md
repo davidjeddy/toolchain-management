@@ -12,6 +12,17 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.11] - 2024-11-18
+
+### ADD
+
+- Missing, but very much needed, `awscli` in `system_tools.sh`
+
+### FIX
+
+- `Jenkinsfile` to tag project when changes in `./docs/CHANGELOG.md` are detected
+- Missing `--assumeyes` argument on dnf when installing `session-manager-plugin`
+
 ## [0.61.10] - 2024-11-12
 
 ### FIX
