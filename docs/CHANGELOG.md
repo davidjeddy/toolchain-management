@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.13] - 2024-11-21
+
+### FIX
+
+- Path to tagging script in `Jenkinsfile`
+
 ## [0.61.12] - 2024-11-21
 
 ### ADD
