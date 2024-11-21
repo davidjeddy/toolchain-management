@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.12] - 2024-11-21
+
+### ADD
+
+- Python package `chardet==5.2.0` to prevent some warning outputs
+
 ## [0.61.11] - 2024-11-18
 
 ### ADD
