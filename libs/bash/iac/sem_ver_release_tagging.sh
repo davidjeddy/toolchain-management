@@ -28,7 +28,7 @@ PREV_TARGET="HEAD~1"
     exit 0
 }
 
-# get the messge from the CHANGELOG
+# get the message from the CHANGELOG
 # Remove the git line leading `+` character
 # Remove the git status title line
 # Double backslash escape for Jenkins

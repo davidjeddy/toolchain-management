@@ -164,7 +164,7 @@ pipeline {
                             variable:       'gitlabPAT'
                         )]) {
                             sh(shellPreamble + '''
-                                ${WORKSPACE}/.tmp/toolchain-management/libs/bash/iac/sem_ver_release_tagging.sh
+                                ${WORKSPACE}/libs/bash/iac/sem_ver_release_tagging.sh
                             ''')
                         }
                     }
