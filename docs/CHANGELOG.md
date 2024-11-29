@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.14] - 2024-11-27
+
+### FIX
+
+- `./libs/jenkins/pipeline/vars/SharedModule.groovy` post.failure and post.fix curl calls to Slack updated to new syntax
+
 ## [0.61.13] - 2024-11-21
 
 ### FIX

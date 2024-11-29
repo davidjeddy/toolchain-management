@@ -54,14 +54,18 @@ def call(
         post { // always, changed, fixed, regression, aborted, failure, success, unstable, unsuccessful, and cleanup
             failure {
                 script {
-                    if (env.gitlabBranch == gitTargetBranch) {
+                    if (env.BRANCH_NAME == 'main') {
+                        // slackChannel argument must NOT include the leading # character, we add it here
                         sh(shellPreamble + '''
                             curl \
-                                --data "channel=''' + slackChannel + '''" \
-                                --data "emoji=:pipeline-failed: " \
-                                --data "text=''' + env.JOB_NAME + ''' build FAILED.\n''' + env.BUILD_URL + '''console." \
-                                --header "Authorization: Bearer ''' + env.SLACK_WEBHOOK + '''" \
-                                --request POST "https://slack.com/api/chat.postMessage"
+                                --data '{
+                                    "channel": "#''' + slackChannel + '''",
+                                    "text": ":pipeline-failed: ''' + env.JOB_NAME + ''' build FAILED.\n''' + env.BUILD_URL + '''console."
+                                }' \
+                                --header "Content-type: application/json" \
+                                --location \
+                                --verbose \
+                                "''' + env.SLACK_WEBHOOK + '''"
                         ''')
                     }
                 }
@@ -69,14 +73,18 @@ def call(
             }
             fixed {
                 script {
-                    if (env.gitlabBranch == gitTargetBranch) {
+                    if (env.BRANCH_NAME == 'main') {
+                        // slackChannel argument must NOT include the leading # character, we add it here
                         sh(shellPreamble + '''
                             curl \
-                                --data "channel=''' + slackChannel + '''" \
-                                --data "emoji=:tada: " \
-                                --data "text=''' + env.JOB_NAME + ''' build FIXED.\n''' + env.BUILD_URL + '''console." \
-                                --header "Authorization: Bearer ''' + env.SLACK_WEBHOOK + '''" \
-                                --request POST "https://slack.com/api/chat.postMessage"
+                                --data '{
+                                    "channel": "#''' + slackChannel + '''",
+                                    "text": ":tada: ''' + env.JOB_NAME + ''' build FIXED.\n''' + env.BUILD_URL + '''console."
+                                }' \
+                                --header "Content-type: application/json" \
+                                --location \
+                                --verbose \
+                                "''' + env.SLACK_WEBHOOK + '''"
                         ''')
                     }
                 }
@@ -151,7 +159,7 @@ def call(
                     script {
                         sh(shellPreamble + '''
                             ${WORKSPACE}/.tmp/toolchain-management/libs/bash/iac/compliance_and_security_scanning.sh
-                            # urlencoding using CURL https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736
+                            # url encoding using CURL https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736https://gist.github.com/jaytaylor/5a90c49e0976aadfe0726a847ce58736
                             # Send payload via GitLab API https://docs.gitlab.com/ee/api/commits.html#post-comment-to-commit
                             curl \
                                 --form "note=# Compliance Scanning Results:\n- ${BUILD_URL}testReport/" \
