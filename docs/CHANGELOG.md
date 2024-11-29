@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.15] - 2024-11-28
+
+### FIX
+
+- `./libs/jenkins/pipeline/vars/SharedModule.groovy` node selection labels updated to better land on the IAC specific Jenkins nodes
+
 ## [0.61.14] - 2024-11-27
 
 ### FIX
