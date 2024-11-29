@@ -23,7 +23,7 @@ def call(
     String gitlabConnectionName = 'gitlab.kazan.myworldline.com'
     String gitlabGitSa          = 'cicd-technical-user'
     String gitTargetBranch      = 'main'
-    String jenkinsNodeLabels    = 'aws && fedora && toolchain'
+    String jenkinsNodeLabels    = 'aws && awscli && bambora && ecs && fedora40 && iac'
     String numToKeepStr         = '7'
     String shellPreamble        = 'set -eo pipefail; if [[ $LOG_LEVEL == "TRACE" ]]; then set -x; fi; if [[ -f "$HOME/.bashrc" ]]; then source "$HOME/.bashrc"; fi;'
     String slackWebhook         = 'SlackWebhook'
