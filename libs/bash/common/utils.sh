@@ -16,7 +16,7 @@ function append_if() {
 
 # Conditional append of a PATH add to a file
 #
-# Appends a single line code snipppet to (script) file
+# Appends a single line code snippet to (script) file
 # where a given path is conditionally added (prepended)
 # to the PATH variable
 #

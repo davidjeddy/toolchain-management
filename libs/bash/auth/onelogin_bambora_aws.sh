@@ -1,13 +1,18 @@
 #!/bin/bash -l
 
-# set -exo pipefail # For debuggin
+# set -exo pipefail # for debugging
 set -eo pipefail
 
-# shellcheck disable=SC1090
-source $HOME/.bashrc
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
+
+if [[ $LOG_LEVEL == "TRACE" ]]
+then 
+    set -x
+fi
 
 # Example: source /path/to/script/bambora_onelogin_aws.sh worldline-gc-connect-staging
-# Recommended: Add the script invokation to .basrc with an alias for each account: alias oli_bmbr_cicd_build_dev="source /path/to/script/onelogin_bambora_aws.sh worldline-gc-cicd-build-dev"
+# Recommended: Add the script invocation to .bashrc with an alias for each account: alias oli_bmbr_cicd_build_dev="source /path/to/script/onelogin_bambora_aws.sh worldline-gc-cicd-build-dev"
 # Version:
 # 0.0.1 - init
 # 0.1.0 - libs/bash/auth/onelogin_bambora_aws.sh now masks MFA token

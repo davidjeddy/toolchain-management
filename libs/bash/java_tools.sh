@@ -1,6 +1,6 @@
 #!/bin/false
 
-# preflight
+## configuration
 
 set -eo pipefail
 
@@ -9,9 +9,9 @@ then
     set -x
 fi
 
-# configuration
+## preflight
 
-# functions
+## functions
 
 function install_java_tools() {
     printf "INFO: Processing SonarQube Scanner.\n"

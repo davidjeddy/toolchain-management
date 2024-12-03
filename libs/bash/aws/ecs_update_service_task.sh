@@ -12,8 +12,8 @@ then
     set -x
 fi
 
-# example $HOME/Projects/Worldline/gitlab.test.igdcs.com/cicd/terraform/tools/toolchain-management/libs/bash/iac/cycle_modules.sh
-# usage   $HOME/Projects/Worldline/gitlab.test.igdcs.com/cicd/terraform/tools/toolchain-management/libs/bash/iac/cycle_modules.sh
+# example ./libs/bash/iac/cycle_modules.sh
+# usage   ./libs/bash/iac/cycle_modules.sh
 
 # sources
 

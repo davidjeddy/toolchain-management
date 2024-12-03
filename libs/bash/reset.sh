@@ -1,20 +1,17 @@
-#!/bin/bash -l
+#!/bin/false
 
-# preflight
+## configuration
 
 set -eo pipefail
-
-# shellcheck disable=SC1090
-# source "$SESSION_SHELL" || exit 1 # We do not need to source the shell before force resetting the system
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
     set -x
 fi
 
-# configuration
+## preflight
 
-# documentation
+## functions
 
 # DO NOT USE THIS unless you are 110% sure you want to hard reset your localhost.
 # This DELETES many programs.

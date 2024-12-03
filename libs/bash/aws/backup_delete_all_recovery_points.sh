@@ -1,6 +1,7 @@
 #!/bin/bash -l
 
-# set -exo pipefail # for debugging
+## configuration
+
 set -eo pipefail
 
 # shellcheck disable=SC1091
@@ -16,7 +17,7 @@ fi
 # versions
 # 0.0.1 - Init
 
-## Preflight
+## preflight
 
 if [[ ! $AWS_PROFILE ]]
 then

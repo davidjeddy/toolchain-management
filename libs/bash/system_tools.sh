@@ -1,6 +1,6 @@
 #!/bin/false
 
-# preflight
+## configuration
 
 set -eo pipefail
 
@@ -9,9 +9,9 @@ then
     set -x
 fi
 
-# configuration
+## preflight
 
-# functions
+## functions
 
 function dnf_systems() {
     # Note: We want to version pin these; but need to push everyone to the same major release of Fedora core; but this is not possible as we support every version the vendor supports

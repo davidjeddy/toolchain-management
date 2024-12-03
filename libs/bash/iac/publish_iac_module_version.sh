@@ -12,7 +12,9 @@ then
     set -x
 fi
 
-printf "INFO: Starting publis_iac_module_version.\n"
+## preflight
+
+printf "INFO: Starting public_iac_module_version.\n"
 
 if [[ ! "${1}" ]]
 then

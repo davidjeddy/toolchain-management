@@ -1,6 +1,7 @@
 #!/bin/bash -l
 
-# set -exo pipefail # when debuggin
+## configuration
+
 set -eo pipefail
 
 # shellcheck disable=SC1091
@@ -54,4 +55,4 @@ printf "INFO: DIFF_LIST: %s\n" "${DIFF_LIST}"
 
 exec ${DIFF_LIST}
 
-printf "INFO: Iac Compliance and Security scanninig completed.\n"
+printf "INFO: Iac Compliance and Security scanning completed.\n"

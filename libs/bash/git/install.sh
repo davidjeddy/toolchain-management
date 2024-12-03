@@ -1,8 +1,7 @@
 #!/bin/bash -l
 
-# preflight
+## configuration
 
-# set -exo pipefail # when debuggin
 set -eo pipefail
 
 # shellcheck disable=SC1091
