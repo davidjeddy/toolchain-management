@@ -68,7 +68,7 @@ Check the usage of variables inside the pipeline.environment{} block. Specifical
 
 Just wait. Localstack requires a lot of packages and version constraints sorting.
 
-# -----
+-----
 
 **Error**
 
@@ -81,3 +81,42 @@ Executing curl from cicd-build-* account targeting a remote host outside the VPC
 **Fix**
 
 Add the remote host DNS to the Bambora egress firewall allow list via the [tf-account-firewall](https://github.com/bambora/tf-account-firewall) project in Bambora Github.
+
+-----
+
+**Error**
+
+```
+FATAL ERROR: Unsupported terraform plan output format version (1.2).
+```
+
+**When**
+
+terraform-compliance ...
+
+**Fix**
+
+Update terraform-compliance to a version that supports the plan file version
+
+-----
+
+**Error**
+
+```
+$ terraform-compliance -f git:https://github.com/terraform-compliance/user-friendly-features.git -p plan.out.json
+WARNING: image platform (linux/amd64) does not match the expected platform (linux/arm64)
+terraform-compliance v1.3.48 initiated
+
+Using remote git repository: https://github.com/terraform-compliance/user-friendly-features.git
+ERROR: plan.out.json is not a file.
+```
+
+**When**
+
+terraform-compliance ...
+
+**Fix**
+
+If using the container version of tf-comp and Podman as the container runtime, Add `:Z` to the end of the mount argument configuration.
+
+-----

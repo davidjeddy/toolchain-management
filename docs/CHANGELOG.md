@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.17] - 2024-12-04
+
+### ADD
+
+- `terraform-compliance` IAC tool as the policy-as-code solution
+
 ## [0.61.16] - 2024-12-03
 
 ### FIX

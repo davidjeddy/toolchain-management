@@ -273,13 +273,7 @@ function iacCompliance() {
     {
         rm -rf ".tmp/junit-checkov.xml" || exit 1
         touch ".tmp/junit-checkov.xml" || exit 1
-        
-        # Because RHEL 7 + Pythin 3.8 have different minimal versions requirements of GLIBC
-        # https://jira.techno.ingenico.com/browse/PROS-2411
-        if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
-        then
-            printf "WARN: Running on an EOL release of Red Hat. Skipping checkov iacCompliance related invokations.\n"
-        elif [[ -f "checkov.yml" ]]
+        if [[ -f "checkov.yml" ]]
         then
             printf "INFO: checkov configuration file found, using it.\n"
             checkov \
@@ -318,7 +312,8 @@ function iacCompliance() {
 
         # find .tf and .hcl files in current folder comma separated, remove trailing comma using sed
         filesToScan=$(find . -maxdepth 1 -type f \( -name "*.tf" -o -name "*.hcl" \) -printf "%f," | sed 's/,$//')
-        if [[ -f "kics.yml" ]]; then
+        if [[ -f "kics.yml" ]]
+        then
             printf "INFO: KICS configuration file found, using it.\n"
             # kics cli argument `--queries-path` must contain an absolute path, else a `/` gets pre-pended.
             kics scan \
@@ -355,11 +350,32 @@ function iacCompliance() {
         exit 1
     }
 
+    printf "INF: terraform-compliance executing...\n"
+    {
+        rm -rf ".tmp/junit-terraform-compliance.xml" || exit 1
+        touch ".tmp/junit-terraform-compliance.xml" || exit 1
+        if [[ -f "terraform-compliance.yml" ]]
+        then
+            printf "INFO: terraform-compliance configuration file found, using it.\n"
+            terraform-compliance \
+                > ".tmp/junit-terraform-compliance.xml"
+        else
+            printf "INFO: terraform-compliance configuration NOT file found.\n"
+            terraform-compliance \
+                > ".tmp/junit-terraform-compliance.xml"
+        fi
+    } || {
+        printf "ERR: terraform-compliance failed. Check report saved to .tmp/junit-terraform-compliance.xml\n"
+        cat ".tmp/junit-terraform-compliance.xml"
+        exit 1
+    }
+
     printf "INFO: tfsec executing...\n"
     {
         rm -rf ".tmp/junit-tfsec.xml" || exit 1
         touch ".tmp/junit-tfsec.xml" || exit 1
-        if [[ -f "tfsec.yml" ]]; then
+        if [[ -f "tfsec.yml" ]]
+        then
             printf "INFO: tfsec configuration file found, using it.\n"
             tfsec . \
                 --concise-output \
@@ -564,10 +580,10 @@ function generateDiffList() {
     printf "%s" "${THIS_DIR_CHANGE_LIST}"
 }
 
-# Do not allow multi-account, multi-refion changes in the same MR.
+# Do not allow multi-account, multi-region changes in the same MR.
 # This is to prevent blowing up more than on deployment at a time.
 #
-# IE this is a blast radius contraint
+# IE this is a blast radius constraint
 # ARG $1 STRING list of modules paths
 # RETURN INT
 #

@@ -15,7 +15,7 @@ fi
 # usage ./libs/bash/install.sh (optional) branch_name
 # example ./libs/bash/install.sh fix/ICON-39280/connect_preprod_module_revert_to_0_36_7_due_to_kms_permissions
 
-# Version: 0.8.3  - 2024-10-30 - Now possible to set WL_GC_TOOLCHAIN_BRANCH as an ENV VAR in additiona to providing the value as argument 1
+# Version: 0.8.3  - 2024-10-30 - Now possible to set WL_GC_TOOLCHAIN_BRANCH as an ENV VAR in additional to providing the value as argument 1
 # Version: 0.8.3  - 2024-10-30 - De-coupling project install process and Toolchain install
 # Version: 0.8.2  - 2024-10-01 - ADD logic to skip tooling install if executed on a CI pipeline host
 # Version: 0.8.1  - 2024-07-16 - ADD logic to copy latest from toolchain to local project
@@ -76,7 +76,7 @@ then
     exit 1
 fi
 
-# For convience we allow projects to also trigger the TC install process only if NOT on an automation host
+# For convenience we allow projects to also trigger the TC install process only if NOT on an automation host
 # BUILD_URL indicates (Jenkins)[]
 # CI_JOB_URL indicates (GitLab)[https://docs.gitlab.com/ee/ci/variables/predefined_variables.html]
 # Do not allow in either case; we are de-coupling the TC project from downstream projects
