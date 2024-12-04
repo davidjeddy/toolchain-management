@@ -19,7 +19,7 @@ function install_additional_iac_tools() {
     printf "INFO: Ensure target dir for IAC provider cache exists\n"
     mkdir -p "$HOME/.terraform.d/plugin-cache" || exit 1
 
-    # IAC tool *env managers
+    # tfenv
     {
         rm -rf "$HOME/.tfenv" || true
         git clone --depth 1 --branch "$(cat "$WL_GC_TM_WORKSPACE"/.tfsec-version)" "https://github.com/tfutils/tfenv.git" "$HOME/.tfenv"
@@ -36,6 +36,7 @@ function install_additional_iac_tools() {
         exit 1
     }
 
+    # tgenv
     {
         rm -rf "$HOME/.tgenv" || true
         git clone --depth 1 --branch "$(cat "$WL_GC_TM_WORKSPACE"/.tgenv-version)" "https://github.com/tgenv/tgenv.git" "$HOME/.tgenv"
@@ -53,6 +54,7 @@ function install_additional_iac_tools() {
         exit 1
     }
 
+    # tofuenv
     {
         rm -rf "$HOME/.tofuenv" || true
         git clone --depth 1 --branch "$(cat "$WL_GC_TM_WORKSPACE"/.tofuenv-version)" "https://github.com/tofuutils/tofuenv.git" "$HOME/.tofuenv"
@@ -93,25 +95,8 @@ function install_additional_iac_tools() {
 
     # terraform-compliance
     {
-        if [[ ! $(which podman) ]]
-        then
-            printf "WARN: terraform-compliance requires a container runtime.\n"
-            exit 1
-        fi
-
-        printf "INFO: Cloning terraform-compliance vendor supplied test cases.\n"
-        rm -f "$HOME/.terraform-compliance" || true
-        git clone https://github.com/terraform-compliance/user-friendly-features.git "$HOME/.terraform-compliance/user-friendly-features"
-
-        printf "INFO: If prompted please select a remote registry to pull from (ECR > others > Docker Hub)\n"
-        podman pull eerkunt/terraform-compliance:"$(cat .terraform-compliance-version)"
-        append_if "function terraform-compliance() {
-    mkdir -p .terraform-compliance || true
-    cp -rf $HOME/.terraform-compliance/user-friendly-features .terraform-compliance;
-    podman run --rm -it -v $(pwd):/target:Z eerkunt/terraform-compliance:$(cat .terraform-compliance-version) \"\$@\";
-}" "$SESSION_SHELL"
-
-        printf "INFO: terraform-compliance build and install completed.\n"
+        pip3 install terraform-compliance=="$(cat "${WL_GC_TM_WORKSPACE}"/.terraform-compliance-version)"
+        printf "INFO: terraform-compliance install completed.\n"
     } || {
         printf "ERR: terraform-compliance failed to build and install.\n"
         exit 1

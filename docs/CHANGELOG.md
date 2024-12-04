@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.18] - 2024-12-04
+
+### ADD
+
+- `terraform-compliance` installed via PIP, not container image, to support execution in container based Jenkins nodes
+
 ## [0.61.17] - 2024-12-04
 
 ### ADD
