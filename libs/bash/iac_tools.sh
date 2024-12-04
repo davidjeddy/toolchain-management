@@ -91,6 +91,32 @@ function install_additional_iac_tools() {
         exit 1
     }
 
+    # terraform-compliance
+    {
+        if [[ ! $(which podman) ]]
+        then
+            printf "WARN: terraform-compliance requires a container runtime.\n"
+            exit 1
+        fi
+
+        printf "INFO: Cloning terraform-compliance vendor supplied test cases.\n"
+        rm -f "$HOME/.terraform-compliance" || true
+        git clone https://github.com/terraform-compliance/user-friendly-features.git "$HOME/.terraform-compliance/user-friendly-features"
+
+        printf "INFO: If prompted please select a remote registry to pull from (ECR > others > Docker Hub)\n"
+        podman pull eerkunt/terraform-compliance:"$(cat .terraform-compliance-version)"
+        append_if "function terraform-compliance() {
+    mkdir -p .terraform-compliance || true
+    cp -rf $HOME/.terraform-compliance/user-friendly-features .terraform-compliance;
+    podman run --rm -it -v $(pwd):/target:Z eerkunt/terraform-compliance:$(cat .terraform-compliance-version) \"\$@\";
+}" "$SESSION_SHELL"
+
+        printf "INFO: terraform-compliance build and install completed.\n"
+    } || {
+        printf "ERR: terraform-compliance failed to build and install.\n"
+        exit 1
+    }
+
     # XEOL
     {
         rm -rf "$HOME/.xeol" || true
