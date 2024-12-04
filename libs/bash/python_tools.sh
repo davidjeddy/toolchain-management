@@ -1,6 +1,6 @@
 #!/bin/false
 
-# preflight
+## configuration
 
 set -eo pipefail
 
@@ -9,9 +9,9 @@ then
     set -x
 fi
 
-# configuration
+## preflight
 
-# functions
+## functions
 
 # This is needed until we are able to start, use, and destroy ephemeral instances of localstack per app/service/pipeline execution
 function install_python_tools_package_localstack() {

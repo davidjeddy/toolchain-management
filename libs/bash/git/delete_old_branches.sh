@@ -1,9 +1,9 @@
 #!/bin/bash -l
 
-# set -exo pipefail # for debugging
+## configuration
+
 set -eo pipefail
 
-# Enforce the session load like an interactive user
 # shellcheck disable=SC1091
 source "$HOME/.bashrc" || exit 1
 
@@ -25,7 +25,7 @@ declare NOW_TIME
 printf "INFO: Setting defaults...\n"
 
 ALLOWED_TIME="2592000" # 30 days as seconds
-echo ${1}
+echo "${1}"
 if [[ $1 != "" ]]
 then
     ALLOWED_TIME="${1}"
@@ -36,7 +36,7 @@ NOW_TIME=$(date +%s)
 
 # -----
 
-printf "INFO: Processing branchs...\n"
+printf "INFO: Processing branches...\n"
 
 # `for/do` loops words, `while/read` loops lines. We want to loop per line
 printf "%s" "$BRANCHES" | while read -r BRANCH
@@ -76,7 +76,7 @@ do
         ## delete local branch
         git push "origin/$BRANCH_NAME"
 
-        ## TODO Trigger Jernkins multibranch pipeline scan or fail w/ INFO
+        ## TODO Trigger Jenkins multi-branch pipeline scan or fail w/ INFO
         continue
     fi
 

@@ -30,7 +30,7 @@ fi
 #   --target_host_port 8162 \
 #   ops-tooling
 
-## Preflight
+## preflight
 
 if [[ ! $AWS_PROFILE ]]
 then

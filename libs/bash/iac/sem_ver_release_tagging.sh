@@ -12,6 +12,8 @@ then
     set -x
 fi
 
+## preflight
+
 declare CHANGELOG_PATH
 declare LINES_FOR_CONTEXT
 declare MSG

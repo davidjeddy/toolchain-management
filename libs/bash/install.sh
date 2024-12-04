@@ -1,15 +1,18 @@
 #!/bin/bash -l
 
-# preflight
+## configuration
 
 set -eo pipefail
+
+# shellcheck disable=SC1091
+source "$HOME/.bashrc" || exit 1
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
     set -x
 fi
 
-# configuration
+## configuration
 
 declare OLD_PWD
 OLD_PWD="$(pwd)"
@@ -78,9 +81,9 @@ fi
 export HOME_USER_BIN
 printf "INFO: HOME_USER_BIN is %s\n" "${HOME_USER_BIN}"
 
-# functions
+## functions
 
-# logic
+## logic
 
 ### system packages
 

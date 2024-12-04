@@ -1,6 +1,6 @@
 #!/bin/false
 
-# preflight
+## configuration
 
 set -eo pipefail
 
@@ -9,9 +9,9 @@ then
     set -x
 fi
 
-# configuration
+## preflight
 
-# functions
+## functions
 
 function asdf_tools_install() {
     # Since we use this CLI invocation we can not (currently) have comments in the source file so here is what we would have

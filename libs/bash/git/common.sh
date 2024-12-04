@@ -40,7 +40,7 @@ function autoUpdate() {
         GITLAB_TOKEN=$(grep -A 1 "$GITLAB_HOST" "$HOME/.terraformrc" | sed -n '2 p' | awk '{print $3}' | jq -rM '.')
     fi
 
-    # Check if remote is avaiable
+    # Check if remote is available
     declare GL_HTTP_RES
     GL_HTTP_RES=$(curl \
         --location \
@@ -57,7 +57,7 @@ function autoUpdate() {
     # Version of toolchain in Gitlab via latest tag
     local VER_IN_GL
     VER_IN_GL=$(curl \
-        --header "Content-Type: appliction/json" \
+        --header "Content-Type: application/json" \
         --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
         --location \
         --silent \
@@ -88,7 +88,7 @@ function rebaseFromOriginMain() {
     # shellcheck disable=SC2181
     if [[ "$?" != 0 ]]
     then
-        printf "ERR: Looks like we are not able to cleanly rebase from origin/main. This would cause exessice work and possible merge conflicts.\n"
+        printf "ERR: Looks like we are not able to cleanly rebase from origin/main. This would cause existing work and possible merge conflicts.\n"
         printf "ERR: Please pull origin default branch and rebase before pushing this feature branch.\n"
         exit 1
     fi
@@ -111,7 +111,7 @@ function exec() {
 
     for THIS_DIR in "$@"
     do
-        # Path to shared modules root is the same as WORKSPACE; in depoloyment project there is additional dirs to traverse
+        # Path to shared modules root is the same as WORKSPACE; in deployment project there is additional dirs to traverse
         if [[ ${WORKSPACE} == ${THIS_DIR}* ]]
         then
             printf "INFO: Changing into WORKSPACE directory if it still exists: %s\n" "${WORKSPACE}"
@@ -124,10 +124,10 @@ function exec() {
         # Create tmp dir
         createTmpDir
 
-        # This process should only be exected during feature branch change committing
+        # This process should only be executed during feature branch change committing
         if [[ "${0?}" == *pre-commit ]]
         then
-            printf "INFO: Git pre-commit invokation detected.\n"
+            printf "INFO: Git pre-commit invocation detected.\n"
 
             # generate docs and meta-data
             documentation
@@ -139,7 +139,7 @@ function exec() {
             continue
         fi
 
-        # Any other invokation executes the full battery of checks
+        # Any other invocation executes the full battery of checks
         doNotAllowSharedModulesInsideDeploymentProjects
 
         # SAST
@@ -212,11 +212,11 @@ function documentation() {
 function generateSBOM() {
     printf "INFO: starting generateSBOM()\n"
 
-    # Because RHEL 7 + Pythin 3.8 have different minimal versions requirements of GLIBC
+    # Because RHEL 7 + Python 3.8 have different minimal versions requirements of GLIBC
     # https://jira.techno.ingenico.com/browse/PROS-2411
     if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
     then
-        printf "WARN: Running on an EOL release of Red Hat. Skipping checkov generateSBOM related invokations.\n"
+        printf "WARN: Running on an EOL release of Red Hat. Skipping checkov generateSBOM related invocations.\n"
         return
     fi
 
@@ -232,7 +232,7 @@ function generateSBOM() {
     fi
 
     {
-        # Because RHEL 7 + Pythin 3.8 have different minimal versions requirements of GLIBC
+        # Because RHEL 7 + Python 3.8 have different minimal versions requirements of GLIBC
         # https://jira.techno.ingenico.com/browse/PROS-2411
         if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
         then
@@ -241,7 +241,7 @@ function generateSBOM() {
         fi
 
         if [[ -f "checkov.yml" ]]; then
-            # use configuration file if present. Created due to terraform/aws/worldline-gc-keycloak-dev/eu-west-1/keycloak/iohd being created BEFORE complaince was mandatory
+            # use configuration file if present. Created due to terraform/aws/worldline-gc-keycloak-dev/eu-west-1/keycloak/iohd being created BEFORE compliance was mandatory
             checkov \
                 --config-file checkov.yml \
                 --directory . \
@@ -519,7 +519,7 @@ function validateBranchName() {
         printf "* fix/ICON-38823/enable_resource_policy_on_efs_volumes_connect_preprod\n"
         printf "* add/ICON-38546/activegate_update_cron_task\n"
         printf "* fix/ENINC-39733/rds_instance_size_for_connect_prod\n"
-        printf "* fix/INC0784730/stag_config_center_website_monitor_downga.\n"
+        printf "* fix/INC0784730/stag_config_center_website_monitor_down.\n"
         exit 1
     fi
 }
@@ -592,7 +592,7 @@ function blastRadiusConstraintsPreventMultipleDeploymentChangeSets() {
 
     printf "INFO: DEPLOYMENT_PREFIX: %s\n" "${DEPLOYMENT_PREFIX}"
     printf "INFO: DIFF_LIST: \n%s\n" "${DIFF_LIST}"
-    # iterate through the entire DIFF_LIST, if any deploymenth path does not match we exit with error
+    # iterate through the entire DIFF_LIST, if any deployment path does not match we exit with error
     # https://www.baeldung.com/linux/shell-script-iterate-over-string-list
     for DEPLOYMENT_PATH in ${DIFF_LIST}
     do

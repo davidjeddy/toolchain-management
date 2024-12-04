@@ -1,6 +1,6 @@
 #!/bin/false
 
-# preflight
+## configuration
 
 set -eo pipefail
 
@@ -9,9 +9,9 @@ then
     set -x
 fi
 
-# configuration
+## preflight
 
-# functions
+## functions
 
 function install_additional_iac_tools() {
     printf "INFO: starting install_additional_tools()\n"
