@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.19] - 2024-12-05
+
+### FIX
+
+- `terraform-compliance` output now plan.json to align with community pattern
+
 ## [0.61.18] - 2024-12-04
 
 ### ADD
