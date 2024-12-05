@@ -212,7 +212,7 @@ function documentation() {
 function generateSBOM() {
     printf "INFO: starting generateSBOM()\n"
 
-    # Because RHEL 7 + Python 3.8 have different minimal versions requirements of GLIBC
+    # Because RHEL 7 + Python 3.x have different minimal versions requirements of GLIBC
     # https://jira.techno.ingenico.com/browse/PROS-2411
     if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
     then
@@ -232,14 +232,6 @@ function generateSBOM() {
     fi
 
     {
-        # Because RHEL 7 + Python 3.8 have different minimal versions requirements of GLIBC
-        # https://jira.techno.ingenico.com/browse/PROS-2411
-        if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
-        then
-            printf "WARN: Running on an EOL release of Red Hat. Skipping checkov.\n"
-            return
-        fi
-
         if [[ -f "checkov.yml" ]]; then
             # use configuration file if present. Created due to terraform/aws/worldline-gc-keycloak-dev/eu-west-1/keycloak/iohd being created BEFORE compliance was mandatory
             checkov \
@@ -269,41 +261,48 @@ function generateSBOM() {
 function iacCompliance() {
     printf "INFO: starting iacCompliance()\n"
 
-    printf "INFO: checkov executing...\n"
-    {
-        rm -rf ".tmp/junit-checkov.xml" || exit 1
-        touch ".tmp/junit-checkov.xml" || exit 1
-        if [[ -f "checkov.yml" ]]
-        then
-            printf "INFO: checkov configuration file found, using it.\n"
-            checkov \
-                --config-file checkov.yml \
-                --directory . \
-                --download-external-modules false \
-                --framework terraform \
-                --quiet \
-                --skip-download \
-                --skip-path ../ \
-                --skip-path .terraform \
-                -o junitxml \
-                > ".tmp/junit-checkov.xml"
-        else
-            printf "INFO: checkov configuration NOT file found.\n"
-            checkov \
-                --directory . \
-                --download-external-modules false \
-                --framework terraform \
-                --quiet \
-                --skip-download \
-                --skip-path ../ \
-                --skip-path .terraform \
-                -o junitxml \
-                > ".tmp/junit-checkov.xml"
-        fi
-    } || {
-        printf ".tmp/junit-checkov.xml\n"
-        exit 1
-    }
+    # Because RHEL 7 + Python 3.x have different minimal versions requirements of GLIBC
+    # https://jira.techno.ingenico.com/browse/PROS-2411
+    if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
+    then
+        printf "WARN: Running on an EOL release of Red Hat. Skipping checkov compliance scanning invocations.\n"
+    else
+        printf "INFO: checkov executing...\n"
+        {
+            rm -rf ".tmp/junit-checkov.xml" || exit 1
+            touch ".tmp/junit-checkov.xml" || exit 1
+            if [[ -f "checkov.yml" ]]
+            then
+                printf "INFO: checkov configuration file found, using it.\n"
+                checkov \
+                    --config-file checkov.yml \
+                    --directory . \
+                    --download-external-modules false \
+                    --framework terraform \
+                    --quiet \
+                    --skip-download \
+                    --skip-path ../ \
+                    --skip-path .terraform \
+                    -o junitxml \
+                    > ".tmp/junit-checkov.xml"
+            else
+                printf "INFO: checkov configuration NOT file found.\n"
+                checkov \
+                    --directory . \
+                    --download-external-modules false \
+                    --framework terraform \
+                    --quiet \
+                    --skip-download \
+                    --skip-path ../ \
+                    --skip-path .terraform \
+                    -o junitxml \
+                    > ".tmp/junit-checkov.xml"
+            fi
+        } || {
+            printf ".tmp/junit-checkov.xml\n"
+            exit 1
+        }
+    fi
 
     printf "INFO: KICS executing...\n"
     {
@@ -350,25 +349,32 @@ function iacCompliance() {
         exit 1
     }
 
-    printf "INF: terraform-compliance executing...\n"
-    {
-        rm -rf ".tmp/junit-terraform-compliance.xml" || exit 1
-        touch ".tmp/junit-terraform-compliance.xml" || exit 1
+    # Because RHEL 7 + Python 3.x have different minimal versions requirements of GLIBC
+    # https://jira.techno.ingenico.com/browse/PROS-2411
+    if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
+    then
+        printf "WARN: Running on an EOL release of Red Hat. Skipping terraform-compliance scanning invocations.\n"
+    else
+        printf "INF: terraform-compliance executing...\n"
+        {
+            rm -rf ".tmp/junit-terraform-compliance.xml" || exit 1
+            touch ".tmp/junit-terraform-compliance.xml" || exit 1
 
-        # terraform-compliance requires a plan output in json, just do the entire IAC lifecycle to be sure
-        terraform plan -no-color -out=plan.out
-        terraform show -json plan.out > plan.json
-        # TODO remove `--no-failure` once overrides are available
-        terraform-compliance \
-            --features "$HOME/.terraform-compliance/user-friendly-features/aws" \
-            --no-failure \
-            --planfile plan.json \
-        > ".tmp/junit-terraform-compliance.xml"
-    } || {
-        printf "ERR: terraform-compliance failed. Check report saved to .tmp/junit-terraform-compliance.xml\n"
-        cat ".tmp/junit-terraform-compliance.xml"
-        exit 1
-    }
+            # terraform-compliance requires a plan output in json, just do the entire IAC lifecycle to be sure
+            terraform plan -no-color -out=plan.out
+            terraform show -json plan.out > plan.json
+            # TODO remove `--no-failure` once overrides are available
+            terraform-compliance \
+                --features "$HOME/.terraform-compliance/user-friendly-features/aws" \
+                --no-failure \
+                --planfile plan.json \
+            > ".tmp/junit-terraform-compliance.xml"
+        } || {
+            printf "ERR: terraform-compliance failed. Check report saved to .tmp/junit-terraform-compliance.xml\n"
+            cat ".tmp/junit-terraform-compliance.xml"
+            exit 1
+        }
+    fi
 
     printf "INFO: tfsec executing...\n"
     {

@@ -41,6 +41,7 @@ function dnf_systems() {
         skopeo \
         tk-devel \
         unzip \
+        xz \
         yq
 
     # Dunno why we have to reinstall pip every time but if this is not done the we get the `bash: pip: command not found` error
@@ -78,7 +79,7 @@ registries = [\"891377244928.dkr.ecr.eu-west-1.amazonaws.com\", \"public.ecr.aws
 short-name-mode = \"enforcing\"" | sudo tee /etc/containers/registries.conf
     cat /etc/containers/registries.conf
 
-    # enable innvocation of `podman` as a bianry replacement for `docker` due to the jenkins-pipeline-lib requiring `docker` all over the place
+    # enable invocation of `podman` as a binary replacement for `docker` due to the jenkins-pipeline-lib requiring `docker` all over the place
     if [[ ! -f "/usr/bin/docker" ]]
     then
         sudo ln -sfn /usr/bin/podman /usr/bin/docker

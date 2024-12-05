@@ -12,6 +12,17 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.21] - 2024-12-05
+
+### ADD
+
+- `xz` is now installed via `dnf` to ensure the system has it available
+
+### FIX
+
+- Disable `checkov` on Red Hat 7 hosts due to Python incompatibility
+- Disable `terraform-compliance` on Red Hat 7 hosts due to Python incompatibility
+
 ## [0.61.20] - 2024-12-05
 
 ### FIX
