@@ -354,16 +354,16 @@ function iacCompliance() {
     {
         rm -rf ".tmp/junit-terraform-compliance.xml" || exit 1
         touch ".tmp/junit-terraform-compliance.xml" || exit 1
-        if [[ -f "terraform-compliance.yml" ]]
-        then
-            printf "INFO: terraform-compliance configuration file found, using it.\n"
-            terraform-compliance \
-                > ".tmp/junit-terraform-compliance.xml"
-        else
-            printf "INFO: terraform-compliance configuration NOT file found.\n"
-            terraform-compliance \
-                > ".tmp/junit-terraform-compliance.xml"
-        fi
+
+        # terraform-compliance requires a plan output in json, just do the entire IAC lifecycle to be sure
+        terraform plan -no-color -out=plan.out
+        terraform show -json plan.out > plan.json
+        # TODO remove `--no-failure` once overrides are available
+        terraform-compliance \
+            --features "$HOME/.terraform-compliance/user-friendly-features/aws" \
+            --no-failure \
+            --planfile plan.json \
+        > ".tmp/junit-terraform-compliance.xml"
     } || {
         printf "ERR: terraform-compliance failed. Check report saved to .tmp/junit-terraform-compliance.xml\n"
         cat ".tmp/junit-terraform-compliance.xml"
