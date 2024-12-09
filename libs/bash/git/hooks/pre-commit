@@ -48,6 +48,6 @@ then
 fi
 printf "INFO: DIFF_LIST: %s\n" "${DIFF_LIST}"
 
-exec ${DIFF_LIST}
+execute "${DIFF_LIST}"
 
 printf "INFO: Git pre-commit hook completed successfully.\n"

@@ -42,6 +42,6 @@ then
 fi
 printf "INFO: DIFF_LIST: %s\n" "${DIFF_LIST}"
 
-exec ${DIFF_LIST}
+execute "${DIFF_LIST}"
 
 printf "INFO: Git pre-push hook completed successfully.\n"

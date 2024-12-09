@@ -1,17 +1,17 @@
-#!/bin/bash -l
+#!/bin/false
 
-# set -exo pipefail # for debugging
+## configuration
+
 set -eo pipefail
-
-# shellcheck disable=SC1091
-source "$HOME/.bashrc" || exit 1
 
 if [[ $LOG_LEVEL == "TRACE" ]]
 then 
     set -x
 fi
 
-# logic
+## preflight
+
+## functions
 
 if [[ ! $WORKSPACE ]]
 then
@@ -94,8 +94,8 @@ function rebaseFromOriginMain() {
     fi
 }
 
-function exec() {
-    printf "INFO: starting exec()\n"
+function execute() {
+    printf "INFO: starting execute()\n"
 
     if [[ ! ${1} ]]
     then
@@ -546,9 +546,13 @@ function validateBranchName() {
     fi
 }
 
-# Non-interactive functions
+# Non-interactive functions. Called from and output consumed by other functions, not for end-user usage.
 
-# This fn() will return EITHER an empty string (non-found) OR a string list of sorted uniq strings
+# This fn() will return EITHER an empty string (no changes detected) OR a string list of sorted uniq strings
+#
+# ARG $1 STRING list of modules paths
+# RETURN STRING list of sort, uniq paths excluding ignored expressions
+#
 function generateDiffList() {
     if [[ ! ${1} ]]
     then
@@ -571,14 +575,10 @@ function generateDiffList() {
         grep -v sbom.xml |
         grep -v terraform.tf
     )
-    if [[ ! $THIS_FILE_CHANGE_LIST ]]
-    then
-        printf "%s" "${THIS_FILE_CHANGE_LIST}"
-    fi
-
     if [[ ! "$THIS_FILE_CHANGE_LIST" ]]
     then
-        return
+        echo -n ""
+        return 
     fi
 
     local THIS_DIR_CHANGE_LIST
@@ -598,8 +598,8 @@ function blastRadiusConstraintsPreventMultipleDeploymentChangeSets() {
 
     if [[ ! ${1} ]]
     then
-        printf "ERR: Argument 1 must be list of IAC module paths.\n"
-        exit 1
+        printf "INFO: No list of modules provided to process, skipping.\n"
+        exit 0
     fi
 
     # extract the deployment path
