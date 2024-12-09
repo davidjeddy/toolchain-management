@@ -21,7 +21,18 @@ function asdf_tools_install() {
     # Added via local `plugin add`
     # https://asdf-vm.com/manage/configuration.html
     # https://github.com/asdf-vm/asdf/issues/276
-    cut -d' ' -f1 ./.tool-versions | xargs -I{} asdf plugin add  {}
+    if [[ $(asdf plugin list installed) != "*" ]]
+    then
+        printf "INFO: Removing existing asdf-vm plugins.\n"
+        asdf plugin list installed | xargs -I{} asdf plugin remove {} 
+    fi
+
+    # List installed plugins
+    asdf plugin list
+    # Add plugins from configuration
+    cut -d' ' -f1 ./.tool-versions | xargs -I{} asdf plugin add {}
+    # Install packages
     asdf install
+    # Just to be sure
     asdf reshim
 }

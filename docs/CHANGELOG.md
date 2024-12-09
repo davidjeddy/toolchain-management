@@ -12,6 +12,17 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.62.2] - 2024-12-09
+
+### FIX
+
+- `./libs/bash/reset.sh` updated to 0.62.x paths
+- `asdf-vm` install now removed plugins before installing
+
+### REMOVE
+
+- `infracost` due to not being used and 401 return from GitHub during install
+
 ## [0.62.1] - 2024-12-09
 
 ### FIX
