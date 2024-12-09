@@ -12,12 +12,19 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
-## [0.61.22] - 2024-12-06
+## [0.62.1] - 2024-12-09
+
+### FIX
+
+- terraform-compliance output logging and init if needed
+
+## [0.62.0] - 2024-12-09
 
 ### FIX
 
 - `./libs/jenkins/pipeline/vars/SharedModule.groovy` to use var for target branch instead of 'main' repeating
-- Renamed `exec()` is a [special builtin function in Bash 5](https://www.gnu.org/software/bash/manual/html_node/Special-Builtins.html)
+- Renamed `exec()` is a special builtin function in Bash 5
+- `generateDiffList()` when the output is an empty string (no IAC changes detected)
 
 ## [0.61.21] - 2024-12-05
 
