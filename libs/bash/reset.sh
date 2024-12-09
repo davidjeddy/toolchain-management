@@ -14,13 +14,15 @@ fi
 ## functions
 
 # DO NOT USE THIS unless you are 110% sure you want to hard reset your localhost.
-# This DELETES many programs.
 # This DELETES .bashrc
 # This DELETES .toolchainrc
+# This DELETES many configurations and programs
+# This DOES DESTRUCTION AND NON_RECOVERABLE CHANGES
 
 # example sudo ./libs/bash/reset.sh
 # usage sudo ./libs/bash/reset.sh
 
+# version 0.3.0 - Updated for 0.62.x release
 # version 0.2.0 - Remove tools installed via Aqua (deprecated) package manager - David Eddy
 # version 0.1.0 - FIX to only support Fedora hosts and reset .bashrc from source - David Eddy
 # version 0.0.1 - David Eddy
@@ -59,16 +61,30 @@ then
       --requirement requirements.txt
 fi
 
-# 0.61.0
-yes | sudo rm -f "$HOME/.tool-versions " || true
+# 0.62.x
+
+yes | sudo rm -f "$HOME/.asdf" || true
+yes | sudo rm -f "$HOME/.asdfrc" || true
+yes | sudo rm -f "$HOME/.kics" || true
+yes | sudo rm -f "$HOME/.local" || true
+yes | sudo rm -f "$HOME/.terraform-compliance" || true
+yes | sudo rm -f "$HOME/.tfenv" || true
+yes | sudo rm -f "$HOME/.tgenv" || true
+yes | sudo rm -f "$HOME/.tofuenv" || true
+yes | sudo rm -f "$HOME/.tool-versions" || true
+yes | sudo rm -f "$HOME/.xeol" || true
+yes | sudo rm -f "$HOME/aquaproj-aqua" || true
+
+# 0.61.x
+yes | sudo rm -f "$HOME/.tool-versions" || true
 yes | sudo rm -f "$HOME/.toolchainrc" || true
 yes | sudo rm -rf "$HOME/.asdf/" || true
 yes | sudo rm -rf "$HOME/.local/lib/python3.12/site-packages" || true
 yes | sudo rm /usr/bin/docker || true
 
-# 0.59.0
+# 0.59.x
 yes | sudo rm -rf "$HOME/.local/bin/" || true
-yes | sudo rm -rf "$HOME/.local/bin/mavenn" || true
+yes | sudo rm -rf "$HOME/.local/bin/maven" || true
 yes | sudo rm -rf "$HOME/.local/bin/sonar-scanner" || true
 yes | sudo rm -rf "$HOME/.kics-installer" || true
 yes | sudo rm -rf "$HOME/.aqua" || true
@@ -79,7 +95,7 @@ yes | sudo rm -rf "$HOME/.m2" || true
 yes | sudo rm -rf "$HOME/.pyenv" || true
 yes | sudo rm -rf "$HOME/.terraform.d/plugin-cache" || true
 
-# 0.56.0
+# 0.56.x
 yes | sudo rm -rf /usr/bin/maven || true
 yes | sudo rm -rf /usr/bin/mvn || true
 yes | sudo rm -rf /usr/bin/pip* || true
