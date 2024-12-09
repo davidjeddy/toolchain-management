@@ -53,6 +53,6 @@ then
 fi
 printf "INFO: DIFF_LIST: %s\n" "${DIFF_LIST}"
 
-exec ${DIFF_LIST}
+execute "${DIFF_LIST}"
 
 printf "INFO: Iac Compliance and Security scanning completed.\n"

@@ -4,8 +4,8 @@
 // Library Imports
 
 // https://stackoverflow.com/questions/61106044/condition-in-jenkins-pipeline-on-the-triggers-directive
-def runCron(String cronSchedule) {
-    if ( env.BRANCH_NAME == 'main' ) {
+def runCron(String cronSchedule, gitTargetBranch) {
+    if ( env.BRANCH_NAME == gitTargetBranch) {
         return cronSchedule
     }
     return ''
@@ -23,7 +23,7 @@ def call(
     String gitlabConnectionName = 'gitlab.kazan.myworldline.com'
     String gitlabGitSa          = 'cicd-technical-user'
     String gitTargetBranch      = 'main'
-    String jenkinsNodeLabels    = 'aws && awscli && bambora && ecs && fedora40 && iac'
+    String jenkinsNodeLabels    = 'aws && awscli && bambora && ecs && iac'
     String numToKeepStr         = '7'
     String shellPreamble        = 'set -eo pipefail; if [[ $LOG_LEVEL == "TRACE" ]]; then set -x; fi; if [[ -f "$HOME/.bashrc" ]]; then source "$HOME/.bashrc"; fi;'
     String slackWebhook         = 'SlackWebhook'
@@ -49,12 +49,12 @@ def call(
             timestamps()
         }
         parameters { // https://www.jenkins.io/doc/book/pipeline/syntax/#parameters
-            string(name: 'TOOLCHAIN_BRANCH', defaultValue: 'main')
+            string(name: 'TOOLCHAIN_BRANCH', defaultValue: gitTargetBranch)
         }
         post { // always, changed, fixed, regression, aborted, failure, success, unstable, unsuccessful, and cleanup
             failure {
                 script {
-                    if (env.BRANCH_NAME == 'main') {
+                    if (env.BRANCH_NAME == gitTargetBranch) {
                         // slackChannel argument must NOT include the leading # character, we add it here
                         sh(shellPreamble + '''
                             curl \
@@ -73,7 +73,7 @@ def call(
             }
             fixed {
                 script {
-                    if (env.BRANCH_NAME == 'main') {
+                    if (env.BRANCH_NAME == gitTargetBranch) {
                         // slackChannel argument must NOT include the leading # character, we add it here
                         sh(shellPreamble + '''
                             curl \
@@ -132,7 +132,7 @@ def call(
             stage('Git Checkout') {
                 steps {
                     echo 'Checkout main branch for compliance, sast, tagging operations'
-                    git branch: 'main',
+                    git branch: gitTargetBranch,
                         credentialsId: gitlabGitSa,
                         url: env.GIT_URL
                     echo 'Checkout feature branch for pipeline execution'
@@ -179,7 +179,7 @@ def call(
             stage('Tagging') {
                 steps {
                     script {
-                        if (env.BRANCH_NAME == 'main') {
+                        if (env.BRANCH_NAME == gitTargetBranch) {
                             withCredentials([string(
                                 credentialsId:  gitlabApiPat,
                                 variable:       'gitlabPAT'
@@ -194,7 +194,7 @@ def call(
             }
         }
         triggers {
-            cron( runCron(cronSchedule) )
+            cron( runCron(cronSchedule, gitTargetBranch) )
         }
     }
 }

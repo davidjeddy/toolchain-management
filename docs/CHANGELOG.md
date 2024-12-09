@@ -12,6 +12,13 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.61.22] - 2024-12-06
+
+### FIX
+
+- `./libs/jenkins/pipeline/vars/SharedModule.groovy` to use var for target branch instead of 'main' repeating
+- Renamed `exec()` is a [special builtin function in Bash 5](https://www.gnu.org/software/bash/manual/html_node/Special-Builtins.html)
+
 ## [0.61.21] - 2024-12-05
 
 ### ADD
