@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.62.3] - 2024-12-12
+
+### FIX
+
+- Only run `terraform-compliance` on deployment modules
+
 ## [0.62.2] - 2024-12-09
 
 ### FIX

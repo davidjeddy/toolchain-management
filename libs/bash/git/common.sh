@@ -360,19 +360,20 @@ function iacCompliance() {
             rm -rf ".tmp/junit-terraform-compliance.xml" || exit 1
             touch ".tmp/junit-terraform-compliance.xml" || exit 1
 
-            if [[ ! -d ".terraform" ]]
+            # Only run if module initialized (ie, is a deployment module)
+            if [[ -d ".terraform" ]]
             then
+                # terraform-compliance requires a plan output in json, just do the entire IAC lifecycle to be sure
                 terraform init
+                terraform plan -no-color -out=plan.out
+                terraform show -json plan.out > plan.json
+                # TODO remove `--no-failure` once overrides are available
+                terraform-compliance \
+                    --features "$HOME/.terraform-compliance/user-friendly-features/aws" \
+                    --no-failure \
+                    --planfile plan.json \
+                > ".tmp/junit-terraform-compliance.xml"
             fi
-            # terraform-compliance requires a plan output in json, just do the entire IAC lifecycle to be sure
-            terraform plan -no-color -out=plan.out
-            terraform show -json plan.out > plan.json
-            # TODO remove `--no-failure` once overrides are available
-            terraform-compliance \
-                --features "$HOME/.terraform-compliance/user-friendly-features/aws" \
-                --no-failure \
-                --planfile plan.json \
-                | tee ".tmp/junit-terraform-compliance.xml"
         } || {
             printf "ERR: terraform-compliance failed. Check report saved to .tmp/junit-terraform-compliance.xml\n"
             cat ".tmp/junit-terraform-compliance.xml"
