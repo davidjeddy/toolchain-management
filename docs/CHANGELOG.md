@@ -12,6 +12,15 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.0] - 2024-12-16
+
+### ADD
+
+- `./libs/jenkins/pipelines/vars/ContainerImage.groovy` shared pipeline to centralize container image building for images hosted in ECR.
+  - Does NOT and will not support any registry other than AWS ECR
+  - Includes `dive` quality check utility
+  - Integration with GitLab and daily cron build checking (just like IAC modules)
+
 ## [0.62.3] - 2024-12-12
 
 ### FIX
