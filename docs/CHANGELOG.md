@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.1] - 2024-12-16
+
+### REMOVE
+
+- `*dnf` packages from PIP requirements.txt, OS package manager version should not be managed by user-space processes
+
 ## [0.63.0] - 2024-12-16
 
 ### ADD
