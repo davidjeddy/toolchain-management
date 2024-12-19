@@ -9,6 +9,12 @@ then
     set -x
 fi
 
+declare  GITLAB_HOST
+GITLAB_HOST="gitlab.kazan.myworldline.com" # do not include protocol
+
+declare GITLAB_PROJECT_ID
+GITLAB_PROJECT_ID="78445" # Toolchain project id
+
 ## preflight
 
 ## functions
@@ -23,22 +29,21 @@ fi
 
 ## Functions
 
-function autoUpdate() {
-    printf "INFO: starting autoUpdate()\n"
+### Helpers
 
-    local GITLAB_HOST
-    GITLAB_HOST="gitlab.kazan.myworldline.com"
-
-    local GITLAB_PROJECT_ID
-    GITLAB_PROJECT_ID="78445"
-
+function getGLtoken() {
     # automation is always jenkins, credentials store provides ENV VAR values
-    if [[ $(whoami) != "jenkins" ]]
+    if [[ $(whoami) != "jenkins" && -f "$HOME/.terraformrc" ]]
     then
         # GitLab Pat token from $HOME/.terraformrc
-        local GITLAB_TOKEN
-        GITLAB_TOKEN=$(grep -A 1 "$GITLAB_HOST" "$HOME/.terraformrc" | sed -n '2 p' | awk '{print $3}' | jq -rM '.')
+        grep -A 1 "$GITLAB_HOST" "$HOME/.terraformrc" | sed -n '2 p' | awk '{print $3}' | jq -rM '.'
     fi
+}
+
+### Logic
+
+function autoUpdate() {
+    printf "INFO: starting autoUpdate()\n"
 
     # Check if remote is available
     declare GL_HTTP_RES
@@ -58,7 +63,7 @@ function autoUpdate() {
     local VER_IN_GL
     VER_IN_GL=$(curl \
         --header "Content-Type: application/json" \
-        --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+        --header "PRIVATE-TOKEN: $(getGLtoken $GITLAB_HOST)" \
         --location \
         --silent \
         "https://$GITLAB_HOST/api/v4/projects/$GITLAB_PROJECT_ID/repository/tags")
@@ -135,6 +140,8 @@ function execute() {
             generateSBOM
             # format, lint, and syntax
             iacLinting
+            # Module Version Check
+            moduleVersionCheck
             # jump to the next item in "$@" list
             continue
         fi
@@ -520,6 +527,87 @@ function iacLinting() {
         cat ".tmp/junit-tflint.xml"
         exit 1
     }
+}
+
+# list *.tf files changed since last commit
+# grep file for "source"
+# extract value path
+# git::https://gitlab.kazan.myworldline.com/cicd/terraform/modules/worldline/terraform-aws-toolbox.git -> https://gitlab.kazan.myworldline.com/cicd/terraform/modules/worldline/terraform-aws-toolbox.git
+# extract value ref version
+# Pull latest tag
+# if not match, exit ERR
+function moduleVersionCheck() {
+    printf "INFO: starting moduleVersionCheck()\n"
+
+    # Always check against the previous commit what has changed.
+    local DIFF_FILE_LIST
+    DIFF_FILE_LIST=$(git diff HEAD~1 --name-only | grep ".tf$" | sort | uniq)
+    printf "INFO: DIFF_FILE_LIST for moduleVersionCheck(): \n%s\n" "${DIFF_FILE_LIST}"
+
+    for FILE in ${DIFF_FILE_LIST}
+    do
+        printf "INFO: FILE: %s\n" "${FILE}"
+
+        local FILENAME
+        FILENAME=$(basename "$FILE")
+        printf "INFO: FILENAME: %s\n" "${FILENAME}"
+
+        local MODULE_SOURCE_DEFINED
+        MODULE_SOURCE_DEFINED=$(grep -w "source" "${FILENAME}")
+        printf "INFO: MODULE_SOURCE_DEFINED: %s\n" "${MODULE_SOURCE_DEFINED}"
+
+        local SOURCE_MODULE_NO_QUOTES
+        # shellcheck disable=SC2001
+        SOURCE_MODULE_NO_QUOTES=$(echo "${MODULE_SOURCE_DEFINED}" | sed 's/\"//g') 
+        printf "INFO: SOURCE_MODULE_NO_QUOTES: %s\n" "${SOURCE_MODULE_NO_QUOTES}"
+
+        local SOURCE_MODULE_URL
+        # shellcheck disable=SC2001
+        SOURCE_MODULE_URL=$(echo "${SOURCE_MODULE_NO_QUOTES}" | sed 's/^.*https/https/g') # remove everything before "https"
+        printf "INFO: SOURCE_MODULE_URL: %s\n" "${SOURCE_MODULE_URL}"
+
+        local SOURCE_MODULE_DNS_PATH
+        # shellcheck disable=SC2001
+        SOURCE_MODULE_DNS_PATH=$(echo "${SOURCE_MODULE_URL}" | sed 's/\.git.*$//g' ) # remove everything after ".git"
+        printf "INFO: SOURCE_MODULE_DNS_PATH: %s\n" "${SOURCE_MODULE_DNS_PATH}"
+
+        local SOURCE_MODULE_PATH
+        SOURCE_MODULE_PATH=$(echo "${SOURCE_MODULE_DNS_PATH}" | sed  's/^.*com\///g' ) # remove everything after ".git"
+        printf "INFO: SOURCE_MODULE_PATH: %s\n" "${SOURCE_MODULE_PATH}"
+
+        local SOURCE_MODULE_VERSION
+        # shellcheck disable=SC2001
+        SOURCE_MODULE_VERSION=$(echo "${SOURCE_MODULE_URL}" | sed 's/^.*ref=//g' ) # remove everything after ".git"
+        printf "INFO: SOURCE_MODULE_VERSION: %s\n" "${SOURCE_MODULE_VERSION}"
+
+        local REMOTE_PROJECT_ID
+        REMOTE_PROJECT_ID=$(curl \
+            --header "Content-Type: application/json" \
+            --header "PRIVATE-TOKEN: $(getGLtoken $GITLAB_HOST)" \
+            --location \
+            --silent \
+            "https://$GITLAB_HOST/api/v4/projects/$(echo -n "${SOURCE_MODULE_PATH}" | jq -s -R -r @uri)" \
+            | jq -rM '.id'
+        )
+        printf "INFO: REMOTE_PROJECT_ID: %s\n" "${REMOTE_PROJECT_ID}"
+
+        local REMOTE_LATEST_VERSION
+        REMOTE_LATEST_VERSION=$(curl \
+            --header "Content-Type: application/json" \
+            --header "PRIVATE-TOKEN: $(getGLtoken $GITLAB_HOST)" \
+            --location \
+            --silent \
+            "https://$GITLAB_HOST/api/v4/projects/$REMOTE_PROJECT_ID/repository/tags" \
+            | jq -rM '.[0].name'
+        )
+        printf "INFO: REMOTE_LATEST_VERSION: %s\n" "${REMOTE_LATEST_VERSION}"
+
+        if [[ "$SOURCE_MODULE_VERSION" != "$REMOTE_LATEST_VERSION" ]]
+        then
+            printf "ERR: Module not using latest version. Must update before committing changes.\n"
+            exit 1
+        fi
+    done
 }
 
 function validateBranchName() {

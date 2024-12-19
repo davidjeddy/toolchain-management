@@ -12,6 +12,13 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.2] - 2024-12-19
+
+### ADD
+
+- IAC module version check in `./libs/bash/git/common.sh` called `moduleVersionCheck()` that is triggered during pre-commit
+  - if changed files define a shared module and that module is not at the latest published version, exit with error
+
 ## [0.63.1] - 2024-12-16
 
 ### REMOVE
