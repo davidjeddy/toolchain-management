@@ -33,7 +33,9 @@ else
     autoUpdate
 fi
 
-## Logic
+# rebaseFromOriginMain
+
+# Logic
 
 declare DIFF_LOGIC
 DIFF_LOGIC="git diff HEAD --name-only"
@@ -50,4 +52,4 @@ printf "INFO: DIFF_LIST: %s\n" "${DIFF_LIST}"
 
 execute "${DIFF_LIST}"
 
-printf "INFO: Git pre-commit hook completed successfully.\n"
+printf "INFO: Git hook completed successfully.\n"
