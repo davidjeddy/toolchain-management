@@ -174,7 +174,7 @@ testing.common.database==2.0.3
 thrift-sasl==0.4.3
 thrift==0.21.0
 thriftpy2==0.5.2
-tornado==6.4.1
+tornado==6.4.2
 typing_extensions==4.12.2
 tzlocal==5.2
 urllib3==2.2.3
