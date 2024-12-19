@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.3] - 2024-12-19
+
+### FIX
+
+- pre-commit check for module version longer longer errantly exits when evaluating IAC provider modules
+
 ## [0.63.2] - 2024-12-19
 
 ### ADD

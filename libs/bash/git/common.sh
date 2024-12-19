@@ -553,7 +553,12 @@ function moduleVersionCheck() {
         printf "INFO: FILENAME: %s\n" "${FILENAME}"
 
         local MODULE_SOURCE_DEFINED
-        MODULE_SOURCE_DEFINED=$(grep -w "source" "${FILENAME}")
+        {
+            MODULE_SOURCE_DEFINED=$(grep -w "source" "${FILENAME}" | grep -w "https" "${FILENAME}")
+        } || {
+            printf "INFO: No iac module configuration found in %s, skipping.\n" "${FILENAME}"
+            continue
+        }
         printf "INFO: MODULE_SOURCE_DEFINED: %s\n" "${MODULE_SOURCE_DEFINED}"
 
         local SOURCE_MODULE_NO_QUOTES
