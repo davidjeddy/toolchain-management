@@ -12,6 +12,17 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.4] - 2025-01-08
+
+### ADD
+
+- `aws-sso-cli` asdf plugin to enable authentication via AWS IAM Identity Center method
+- `pass` credential manager for use with `aws-sso`
+
+### FIX
+
+- asdf-vm upgraded to version `0.15.0`
+
 ## [0.63.3] - 2024-12-19
 
 ### FIX

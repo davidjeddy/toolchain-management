@@ -34,6 +34,7 @@ function dnf_systems() {
         jq \
         libvirt-devel \
         parallel \
+        pass \
         patch \
         podman \
         python3 \
