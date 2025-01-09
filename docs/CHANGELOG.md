@@ -12,6 +12,14 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.5] - 2025-01-08
+
+### FIX
+
+- check for error response from GitLab when authenticating using `$HOME/.terraformrc` credentials
+- create module `plan.out` only if it does not already exist when running `terraform-compliance` tool
+- do not init  modules for `terraform-compliance` tool, author should init modules before committing changes
+
 ## [0.63.4] - 2025-01-08
 
 ### ADD

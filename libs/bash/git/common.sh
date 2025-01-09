@@ -68,6 +68,15 @@ function autoUpdate() {
         --silent \
         "https://$GITLAB_HOST/api/v4/projects/$GITLAB_PROJECT_ID/repository/tags")
 
+    # check if response contains `error`
+    # We are using `-q` as best practice
+    # shellcheck disable=SC2143
+    if [[ $(grep -q "error" "$VER_IN_GL") ]]
+    then
+        printf "ERROR: %s\n" "$VER_IN_GL"
+        exit 0
+    fi
+
     VER_IN_GL=$(echo "$VER_IN_GL" | jq -rM .[0].name)
 
     # Version of toolchain on Localhost via tags
@@ -367,20 +376,27 @@ function iacCompliance() {
             rm -rf ".tmp/junit-terraform-compliance.xml" || exit 1
             touch ".tmp/junit-terraform-compliance.xml" || exit 1
 
-            # Only run if module initialized (ie, is a deployment module)
+            # module init should be completed by the change author before committing changes
             if [[ -d ".terraform" ]]
             then
-                # terraform-compliance requires a plan output in json, just do the entire IAC lifecycle to be sure
-                terraform init
-                terraform plan -no-color -out=plan.out
-                terraform show -json plan.out > plan.json
-                # TODO remove `--no-failure` once overrides are available
-                terraform-compliance \
-                    --features "$HOME/.terraform-compliance/user-friendly-features/aws" \
-                    --no-failure \
-                    --planfile plan.json \
-                > ".tmp/junit-terraform-compliance.xml"
+                printf "ERR: Please ensure edited modules have been initialized before committing changes.\n"
+                exit 1
             fi
+
+            # If a plan file exists, no need to re-create it
+            if [[ ! -f plan.out ]]
+            then
+                terraform plan -no-color -out=plan.out
+            fi
+
+            terraform show -json plan.out > plan.json
+
+            # TODO remove `--no-failure` once overrides are available
+            terraform-compliance \
+                --features "$HOME/.terraform-compliance/user-friendly-features/aws" \
+                --no-failure \
+                --planfile plan.json \
+            > ".tmp/junit-terraform-compliance.xml"
         } || {
             printf "ERR: terraform-compliance failed. Check report saved to .tmp/junit-terraform-compliance.xml\n"
             cat ".tmp/junit-terraform-compliance.xml"
