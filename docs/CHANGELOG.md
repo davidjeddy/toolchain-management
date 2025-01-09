@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.6] - 2025-01-09
+
+### FIX
+
+- `terraform-compliance` check will run `init` if cache directory does not exist as is needed in automation
+
 ## [0.63.5] - 2025-01-08
 
 ### FIX

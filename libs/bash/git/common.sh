@@ -376,11 +376,10 @@ function iacCompliance() {
             rm -rf ".tmp/junit-terraform-compliance.xml" || exit 1
             touch ".tmp/junit-terraform-compliance.xml" || exit 1
 
-            # module init should be completed by the change author before committing changes
-            if [[ -d ".terraform" ]]
+            if [[ ! -d ".terraform" ]]
             then
-                printf "ERR: Please ensure edited modules have been initialized before committing changes.\n"
-                exit 1
+                printf "WARN: .terraform cache directory not found, running init.\n"
+                terraform init
             fi
 
             # If a plan file exists, no need to re-create it
