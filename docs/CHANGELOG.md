@@ -12,6 +12,13 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.7] - 2025-01-09
+
+### FIX
+
+- IAC module version check getting project id
+- moduleVersionCheck() disabled until we can refactor the loop and prevent the url encoding from smashing all the remote addresses together
+
 ## [0.63.6] - 2025-01-09
 
 ### FIX

@@ -150,7 +150,8 @@ function execute() {
             # format, lint, and syntax
             iacLinting
             # Module Version Check
-            moduleVersionCheck
+            # TODO re-enable once we get time to refactor the logic
+            # moduleVersionCheck
             # jump to the next item in "$@" list
             continue
         fi
@@ -376,6 +377,12 @@ function iacCompliance() {
             rm -rf ".tmp/junit-terraform-compliance.xml" || exit 1
             touch ".tmp/junit-terraform-compliance.xml" || exit 1
 
+            if [[ ! -f ".terraform.lock.hcl" ]]
+            then
+                printf "WARN: Directory is a shared module, skipping terraform-compliance.\n"
+                return 0
+            fi
+
             if [[ ! -d ".terraform" ]]
             then
                 printf "WARN: .terraform cache directory not found, running init.\n"
@@ -559,7 +566,8 @@ function moduleVersionCheck() {
     DIFF_FILE_LIST=$(git diff HEAD~1 --name-only | grep ".tf$" | sort | uniq)
     printf "INFO: DIFF_FILE_LIST for moduleVersionCheck(): \n%s\n" "${DIFF_FILE_LIST}"
 
-    for FILE in ${DIFF_FILE_LIST}
+    # read per line of DIFF_FILE_LIST using \n as the delimiter
+    while read -r FILE
     do
         printf "INFO: FILE: %s\n" "${FILE}"
 
@@ -600,13 +608,17 @@ function moduleVersionCheck() {
         SOURCE_MODULE_VERSION=$(echo "${SOURCE_MODULE_URL}" | sed 's/^.*ref=//g' ) # remove everything after ".git"
         printf "INFO: SOURCE_MODULE_VERSION: %s\n" "${SOURCE_MODULE_VERSION}"
 
+        local SOURCE_MODULE_PATH_URL_ENCODED
+        SOURCE_MODULE_PATH_URL_ENCODED=$(printf %s "$SOURCE_MODULE_PATH" | jq -sRr @uri)
+        printf "INFO: SOURCE_MODULE_PATH_URL_ENCODED: %s\n" "${SOURCE_MODULE_PATH_URL_ENCODED}"
+
         local REMOTE_PROJECT_ID
         REMOTE_PROJECT_ID=$(curl \
             --header "Content-Type: application/json" \
             --header "PRIVATE-TOKEN: $(getGLtoken $GITLAB_HOST)" \
             --location \
             --silent \
-            "https://$GITLAB_HOST/api/v4/projects/$(echo -n "${SOURCE_MODULE_PATH}" | jq -s -R -r @uri)" \
+            "https://$GITLAB_HOST/api/v4/projects/$SOURCE_MODULE_PATH_URL_ENCODED" \
             | jq -rM '.id'
         )
         printf "INFO: REMOTE_PROJECT_ID: %s\n" "${REMOTE_PROJECT_ID}"
@@ -627,7 +639,7 @@ function moduleVersionCheck() {
             printf "ERR: Module not using latest version. Must update before committing changes.\n"
             exit 1
         fi
-    done
+    done <<< "$DIFF_FILE_LIST"
 }
 
 function validateBranchName() {
