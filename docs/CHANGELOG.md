@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.8] - 2025-01-14
+
+### ADD
+
+- `pinentry` dependency for `gpg` to configure `aws-sso`
+
 ## [0.63.7] - 2025-01-09
 
 ### FIX
