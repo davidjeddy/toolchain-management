@@ -36,6 +36,7 @@ function dnf_systems() {
         parallel \
         pass \
         patch \
+        pinentry \
         podman \
         python3 \
         python3-pip \
