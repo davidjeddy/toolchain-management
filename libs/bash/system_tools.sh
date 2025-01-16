@@ -22,6 +22,7 @@ function dnf_systems() {
     sudo dnf update --assumeyes
     sudo dnf install --assumeyes \
         awscli \
+        bash-completion \
         ca-certificates \
         curl \
         dmidecode \

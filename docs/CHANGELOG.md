@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.9] - 2025-01-16
+
+### ADD
+
+- `bash-completion` dependency to enable `aws-sso` profile completion
+
 ## [0.63.8] - 2025-01-14
 
 ### ADD
