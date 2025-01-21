@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.10] - 2025-01-17
+
+### ADD
+
+- `./libs/bash/aws/iam_assume_role.sh` helper script for authorization after authentication via `aws-sso`
+
 ## [0.63.9] - 2025-01-16
 
 ### ADD
