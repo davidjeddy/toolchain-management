@@ -30,13 +30,6 @@ fi
 #   --target_host_port 8162 \
 #   ops-tooling
 
-## preflight
-
-if [[ ! $AWS_PROFILE ]]
-then
-  printf "ERR: Please authenticate via OneLogin CLI before attempting to connect.\n"
-  exit 1
-fi
 
 ## Variables
 

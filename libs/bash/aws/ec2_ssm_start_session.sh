@@ -16,12 +16,6 @@ fi
 #        /path/to/script/ec2_ssm_start_session.sh [[REGION]]
 #        /path/to/script/ec2_ssm_start_session.sh [[REGION]] [[INSTANCE_ID]]
 
-if [[ ! $AWS_PROFILE ]]
-then
-    printf "ERR: ENV VAR AWS_PROFILE must be set.\n"
-    exit 1
-fi
-
 if [[ "$1" ]]
 then
     AWS_REGION="$1"

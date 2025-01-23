@@ -17,14 +17,6 @@ fi
 # versions
 # 0.0.1 - Init
 
-## preflight
-
-if [[ ! $AWS_PROFILE ]]
-then
-  printf "ERR: Please authenticate via OneLogin CLI before attempting to connect.\n"
-  exit 1
-fi
-
 if [[ ! $1 || ! $2 ]]
 then
     printf "ERR: Two arguments are required. See usage examples, exiting with error.\n"
