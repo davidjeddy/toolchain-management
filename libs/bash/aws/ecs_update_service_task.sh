@@ -43,12 +43,6 @@ then
   exit 1;
 fi
 
-if [[ ! "$AWS_PROFILE" ]]
-then
-  echo "ERROR: Shell session missing AWS_PROFILE."
-  exit 1;
-fi
-
 # logic
 
 echo "INFO: Starting..."

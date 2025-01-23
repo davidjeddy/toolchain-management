@@ -34,13 +34,6 @@ then
     exit 1;
 fi
 
-if [[ ! $AWS_PROFILE ]]
-then 
-    printf "ERR: Please provide target AWS account via \$AWS_PROFILE ENV VAR\.\n"
-    exit 1;
-fi
-
-
 if [[ ! -f "/run/user/1000/containers/auth.json" ]]
 then 
     printf "ERR: Please ensure you have authenticated to a remote image repository before running this process.\n"

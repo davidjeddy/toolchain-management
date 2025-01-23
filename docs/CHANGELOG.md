@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.11] - 2025-01-22
+
+### FIX
+
+- Removed `AWS_PROFILE` checks from `./libs/bash/aws/*.sh` helper scripts as `aws-sso-profile` does not set it, preventing the scripts from being used
+
 ## [0.63.10] - 2025-01-17
 
 ### ADD
