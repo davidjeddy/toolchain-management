@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.13] - 2025-01-27
+
+### FIX
+
+- Ensure usage of `./libs/bash/aws/iam_assume_role.sh` is triggered via `source` not execution to ensure role assumption
+
 ## [0.63.12] - 2025-01-24
 
 ### FIX
