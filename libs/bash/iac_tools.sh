@@ -83,7 +83,7 @@ function install_additional_iac_tools() {
         go mod vendor
 
         printf "INFO: Building KICS binary. This can some time, please stand by.\n"
-        CGO_ENABLED=0 go build \
+        GOPROXY='https://proxy.golang.org,direct' CGO_ENABLED=0 go build \
             -a -installsuffix cgo \
             -o bin/kics cmd/console/main.go
         append_add_path "$HOME/.kics/bin" "$SESSION_SHELL"

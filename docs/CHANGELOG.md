@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.12] - 2025-01-24
+
+### FIX
+
+- Set `GOPROXY='https://proxy.golang.org,direct'` before KICS build to temporary workaround issue with incorrect SSL on https://go.opencensus.io/ during dependencies download that was causing build to silently fail
+
 ## [0.63.11] - 2025-01-22
 
 ### FIX
