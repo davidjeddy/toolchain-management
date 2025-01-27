@@ -12,6 +12,16 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.14] - 2025-01-27
+
+### FIX
+
+- opentofu from `1.8.0` to `1.9.0`
+
+## REMOVE
+
+- `./docs/TESTING.md` as provided no value
+
 ## [0.63.13] - 2025-01-27
 
 ### FIX
