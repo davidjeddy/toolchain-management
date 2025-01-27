@@ -63,7 +63,7 @@ onelogin -C [[REDACTED]]
 
 terraform plan -out=plan.out
 terraform show -json plan.out > plan.out.json
-# if the value fro --features is missing then it is copied from $HOME/.terraform-compliance/user-friendly-features to local dir
+# if the value from --features is missing then it is copied from $HOME/.terraform-compliance/user-friendly-features to local dir
 terraform-compliance \
   --features .terraform-compliance/user-friendly-features/aws \
   --planfile plan.out.json
