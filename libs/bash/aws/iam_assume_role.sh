@@ -27,6 +27,15 @@ fi
 declare ROLE_NAME
 ROLE_NAME=$1
 
+# ensure the script is being sources, not executed
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
+then
+  printf "ERR: Script must be invoked via source, not executed. Example: \"source /path/to/script/iam_assume_role.sh \${ROLE}\"\n"
+  exit 1
+fi
+
+## Logic
+
 # Get the AWS account ID dynamically
 ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
 # shellcheck disable=SC2181
