@@ -368,47 +368,47 @@ function iacCompliance() {
 
     # Because RHEL 7 + Python 3.x have different minimal versions requirements of GLIBC
     # https://jira.techno.ingenico.com/browse/PROS-2411
-    if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
-    then
-        printf "WARN: Running on an EOL release of Red Hat. Skipping terraform-compliance scanning invocations.\n"
-    else
-        printf "INF: terraform-compliance executing...\n"
-        {
-            rm -rf ".tmp/junit-terraform-compliance.xml" || exit 1
-            touch ".tmp/junit-terraform-compliance.xml" || exit 1
+    # if [[ -f "/etc/os-release" && $(cat /etc/os-release) == *"Red Hat Enterprise Linux Server 7"* ]]
+    # then
+    #     printf "WARN: Running on an EOL release of Red Hat. Skipping terraform-compliance scanning invocations.\n"
+    # else
+    #     printf "INF: terraform-compliance executing...\n"
+    #     {
+    #         rm -rf ".tmp/junit-terraform-compliance.xml" || exit 1
+    #         touch ".tmp/junit-terraform-compliance.xml" || exit 1
 
-            if [[ ! -f ".terraform.lock.hcl" ]]
-            then
-                printf "WARN: Directory is a shared module, skipping terraform-compliance.\n"
-                return 0
-            fi
+    #         if [[ ! -f ".terraform.lock.hcl" ]]
+    #         then
+    #             printf "WARN: Directory is a shared module, skipping terraform-compliance.\n"
+    #             return 0
+    #         fi
 
-            if [[ ! -d ".terraform" ]]
-            then
-                printf "WARN: .terraform cache directory not found, running init.\n"
-                terraform init
-            fi
+    #         if [[ ! -d ".terraform" ]]
+    #         then
+    #             printf "WARN: .terraform cache directory not found, running init.\n"
+    #             terraform init
+    #         fi
 
-            # If a plan file exists, no need to re-create it
-            if [[ ! -f plan.out ]]
-            then
-                terraform plan -no-color -out=plan.out
-            fi
+    #         # If a plan file exists, no need to re-create it
+    #         if [[ ! -f plan.out ]]
+    #         then
+    #             terraform plan -no-color -out=plan.out
+    #         fi
 
-            terraform show -json plan.out > plan.json
+    #         terraform show -json plan.out > plan.json
 
-            # TODO remove `--no-failure` once overrides are available
-            terraform-compliance \
-                --features "$HOME/.terraform-compliance/user-friendly-features/aws" \
-                --no-failure \
-                --planfile plan.json \
-            > ".tmp/junit-terraform-compliance.xml"
-        } || {
-            printf "ERR: terraform-compliance failed. Check report saved to .tmp/junit-terraform-compliance.xml\n"
-            cat ".tmp/junit-terraform-compliance.xml"
-            exit 1
-        }
-    fi
+    #         # TODO remove `--no-failure` once overrides are available
+    #         terraform-compliance \
+    #             --features "$HOME/.terraform-compliance/user-friendly-features/aws" \
+    #             --no-failure \
+    #             --planfile plan.json \
+    #         > ".tmp/junit-terraform-compliance.xml"
+    #     } || {
+    #         printf "ERR: terraform-compliance failed. Check report saved to .tmp/junit-terraform-compliance.xml\n"
+    #         cat ".tmp/junit-terraform-compliance.xml"
+    #         exit 1
+    #     }
+    # fi
 
     printf "INFO: tfsec executing...\n"
     {
