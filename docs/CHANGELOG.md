@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.15] - 2025-01-28
+
+## REMOVE
+
+- `terraform-compliance` until more testing and integration can be completed to ensure stability of pipelines
+
 ## [0.63.14] - 2025-01-27
 
 ### FIX
