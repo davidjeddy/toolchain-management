@@ -184,6 +184,7 @@ def call(
                                     podman build . \
                                         --file "Containerfile" \
                                         --platform "${PLATFORM}" \
+                                        --squash \
                                         --tag "''' + params.AWS_ECR_DNS + ''':''' + params.IMAGE_TAG_VERSION + '''" \
                                         | tee "build_$(date +%s).log"
                                     podman images -q "''' + params.AWS_ECR_DNS + ''':''' + params.IMAGE_TAG_VERSION + '''"
