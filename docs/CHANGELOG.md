@@ -12,20 +12,28 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.17] - 2025-02-03
+
+### FIX
+
+- `./docs/CHANGELOG` action header indications
+- docs in header of `./libs/bash/aws/iam_assume_role.sh`
+- syntax of `./libs/bash/aws/iam_assume_role.sh` to better align with existing helpers
+
 ## [0.63.16] - 2025-02-03
 
-## ADD
+### ADD
 
 - `./libs/bash/aws-unset_env_var.sh` to remove set AWS_* ENV VARs, useful when switching accounts in using `aws-sso` and the same terminal session
 - optional `./libs/bash/append_libs_to_sys_path.sh` helper that will append lib paths to system,s ENV VAR PATH
 
-## FIX
+### FIX
 
 - `./libs/jenkins/pipelines/vars/ContainerImage.groovy` now uses `podman ...--squash` argument when building container images to reduce image sizes
 
 ## [0.63.15] - 2025-01-28
 
-## REMOVE
+### REMOVE
 
 - `terraform-compliance` until more testing and integration can be completed to ensure stability of pipelines
 
