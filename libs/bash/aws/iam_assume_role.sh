@@ -12,13 +12,14 @@ then
     set -x
 fi
 
-# usage: /path/to/script/iam_assume_role.sh
-# example: /path/to/script/iam_assume_role.sh $ROLE_NAME
+# usage: source /path/to/script/iam_assume_role.sh
+# example: source ./libs/bash/aws/iam_assume_role.sh privileged
 
 ## pre-flight checks
 
 # Check if a role name is provided as an argument
-if [ -z "$1" ]; then
+if [ ! "$1" ]
+then
   echo "Usage: $0 <role-name>"
   echo "Example: $0 privileged"
   exit 1
@@ -39,7 +40,8 @@ fi
 # Get the AWS account ID dynamically
 ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
 # shellcheck disable=SC2181
-if [ $? -ne 0 ]; then
+if [ $? != 0 ]
+then
   echo "Error: Failed to retrieve AWS account ID."
   exit 1
 fi
@@ -55,7 +57,9 @@ ASSUME_ROLE_OUTPUT=$(aws sts assume-role \
   --role-session-name "$ROLE_SESSION_NAME" \
   --output json)
 
-if [ $? -ne 0 ]; then
+# shellcheck disable=SC2181
+if [ $? != 0 ]
+then
   printf "Error: Failed to assume role. Please ensure the role name is correct and you have permissions.\n"
   exit 1
 fi
