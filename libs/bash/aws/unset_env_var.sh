@@ -22,7 +22,7 @@ fi
 printf "INFO: AWS ENV VAR before:\n"
 printenv | grep AWS | sort
 
-unset AWS_ACCESS_KEY_ID=
+unset AWS_ACCESS_KEY_ID
 unset AWS_DEFAULT_REGION
 unset AWS_REGION
 unset AWS_SECRET_ACCESS_KEY
@@ -31,7 +31,7 @@ unset AWS_SSO_ACCOUNT_ID
 unset AWS_SSO
 unset AWS_SSO_DEFAULT_REGION
 unset AWS_SSO_PROFILE
-unset AWS_SSO_ROLE_ARN=
+unset AWS_SSO_ROLE_ARN
 unset AWS_SSO_ROLE_NAME
 unset AWS_SSO_SESSION_EXPIRATION
 
