@@ -5,6 +5,7 @@ iam-policy-json-to-terraform 1.8.2
 maven 3.9.8
 shellcheck 0.7.1
 shfmt 3.3.0
+syft 1.19.0
 terraform-docs 0.18.0
 tflint 0.53.0
 tfsec 1.28.10

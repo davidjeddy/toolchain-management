@@ -12,6 +12,16 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.63.18] - 2025-02-04
+
+### ADD
+
+- [syft](https://github.com/anchore/syft) to generate SBOM via asdf-vm
+
+### FIX
+
+- AWS ENV VAR unset helper errant characters
+
 ## [0.63.17] - 2025-02-03
 
 ### FIX
