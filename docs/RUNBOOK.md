@@ -58,20 +58,6 @@ Check the usage of variables inside the pipeline.environment{} block. Specifical
 
 **Error**
 
-`INFO: This is taking longer than usual. You might need to provide the dependency resolver with stricter constraints to reduce runtime. See https://pip.pypa.io/warnings/backtracking for guidance. If you want to abort this run, press Ctrl + C.`
-
-**When**
-
-./libs/bash/install.sh
-
-**Fix**
-
-Just wait. Localstack requires a lot of packages and version constraints sorting.
-
------
-
-**Error**
-
 `curl: (35) Recv failure: Connection reset by peer`
 
 **When**

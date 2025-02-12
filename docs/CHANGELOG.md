@@ -12,6 +12,19 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.0] - 2025-02-12
+
+### FIX
+
+- `./libs/bash/iac_tools.sh` blocks sorted alphabetically
+- `./libs/bash/reset.sh` is self executing so needs bash shebang
+- `./.gitlab/CODEOWNERS` to use groups rather than specific users
+
+### REMOVE
+
+- Python and Python tools as no longer needed
+- `./bash/auth` as both OneLogin and direct AWS authentication is either no longer support
+
 ## [0.63.18] - 2025-02-04
 
 ### ADD

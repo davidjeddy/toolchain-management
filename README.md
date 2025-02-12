@@ -85,7 +85,6 @@ Skip this section of the install process (may have unintended side effects):
 - WL_GC_TOOLCHAIN_ASDF_TOOLS_SKIP=true
 - WL_GC_TOOLCHAIN_IAC_TOOLS_SKIP=true
 - WL_GC_TOOLCHAIN_JAVA_TOOLS_SKIP=true
-- WL_GC_TOOLCHAIN_PYTHON_TOOLS_SKIP=true
 - WL_GC_TOOLCHAIN_ROOT_OVERRIDE=true
 - WL_GC_TOOLCHAIN_SYSTEM_TOOLS_SKIP=true
 

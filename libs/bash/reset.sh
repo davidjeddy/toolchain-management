@@ -1,4 +1,4 @@
-#!/bin/false
+#!/bin/bash
 
 ## configuration
 
@@ -35,6 +35,13 @@ printf "INFO: Resetting .bashrc from init provided by (Fedora) host OS.\n"
 rm "$HOME/.bashrc"
 cp /etc/skel/.bashrc "$HOME/.bashrc"
 
+# 0.64.x
+
+# Removed Python, pip, and related tooling from installation
+
+# 0.63.x
+
+
 if [[ $(which aqua) ]]
 then
     printf "WARN: Removing packages managed Aqua (one time action).\n"
@@ -44,7 +51,7 @@ then
 fi
 
 # Just plain `pip` here, nothing to see
-if [[ $(which pip) ]]
+if [[ $(which pip) && -f requirements.txt ]]
 then
     printf "WARN: Removing packages managed PIP (one time action).\n"
     pip uninstall \
@@ -53,7 +60,7 @@ then
 fi
 
 # Incase the OS knows it as `pip3`
-if [[ $(which pip3) ]]
+if [[ $(which pip3) && -f requirements.txt ]]
 then
     printf "WARN: Removing packages managed PIP (one time action).\n"
     pip3 uninstall \
