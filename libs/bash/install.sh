@@ -103,15 +103,6 @@ then
     source "./libs/bash/java_tools.sh" || exit 1
     install_java_tools
 fi
-
-if [[ ! "${WL_GC_TOOLCHAIN_PYTHON_TOOLS_SKIP}" ]]
-then
-    # shellcheck disable=SC1091
-    source "./libs/bash/python_tools.sh" || exit 1
-    install_python_tools_package_localstack
-    install_python_tools_packages
-fi
-
 ### user packages
 
 if [[ ! "${WL_GC_TOOLCHAIN_ASDF_SKIP}" ]]
@@ -146,7 +137,6 @@ source "$HOME/.bashrc" || exit 1
 
 # Note: Keep this list in this order as the most relevant packages/tools are listed closest to the end of execution
 dnf list --installed
-pip list --verbose
 asdf list
 
 tail "$HOME/.bashrc"

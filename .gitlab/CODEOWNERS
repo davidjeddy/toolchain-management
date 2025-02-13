@@ -11,15 +11,14 @@
 
 ## Typical rules
 
-[/docs/, /examples/]
-*.md @cicd
-/docs/ @cicd
-/examples/ @cicd
-
-[/libs/bash/git/install.sh]
-/libs/bash/git/install.sh @cicd
-
 [.]
-aqua* @W128214 @W104184 @W104279 @W103979 @W127197
-Jenkinsfile @W128214 @W104184 @W104279 @W103979 @W127197
-versions.sh @W128214 @W104184 @W104279 @W103979 @W127197
+* @W128214 @W104184 @W104279 @W103979 @W127197
+
+[Docs]
+README.md @cicd
+docs @cicd
+examples @cicd
+
+[Installer]
+libs/bash/install.sh @cicd
+libs/bash/git/install.sh @cicd

@@ -31,7 +31,7 @@ fi
 
 printf "INFO: Appending paths to ENV VAR PATH.\n"
 
-append_add_path "$PWD/bash/auth"
+append_add_path "$PWD/bash/auth/bash/auth" "$SESSION_SHELL"
 append_add_path "$PWD/bash/aws" "$SESSION_SHELL"
 append_add_path "$PWD/bash/common" "$SESSION_SHELL"
 append_add_path "$PWD/bash/container" "$SESSION_SHELL"

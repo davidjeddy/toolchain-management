@@ -19,6 +19,39 @@ function install_additional_iac_tools() {
     printf "INFO: Ensure target dir for IAC provider cache exists\n"
     mkdir -p "$HOME/.terraform.d/plugin-cache" || exit 1
 
+    # kics
+    {
+        rm -rf "$HOME/.kics" || true
+        git clone --depth 1 --branch "$(cat "$WL_GC_TM_WORKSPACE"/.kics-version)" "https://github.com/Checkmarx/kics.git" "$HOME/.kics"
+        cd "$HOME/.kics" || exit 1
+
+        # build the binary
+        printf "INFO: Install kics dependencies.\n"
+        go mod vendor
+
+        printf "INFO: Building KICS binary. This can some time, please stand by.\n"
+        GOPROXY='https://proxy.golang.org,direct' CGO_ENABLED=0 go build \
+            -a -installsuffix cgo \
+            -o bin/kics cmd/console/main.go
+        append_add_path "$HOME/.kics/bin" "$SESSION_SHELL"
+        printf "INFO: Kics build and install completed.\n"
+    } || {
+        printf "ERR: kics failed to build and install.\n"
+        exit 1
+    }
+
+    # terraform-compliance
+    {
+        rm -f "$HOME/.terraform-compliance" || true
+        git clone https://github.com/terraform-compliance/user-friendly-features.git "$HOME/.terraform-compliance/user-friendly-features"
+
+        pip3 install terraform-compliance=="$(cat "${WL_GC_TM_WORKSPACE}"/.terraform-compliance-version)"
+        printf "INFO: terraform-compliance install completed.\n"
+    } || {
+        printf "ERR: terraform-compliance failed to build and install.\n"
+        exit 1
+    }
+
     # tfenv
     {
         rm -rf "$HOME/.tfenv" || true
@@ -69,39 +102,6 @@ function install_additional_iac_tools() {
         cp -f "$WL_GC_TM_WORKSPACE/.tofu-version" "$HOME/.tfenv/version" # ensure the default versions is set in the *env tool
     } || {
         printf "ERR: tofuenv failed to build and install.\n"
-        exit 1
-    }
-
-    # kics
-    {
-        rm -rf "$HOME/.kics" || true
-        git clone --depth 1 --branch "$(cat "$WL_GC_TM_WORKSPACE"/.kics-version)" "https://github.com/Checkmarx/kics.git" "$HOME/.kics"
-        cd "$HOME/.kics" || exit 1
-
-        # build the binary
-        printf "INFO: Install kics dependencies.\n"
-        go mod vendor
-
-        printf "INFO: Building KICS binary. This can some time, please stand by.\n"
-        GOPROXY='https://proxy.golang.org,direct' CGO_ENABLED=0 go build \
-            -a -installsuffix cgo \
-            -o bin/kics cmd/console/main.go
-        append_add_path "$HOME/.kics/bin" "$SESSION_SHELL"
-        printf "INFO: Kics build and install completed.\n"
-    } || {
-        printf "ERR: kics failed to build and install.\n"
-        exit 1
-    }
-
-    # terraform-compliance
-    {
-        rm -f "$HOME/.terraform-compliance" || true
-        git clone https://github.com/terraform-compliance/user-friendly-features.git "$HOME/.terraform-compliance/user-friendly-features"
-
-        pip3 install terraform-compliance=="$(cat "${WL_GC_TM_WORKSPACE}"/.terraform-compliance-version)"
-        printf "INFO: terraform-compliance install completed.\n"
-    } || {
-        printf "ERR: terraform-compliance failed to build and install.\n"
         exit 1
     }
 
