@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.1] - 2025-02-12
+
+### REMOVE
+
+- infracost from asdf-vm due to 401 response from Github for the plugin project
+
 ## [0.64.0] - 2025-02-12
 
 ### FIX
