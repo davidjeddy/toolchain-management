@@ -12,6 +12,19 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.3] - 2025-02-14
+
+### FIX
+
+- Updated os package list with commonly used tools from wl-gc-* projects
+- Better explained to not repeat packages in downstream projects that are managed by this project
+
+## [0.64.2] - 2025-02-12
+
+### FIX
+
+- infracost from asdf-vm due to 401 response from Github for the plugin project
+
 ## [0.64.1] - 2025-02-12
 
 ### REMOVE

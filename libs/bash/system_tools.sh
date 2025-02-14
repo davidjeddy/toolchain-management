@@ -16,12 +16,13 @@ fi
 function dnf_systems() {
     # Note: We want to version pin these; but need to push everyone to the same major release of Fedora core; but this is not possible as we support every version the vendor supports
     # - this is similar to the Containerfile for wl-gc-* container based nodes
-    # - this should be the primary process to control package versions
+    # - this should be the primary process to control host package versions that are common in all environments
     # - use `asdf` version manager only as an alternative OR for user-space special programs
     # - this forces us to stay current with security patching as prior patch version are removed when new patches are released
+    # - If listed here we should not list in a Containerfile
     sudo dnf update --assumeyes
     sudo dnf install --assumeyes \
-        awscli \
+        awscli2 \
         bash-completion \
         ca-certificates \
         curl \
@@ -45,7 +46,11 @@ function dnf_systems() {
         tk-devel \
         unzip \
         xz \
-        yq
+        xmlstarlet \
+        which \
+        wget \
+        yq \
+        zip
 
     # Dunno why we have to reinstall pip every time but if this is not done the we get the `bash: pip: command not found` error
     sudo dnf reinstall --assumeyes python3-pip
