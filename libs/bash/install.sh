@@ -92,17 +92,8 @@ then
     # shellcheck disable=SC1091
     source "./libs/bash/system_tools.sh" || exit 1
     dnf_systems
-    jenkins_user_patches
 fi
 
-### language packages
-
-if [[ ! "${WL_GC_TOOLCHAIN_JAVA_TOOLS_SKIP}" ]]
-then
-    # shellcheck disable=SC1091
-    source "./libs/bash/java_tools.sh" || exit 1
-    install_java_tools
-fi
 ### user packages
 
 if [[ ! "${WL_GC_TOOLCHAIN_ASDF_SKIP}" ]]
@@ -117,6 +108,20 @@ then
     # shellcheck disable=SC1091
     source "./libs/bash/asdf_tools.sh" || exit 1
     asdf_tools_install
+fi
+
+if [[ ! "${WL_GC_TOOLCHAIN_CLOUD_TOOLS_SKIP}" ]]
+then
+    # shellcheck disable=SC1091
+    source "./libs/bash/cloud_tools.sh" || exit 1
+    install_additional_cloud_tools
+fi
+
+if [[ ! "${WL_GC_TOOLCHAIN_CONTAINER_TOOLS_SKIP}" ]]
+then
+    # shellcheck disable=SC1091
+    source "./libs/bash/container_tools.sh" || exit 1
+    install_additional_container_tools
 fi
 
 if [[ ! "${WL_GC_TOOLCHAIN_IAC_TOOLS_SKIP}" ]]
