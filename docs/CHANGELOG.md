@@ -12,6 +12,14 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.4] - 2025-02-14
+
+### FIX
+
+- Missing fn() start outputs
+- Put container tools behind a feature flag to better work with down stream container project
+- SonarScanner now installed via asdf-vm, no more ad-hoc Bash script
+
 ## [0.64.3] - 2025-02-14
 
 ### FIX

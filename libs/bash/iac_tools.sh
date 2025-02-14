@@ -21,6 +21,10 @@ function install_additional_iac_tools() {
 
     # kics
     {
+        # Kics need Golang to compile
+        sudo dnf update --assumeyes
+        sudo dnf install --assumeyes golang
+
         rm -rf "$HOME/.kics" || true
         git clone --depth 1 --branch "$(cat "$WL_GC_TM_WORKSPACE"/.kics-version)" "https://github.com/Checkmarx/kics.git" "$HOME/.kics"
         cd "$HOME/.kics" || exit 1

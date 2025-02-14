@@ -21,6 +21,7 @@ function asdf_tools_install() {
         printf "WARN: No tools defined in asdf-vm .tool-versions, skipping.\n"
         return 0
     fi
+
     # Since we use this CLI invocation we can not (currently) have comments in the source file so here is what we would have
     # https://asdf-vm.com/manage/configuration.html
     # Provided by well-known plugin short list
@@ -31,7 +32,11 @@ function asdf_tools_install() {
     if [[ $(asdf plugin list installed) != "*" ]]
     then
         printf "INFO: Removing existing asdf-vm plugins.\n"
-        asdf plugin list installed | xargs -I{} asdf plugin remove {}
+        {
+            asdf plugin list installed | xargs -I{} asdf plugin remove {}
+        } || {
+            printf "WARN: Unable to clear asdf-vm plugin list, skipping.\n"
+        }
     fi
 
     # List installed plugins
@@ -40,6 +45,11 @@ function asdf_tools_install() {
     cut -d' ' -f1 .tool-versions | xargs -I{} asdf plugin add {}
     # Install packages
     asdf install
+
+    # Add plugins not listed in https://github.com/asdf-vm/asdf-plugins
+    asdf plugin-add sonarscanner https://github.com/virtualstaticvoid/asdf-sonarscanner.git
+    asdf install sonarscanner "$(cat .sonarscanner-version)"
+
     # Just to be sure
     asdf reshim
 }
