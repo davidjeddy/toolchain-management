@@ -12,6 +12,13 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.5] - 2025-02-14
+
+### FIX
+
+- README.md now documents a usage override examples
+- So not output `asdf` packages if `asdf` is not installed
+
 ## [0.64.4] - 2025-02-14
 
 ### FIX
