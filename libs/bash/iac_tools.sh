@@ -67,7 +67,7 @@ function install_additional_iac_tools() {
 
         # shellcheck disable=SC2046
         tfenv use "$(cat "$WL_GC_TM_WORKSPACE"/.terraform-version)"
-        cp -f "$WL_GC_TM_WORKSPACE/.terraform-version" "$HOME/.tfenv/version" # ensure the default versions is set in the *env tool
+        cp -f "$WL_GC_TM_WORKSPACE/.terraform-version" "$HOME/.tfenv/.terraform-version" # ensure the default versions is set in the *env tool
     } || {
         printf "ERR: tfenv failed to build and install.\n"
         exit 1
@@ -85,7 +85,7 @@ function install_additional_iac_tools() {
 
         # shellcheck disable=SC2046
         tgenv use "$(cat "$WL_GC_TM_WORKSPACE"/.terragrunt-version)"
-        cp -f "$WL_GC_TM_WORKSPACE/.terragrunt-version" "$HOME/.tgenv/version" # ensure the default versions is set in the *env tool
+        cp -f "$WL_GC_TM_WORKSPACE/.terragrunt-version" "$HOME/.tgenv/.terragrunt-version" # ensure the default versions is set in the *env tool
     } || {
         printf "ERR: tgenv failed to build and install.\n"
         exit 1
@@ -99,11 +99,11 @@ function install_additional_iac_tools() {
         printf "INFO: tofuenv install completed.\n"
 
         # shellcheck disable=SC2046
-        tofuenv install "$(cat "$WL_GC_TM_WORKSPACE"/.tofu-version)"
+        tofuenv install "$(cat "$WL_GC_TM_WORKSPACE"/.opentofu-version)"
 
         # shellcheck disable=SC2046
-        tofuenv use "$(cat "$WL_GC_TM_WORKSPACE"/.tofu-version)"
-        cp -f "$WL_GC_TM_WORKSPACE/.tofu-version" "$HOME/.tfenv/version" # ensure the default versions is set in the *env tool
+        tofuenv use "$(cat "$WL_GC_TM_WORKSPACE"/.opentofu-version)"
+        cp -f "$WL_GC_TM_WORKSPACE/.opentofu-version" "$HOME/.tofuenv/.opentofu-version" # ensure the default versions is set in the *env tool
     } || {
         printf "ERR: tofuenv failed to build and install.\n"
         exit 1

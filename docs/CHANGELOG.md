@@ -12,6 +12,13 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.8] - 2025-02-20
+
+### FIX
+
+- fixed `append_add_path` to append path to PATH env as well
+- fixed `tfenv`, `tofuenv` and `tgenv` version initialization
+
 ## [0.64.7] - 2025-02-20
 
 ### FIX
