@@ -44,12 +44,17 @@ function asdf_tools_install() {
     # Add plugins from configuration
     cut -d' ' -f1 .tool-versions | xargs -I{} asdf plugin add {}
 
-    # Fedora 40 + asdf needs pip to install checkov
+    # checkov requires Python and PIP
     if [[ ! $(which python) ]]
     then
-        # checkov need Python to compile
         sudo dnf update --assumeyes
-        sudo dnf install --assumeyes python3-3.12.8
+        sudo dnf install --assumeyes "python3-$(cat .python-version)"
+    fi
+
+    # checkov requires Python and PIP
+    if [[ ! $(which pip) ]]
+    then
+        python -m pip install --upgrade pip
     fi
 
     # Install packages
@@ -61,4 +66,7 @@ function asdf_tools_install() {
 
     # Just to be sure
     asdf reshim
+
+    # output package list
+    asdf list
 }

@@ -70,24 +70,24 @@ fi
 
 # 0.62.x
 
-yes | sudo rm -f "$HOME/.asdf" || true
-yes | sudo rm -f "$HOME/.asdfrc" || true
-yes | sudo rm -f "$HOME/.kics" || true
-yes | sudo rm -f "$HOME/.local" || true
-yes | sudo rm -f "$HOME/.terraform-compliance" || true
-yes | sudo rm -f "$HOME/.tfenv" || true
-yes | sudo rm -f "$HOME/.tgenv" || true
-yes | sudo rm -f "$HOME/.tofuenv" || true
-yes | sudo rm -f "$HOME/.tool-versions" || true
-yes | sudo rm -f "$HOME/.xeol" || true
-yes | sudo rm -f "$HOME/aquaproj-aqua" || true
+yes | sudo rm -rf "$HOME/.asdf" || true
+yes | sudo rm -rf "$HOME/.asdfrc" || true
+yes | sudo rm -rf "$HOME/.kics" || true
+yes | sudo rm -rf "$HOME/.local" || true
+yes | sudo rm -rf "$HOME/.terraform-compliance" || true
+yes | sudo rm -rf "$HOME/.tfenv" || true
+yes | sudo rm -rf "$HOME/.tgenv" || true
+yes | sudo rm -rf "$HOME/.tofuenv" || true
+yes | sudo rm -rf "$HOME/.tool-versions" || true
+yes | sudo rm -rf "$HOME/.xeol" || true
+yes | sudo rm -rf "$HOME/aquaproj-aqua" || true
 
 # 0.61.x
-yes | sudo rm -f "$HOME/.tool-versions" || true
-yes | sudo rm -f "$HOME/.toolchainrc" || true
+yes | sudo rm -rf "$HOME/.tool-versions" || true
+yes | sudo rm -rf "$HOME/.toolchainrc" || true
 yes | sudo rm -rf "$HOME/.asdf/" || true
 yes | sudo rm -rf "$HOME/.local/lib/python3.12/site-packages" || true
-yes | sudo rm /usr/bin/docker || true
+yes | sudo rm -rf /usr/bin/docker || true
 
 # 0.59.x
 yes | sudo rm -rf "$HOME/.local/bin/" || true

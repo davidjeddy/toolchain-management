@@ -44,4 +44,7 @@ function dnf_systems() {
         xz \
         xmlstarlet \
         which
+
+    # output package list
+    sudo dnf list --installed
 }
