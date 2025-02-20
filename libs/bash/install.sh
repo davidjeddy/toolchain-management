@@ -140,13 +140,6 @@ cd "$OLD_PWD" || exit 1
 # shellcheck disable=SC1091
 source "$HOME/.bashrc" || exit 1
 
-# Note: Keep this list in this order as the most relevant packages/tools are listed closest to the end of execution
-dnf list --installed
-if [[ $(which asdf) ]]
-then
-    asdf list
-fi
-
 tail "$HOME/.bashrc"
 cat "$SESSION_SHELL"
 

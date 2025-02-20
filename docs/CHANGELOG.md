@@ -12,6 +12,13 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.7] - 2025-02-20
+
+### FIX
+
+- `asdf-checkov: dependencies aren't met and the installation won't proceed` error during fresh installs
+- Moved `append_libs_to_sys_path.sh` to inside `./libs/bash/`
+
 ## [0.64.6] - 2025-02-18
 
 ### FIX
