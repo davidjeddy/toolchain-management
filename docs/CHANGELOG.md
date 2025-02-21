@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.10] - 2025-02-21
+
+### FIX
+
+- We are not ready to goto asdf-vm 0.16.x; reset back to 0.15.x
+
 ## [0.64.9] - 2025-02-21
 
 ### ADD
