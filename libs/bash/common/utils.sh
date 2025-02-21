@@ -14,11 +14,14 @@ function append_if() {
   fi
 }
 
-# Conditional append of a PATH add to a file
+# Conditional append of a path 
 #
 # Appends a single line code snippet to (script) file
 # where a given path is conditionally added (prepended)
 # to the PATH variable
+#
+# It also conditionally appends the path to the PATH
+# environment variable
 #
 # Line will not be appended if it can be already found in
 # the file
@@ -30,6 +33,7 @@ function append_add_path() {
   local file="$2"
   delete_line "[[ \":\$PATH:\" != *\":$path:\"* ]] && export PATH=\"$path:\$PATH\"" "$file"
   append_if "if [[ \":\$PATH:\" != *\":$path:\"* ]]; then export PATH=\"$path:\$PATH\"; fi" "$file"
+  add_path "$path"
 }
 
 # Delete line from file
