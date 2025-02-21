@@ -63,6 +63,14 @@ cd toolchain-management
 # start new shell session
 ```
 
+You will be asked what type of project the Toolchain is being installed for, the selection determines what set of Git hooks are installed.
+
+1) BASH - the project is primary a BASH script project
+2) CONTAINER - the project main focus is on a Containerfile (aka Dockerfile) and resultant container image
+3) IAC (Infrastructure as Code) - the project focuses on Terraform/OpenTofu module configuration, both deployable and shared modules
+
+If no option or an invalid option is selected, for backwards compatibility the deprecated legacy Git hooks will be installed
+
 ### Pipeline
 
 - Jenkins pipeline should only be run on EC2 hosts
