@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.9] - 2025-02-21
+
+### ADD
+
+- The ability to select the Git hook collection to be used with a project based on user selection during `./libs/bash/install.sh` execution
+
 ## [0.64.8] - 2025-02-20
 
 ### FIX
