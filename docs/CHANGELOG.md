@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.11] - 2025-02-25
+
+### FIX
+
+- Python bumped from `3.12.8` to `3.12.9`
+
 ## [0.64.10] - 2025-02-21
 
 ### FIX
