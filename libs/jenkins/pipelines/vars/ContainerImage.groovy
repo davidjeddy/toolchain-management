@@ -75,7 +75,7 @@ def call(
                             curl \
                                 --data '{
                                     "channel": "#''' + slackChannel + '''",
-                                    "text": ":pipeline-failed: ''' + env.JOB_NAME + ''' build FAILED.\n''' + env.BUILD_URL + '''console."
+                                    "text": ":warning: ''' + env.JOB_NAME + ''' build FAILED.\n''' + env.BUILD_URL + '''console."
                                 }' \
                                 --header "Content-type: application/json" \
                                 --location \
