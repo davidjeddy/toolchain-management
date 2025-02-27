@@ -12,6 +12,13 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.13] - 2025-02-27
+
+### FIX
+
+- Golang version now pinned using the same pattern as Python
+- Python invocation in asdf_tools.sh before `asdf install`
+
 ## [0.64.12] - 2025-02-25
 
 ### FIX
