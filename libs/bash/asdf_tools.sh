@@ -45,14 +45,11 @@ function asdf_tools_install() {
     cut -d' ' -f1 .tool-versions | xargs -I{} asdf plugin add {}
 
     # checkov requires Python
-    if [[ ! $(which python) ]]
+    if [[ ! $(which python) || ! $(which pip) ]]
     then
-        printf "WARN: Python not detected, but is required, installing now.\n"
+        printf "WARN: Python or PIP not detected, but is required, installing...\n"
         sudo dnf update --assumeyes
-        sudo dnf install --assumeyes "python3-$(cat .python-version)"
-
-        printf "WARN: Python PIP install/upgrade.\n"
-        python3 -m pip install --upgrade pip
+        sudo dnf install --assumeyes "python3-$(cat .python-version)" python3-pip
     fi
 
     # Install packages

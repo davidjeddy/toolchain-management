@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.14] - 2025-02-28
+
+### FIX
+
+- pip install process, now uses OS package manager
+
 ## [0.64.13] - 2025-02-27
 
 ### FIX
