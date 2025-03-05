@@ -12,6 +12,14 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.15] - 2025-03-03
+
+### FIX
+
+- `sonar-scanner` updated from `4.2.0.1873` to `7.0.1.4817`
+- error thrown by asdf if 3rd party plugins are not present in $HOME/.tool-versions
+- Python3 pip installation now via `dnf` for reliability
+
 ## [0.64.14] - 2025-02-28
 
 ### FIX
