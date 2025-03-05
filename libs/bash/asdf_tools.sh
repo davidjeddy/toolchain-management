@@ -49,7 +49,9 @@ function asdf_tools_install() {
     then
         printf "WARN: Python or PIP not detected, but is required, installing...\n"
         sudo dnf update --assumeyes
-        sudo dnf install --assumeyes "python3-$(cat .python-version)" python3-pip
+        sudo dnf install --assumeyes \
+            "python3-$(cat .python-version)" \
+            "python3-pip-$(cat .pip-version)"
     fi
 
     # Install packages
@@ -58,6 +60,7 @@ function asdf_tools_install() {
     # Add plugins not listed in https://github.com/asdf-vm/asdf-plugins
     asdf plugin-add sonarscanner https://github.com/virtualstaticvoid/asdf-sonarscanner.git
     asdf install sonarscanner "$(cat .sonarscanner-version)"
+    asdf global sonarscanner "$(cat .sonarscanner-version)" # to ensure sonar-scanner binary and version is available via CLI invocation
 
     # Just to be sure
     asdf reshim
