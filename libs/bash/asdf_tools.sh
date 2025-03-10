@@ -50,8 +50,9 @@ function asdf_tools_install() {
         printf "WARN: Python or PIP not detected, but is required, installing...\n"
         sudo dnf update --assumeyes
         sudo dnf install --assumeyes \
-            "python3-$(cat .python-version)" \
-            "python-pip-$(cat .pip-version)" # why is PIP under the python-pip package instead of python3-pip?
+            python3-"$(cat .python-version)" \
+            python3-pip
+        sudo dnf reinstall python3-pip # I do not know why we have to do this but if we do not then pip is not found on the $PATH.
     fi
 
     # Install packages
