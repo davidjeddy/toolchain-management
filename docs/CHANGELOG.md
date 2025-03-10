@@ -12,6 +12,16 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.18] - 2025-03-10
+
+### FIX
+
+- dnf reinstall of `python-pip` is needed else `pip` is not found on the $PATH
+
+### REMOVE
+
+- dnf install of `python-pip` does not accept a version constraint, always use latest
+
 ## [0.64.17] - 2025-03-10
 
 ### FIX
