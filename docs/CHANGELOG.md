@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.16] - 2025-03-06
+
+### FIX
+
+- Add instance name to EC2 output to make it easier to know what instance is being connected to
+
 ## [0.64.15] - 2025-03-03
 
 ### FIX
