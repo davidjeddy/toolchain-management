@@ -29,7 +29,11 @@ then
     AWS_EC2_INSTANCE_ID="$2"
 else # List EC2 instance IDs
     printf "INFO: Listing running instances in region:\n"
-    aws ec2 describe-instances --region "$AWS_REGION" --query 'Reservations[*].Instances[*].[InstanceId]' --filters Name=instance-state-name,Values=running --output text
+    aws ec2 describe-instances \
+        --filters Name=instance-state-name,Values=running \
+        --output text \
+        --query "Reservations[*].Instances[*].{Name:Tags[?Key == 'Name'].Value, InstanceId:InstanceId}" \
+        --region "$AWS_REGION"
     read -rp "INPUT: Select EC2 instance: " AWS_EC2_INSTANCE_ID
 fi
 
