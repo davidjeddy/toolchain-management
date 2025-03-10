@@ -51,7 +51,7 @@ function asdf_tools_install() {
         sudo dnf update --assumeyes
         sudo dnf install --assumeyes \
             "python3-$(cat .python-version)" \
-            "python3-pip-$(cat .pip-version)"
+            "python-pip-$(cat .pip-version)" # why is PIP under the python-pip package instead of python3-pip?
     fi
 
     # Install packages

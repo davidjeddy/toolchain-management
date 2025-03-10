@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.17] - 2025-03-10
+
+### FIX
+
+- `pip` install package is `python-pip` not the expected `python3-pip` like other Python3 packages
+
 ## [0.64.16] - 2025-03-06
 
 ### FIX
