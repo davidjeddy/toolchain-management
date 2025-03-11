@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.64.19] -2025-03-11
+
+### FIX
+
+- dnf reinstall of `python-pip` automatically, now include assumeyes
+ 
 ## [0.64.18] - 2025-03-10
 
 ### FIX

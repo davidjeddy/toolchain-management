@@ -52,7 +52,7 @@ function asdf_tools_install() {
         sudo dnf install --assumeyes \
             python3-"$(cat .python-version)" \
             python3-pip
-        sudo dnf reinstall python3-pip # I do not know why we have to do this but if we do not then pip is not found on the $PATH.
+        sudo dnf reinstall --assumeyes python3-pip # I do not know why we have to do this but if we do not then pip is not found on the $PATH.
     fi
 
     # Install packages
