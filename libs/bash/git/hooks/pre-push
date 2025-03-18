@@ -45,7 +45,7 @@ declare DIFF_LIST
 DIFF_LIST=$(generateDiffList "${DIFF_LOGIC}")
 if [[ ! ${DIFF_LIST} ]]
 then
-    printf "WARN: IAC DIFF_LIST is empty, exiting without error.\n"
+    printf "WARN: DIFF_LIST does not container IAC or container image configuration changes. Exiting without error.\n"
     exit 0
 fi
 printf "INFO: DIFF_LIST: %s\n" "${DIFF_LIST}"

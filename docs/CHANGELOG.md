@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.65.01] - 2025-03-17
+
+### ADD
+
+- syft to automatically generate sbom.xml during pre-push Git Hook for all downstream projects
+
 ## [0.65.0] - 2025-03-17
 
 ### REMOVE

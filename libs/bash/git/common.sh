@@ -145,13 +145,13 @@ function execute() {
 
             # generate docs and meta-data
             documentation
-            # generate sbom for supply chain auditing
-            generateSBOM
             # format, lint, and syntax
             iacLinting
             # Module Version Check
             # TODO re-enable once we get time to refactor the logic
             # moduleVersionCheck
+            # generate sbom for supply chain auditing
+            generateSBOM
             # jump to the next item in "$@" list
             continue
         fi
@@ -226,6 +226,7 @@ function documentation() {
     git add README.md || true
 }
 
+# Generate SBOM using the syft tool; add generated sbom.xml to most recent commit via git amend
 function generateSBOM() {
     printf "INFO: starting generateSBOM()\n"
 
@@ -240,31 +241,35 @@ function generateSBOM() {
         return
     fi
 
-    {
-        if [[ -f "checkov.yml" ]]; then
-            # use configuration file if present. Created due to terraform/aws/worldline-gc-keycloak-dev/eu-west-1/keycloak/iohd being created BEFORE compliance was mandatory
-            checkov \
-                --config-file checkov.yml \
-                --directory . \
-                --skip-path .terraform \
-                --skip-results-upload \
-                -o cyclonedx \
-                > "$(pwd)/sbom.xml"
+    if [[ -f Dockerfile || -f Containerfile ]]
+    then
+        # Container image type projects
+        printf "INFO: Container image configuration detected.\n"
 
-        else
-            checkov \
-                --directory . \
-                --skip-path .terraform \
-                --skip-results-upload \
-                -o cyclonedx \
-                > "$(pwd)/sbom.xml"
+        if [[ ! "${TARGET}" || ! "${TARGET_VERSION_TAG}" ]]
+        then
+            printf "ERR: Required to provide ENV VAR \$TARGET and \$TARGET_VERSION_TAG to generate SBOM.\n"
+            exit 1
         fi
-        git add sbom.xml || true
-    } || {
-        printf "ERR: checkov SBOM failed to generate.\n"
-        cat "sbom.xml"
-        exit 1
-    }
+
+        syft scan \
+            --scope all-layers \
+            --output cyclonedx-xml=sbom.xml \
+            --quiet 
+            podman:"${TARGET}":"${TARGET_VERSION_TAG}"
+    else
+        # All other projects types (IAC)
+        printf "INFO: Assuming IAC project directory.\n"
+        printf "INFO: %s\n" "$(pwd)"
+
+        syft scan \
+            --output cyclonedx-xml=sbom.xml \
+            --quiet \
+            dir:.
+    fi
+
+    # to working commit
+    git add sbom.xml
 }
 
 function iacCompliance() {
@@ -670,7 +675,7 @@ function generateDiffList() {
     # Checks w/ -v are ignored/removed as being valid strings
     THIS_FILE_CHANGE_LIST=$(
         eval "${1}" |
-        grep "hcl\$\|tf\$" |
+        grep --extended-regexp "Containerfile|Dockerfile|hcl\$|tf\$" |
         grep -v .tmp/ |
         grep -v docs/ |
         grep -v examples/ |
