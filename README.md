@@ -37,7 +37,7 @@ To ensure compliance with community and security best practices via the shift-le
 
 ## Requirements / Supported Platforms
 
-- [Fedora](https://fedoraproject.org/)(recommended) or [RHEL](https://en.wikipedia.org/wiki/Red_Hat_Enterprise_Linux)(second option) based systems are the only distributions currently actively supported
+- [Fedora](https://fedoraproject.org/)(recommended)
   - [UTM](https://mac.getutm.app/) & [Installing Fedora Workstation 39 QEMU via UTM on DWS Apple M2 MacBook Pro](https://confluence.worldline-solutions.com/display/PPSTECHNO/Installing+Fedora+Workstation+38+on+DWS+Apple+M2+MacBook+Pro)
   - [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install)
 - [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) >= 5.x
