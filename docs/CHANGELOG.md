@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.65.0] - 2025-03-17
+
+### REMOVE
+
+- Logic to skip some tools when hosted on a Red Hat
+
 ## [0.64.19] -2025-03-11
 
 ### FIX
