@@ -58,7 +58,7 @@ function asdf_install_gtoet_0_16_0() {
         fi
 
         printf "INFO: Copy asdf-vm .tool-versions to user \$HOME to prevent \"No version is set ...\" error\n."
-        cp .tool-versions "$HOME/.tool-versions" || exit 1
+        echo "" > "$HOME/.tool-versions" || exit 1
 
         # because vendors can not seem to settle on consistent ARCH values
         local ARCH

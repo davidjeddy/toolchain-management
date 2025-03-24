@@ -16,10 +16,22 @@ fi
 function asdf_tools_install() {
     printf "INFO: starting asdf_tools_install()\n"
 
+    # be sure we have some tools configured to even use asdf
     if [[ ! -s .tool-versions ]]
     then
         printf "WARN: No tools defined in asdf-vm .tool-versions, skipping.\n"
         return 0
+    fi
+
+    # required dependency for checkov as managed by asdf
+    if [[ ! $(which python) || ! $(which pip) ]]
+    then
+        printf "WARN: Python or PIP not detected, but is required, installing...\n"
+        sudo dnf update --assumeyes
+        sudo dnf install --assumeyes \
+            python3-"$(cat .python-version)" \
+            python3-pip
+        sudo dnf reinstall --assumeyes python3-pip # I do not know why we have to do this but if we do not then pip is not found on the $PATH.
     fi
 
     # Since we use this CLI invocation we can not (currently) have comments in the source file so here is what we would have
@@ -39,29 +51,11 @@ function asdf_tools_install() {
         }
     fi
 
-    # List installed plugins
-    asdf plugin list
-    # Add plugins from configuration
-    cut -d' ' -f1 .tool-versions | xargs -I{} asdf plugin add {}
-
-    # checkov requires Python
-    if [[ ! $(which python) || ! $(which pip) ]]
-    then
-        printf "WARN: Python or PIP not detected, but is required, installing...\n"
-        sudo dnf update --assumeyes
-        sudo dnf install --assumeyes \
-            python3-"$(cat .python-version)" \
-            python3-pip
-        sudo dnf reinstall --assumeyes python3-pip # I do not know why we have to do this but if we do not then pip is not found on the $PATH.
-    fi
+    # Add plugins not listed in https://github.com/asdf-vm/asdf-plugins
+    asdf plugin add sonarscanner https://github.com/virtualstaticvoid/asdf-sonarscanner.git
 
     # Install packages
     asdf install
-
-    # Add plugins not listed in https://github.com/asdf-vm/asdf-plugins
-    asdf plugin add sonarscanner https://github.com/virtualstaticvoid/asdf-sonarscanner.git
-    asdf install sonarscanner "$(cat .sonarscanner-version)"
-    asdf set sonarscanner "$(cat .sonarscanner-version)" # to ensure sonar-scanner binary and version is available via CLI invocation
 
     # Just to be sure
     asdf reshim
