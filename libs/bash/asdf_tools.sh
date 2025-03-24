@@ -54,6 +54,9 @@ function asdf_tools_install() {
     # Add plugins not listed in https://github.com/asdf-vm/asdf-plugins
     asdf plugin add sonarscanner https://github.com/virtualstaticvoid/asdf-sonarscanner.git
 
+    # we do need to add each 
+    cut -d' ' -f1 .tool-versions | xargs -I{} asdf plugin add {}
+
     # Install packages
     asdf install
 
