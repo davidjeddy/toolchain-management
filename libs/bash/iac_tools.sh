@@ -49,7 +49,7 @@ function install_additional_iac_tools() {
 
     # terraform-compliance
     {
-        rm -f "$HOME/.terraform-compliance" || true
+        rm -rf "$HOME/.terraform-compliance" || true
         git clone https://github.com/terraform-compliance/user-friendly-features.git "$HOME/.terraform-compliance/user-friendly-features"
 
         pip3 install terraform-compliance=="$(cat "${WL_GC_TM_WORKSPACE}"/.terraform-compliance-version)"
@@ -62,7 +62,7 @@ function install_additional_iac_tools() {
     # tfenv
     {
         rm -rf "$HOME/.tfenv" || true
-        git clone --depth 1 --branch "$(cat "$WL_GC_TM_WORKSPACE"/.tfsec-version)" "https://github.com/tfutils/tfenv.git" "$HOME/.tfenv"
+        git clone --depth 1 --branch "$(cat "$WL_GC_TM_WORKSPACE"/.tfenv-version)" "https://github.com/tfutils/tfenv.git" "$HOME/.tfenv"
         append_add_path "$HOME/.tfenv/bin" "$SESSION_SHELL"
         printf "INFO: tfenv install completed.\n"
         # shellcheck disable=SC2046

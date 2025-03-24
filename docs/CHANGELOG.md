@@ -12,6 +12,18 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.66.0] - 2025-03-21
+
+### FIX
+
+- `asdf-vm` upgraded to `0.16.x` release family
+- Correctly remove terraform-compliance build dir when updating
+- Version updated any tool that has a newer release tag
+
+### REMOVE
+
+- Unused .*version files
+
 ## [0.65.01] - 2025-03-17
 
 ### ADD
