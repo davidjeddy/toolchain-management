@@ -12,7 +12,14 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
-## [0.66.1 - 2025-03-24
+## [0.66.2] - 2025-03-24
+
+### FIX
+
+- asdf binary architecture detection now defaults to `amd64`
+- asdf install regression corrected; we DO need to parse .tool-version explicitly
+
+## [0.66.1] - 2025-03-24
 
 ### FIX
 

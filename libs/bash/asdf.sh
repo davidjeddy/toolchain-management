@@ -62,7 +62,7 @@ function asdf_install_gtoet_0_16_0() {
 
         # because vendors can not seem to settle on consistent ARCH values
         local ARCH
-        ARCH="64bit"
+        ARCH="amd64"
         if [[ $(uname -m) == "arm64" || $(uname -m) == "aarch64" ]]
         then
             ARCH="arm64"
