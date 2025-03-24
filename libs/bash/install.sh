@@ -100,7 +100,8 @@ if [[ ! "${WL_GC_TOOLCHAIN_ASDF_SKIP}" ]]
 then
     # shellcheck disable=SC1091
     source "./libs/bash/asdf.sh" || exit 1
-    asdf_install
+    # asdf_install
+    asdf_install_gtoet_0_16_0
 fi
 
 if [[ ! "${WL_GC_TOOLCHAIN_ASDF_TOOLS_SKIP}" ]]

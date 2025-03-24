@@ -59,9 +59,9 @@ function asdf_tools_install() {
     asdf install
 
     # Add plugins not listed in https://github.com/asdf-vm/asdf-plugins
-    asdf plugin-add sonarscanner https://github.com/virtualstaticvoid/asdf-sonarscanner.git
+    asdf plugin add sonarscanner https://github.com/virtualstaticvoid/asdf-sonarscanner.git
     asdf install sonarscanner "$(cat .sonarscanner-version)"
-    asdf global sonarscanner "$(cat .sonarscanner-version)" # to ensure sonar-scanner binary and version is available via CLI invocation
+    asdf set sonarscanner "$(cat .sonarscanner-version)" # to ensure sonar-scanner binary and version is available via CLI invocation
 
     # Just to be sure
     asdf reshim
