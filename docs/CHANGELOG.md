@@ -12,6 +12,13 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.66.1 - 2025-03-24
+
+### FIX
+
+- asdf now starts with an empty `.tool-versions in $HOME
+- asdf install and plugin process now work with sonarscanner in .tool-versions
+
 ## [0.66.0] - 2025-03-21
 
 ### FIX
