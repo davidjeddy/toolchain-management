@@ -515,14 +515,12 @@ function iacLinting() {
         if [[ -f "tflint.hcl" ]]; then
             tflint \
                 --config="tflint.hcl" \
-                --no-module \
                 --no-color \
                 --format=junit \
                 --ignore-module=SOURCE \
                 > ".tmp/junit-tflint.xml"
         else
             tflint \
-                --no-module \
                 --no-color \
                 --format=junit \
                 --ignore-module=SOURCE \
