@@ -63,6 +63,10 @@ function asdf_tools_install() {
     # Just to be sure
     asdf reshim
 
+    # To be sure all tools, including additional plugin tools, are available to asdf globally
+    printf "INFO: Copy asdf-vm .tool-versions to user \$HOME to prevent \"No version is set ...\" error\n."
+    cp -rf ".tool-versions" "$HOME/.tool-versions" || exit 1
+
     # output package list
     asdf list
 }

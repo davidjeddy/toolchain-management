@@ -12,6 +12,13 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.66.3] - 2025-03-25
+
+### FIX
+
+- copy asdf .tool-versions both before and after plugins are added, just to be sure
+- kics regression; cannot use `v2.1.6` without golang `1.23`; which inturn is not yet available on Fedora 40
+
 ## [0.66.2] - 2025-03-24
 
 ### FIX
