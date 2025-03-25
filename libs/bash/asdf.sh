@@ -39,7 +39,7 @@ function asdf_install() {
     fi
 
     printf "INFO: Copy asdf-vm .tool-versions to user \$HOME to prevent \"No version is set ...\" error\n."
-    cp .tool-versions "$HOME/.tool-versions" || exit 1
+    cp -rf ".tool-versions" "$HOME/.tool-versions" || exit 1
 
     which asdf
     asdf version
