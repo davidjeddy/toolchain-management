@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.66.4] - 2025-03-25
+
+### FIX
+
+- tflint update needs removal of CLI arg `--no-module`
+
 ## [0.66.3] - 2025-03-25
 
 ### FIX
