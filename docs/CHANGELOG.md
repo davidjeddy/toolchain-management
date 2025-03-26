@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.66.8] - 2025-03-26
+
+### FIX
+
+- another attempt at ensuring the docker alias is injected only once
+
 ## [0.66.7] - 2025-03-26
 
 ### FIX
