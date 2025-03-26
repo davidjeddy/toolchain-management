@@ -17,16 +17,15 @@ fi
 function asdf_install() {
     printf "INFO: starting asdf_install().\n"
 
-    if [[ ! $(which asdf) || $(asdf --version) != $(cat .asdf-version)* ]]
+    if [[ ! $(which asdf) || $(cat .asdf-version) != *$(asdf --version)* ]]
     then
         # Remove if exists
-        if [[ -d "$HOME/.asdf" ]]
-        then
-            rm -rf "$HOME/.asdf"
-        fi
+        rm -rf "$HOME/.asdf" || true
+        rm "$HOME/.tool-versions" || true
+        sudo rm "/usr/bin/asdf" || true
 
         # clone new version
-        git clone https://github.com/asdf-vm/asdf.git "$HOME/.asdf" --branch "$(cat .asdf-version)"
+        git clone https://github.com/asdf-vm/asdf.git "$HOME/.asdf" --branch "v$(cat .asdf-version)"
     fi
 
     if [[ $(cat "$SESSION_SHELL") != *".asdf/asdf.sh"* ]]
@@ -38,8 +37,7 @@ function asdf_install() {
         source "${SESSION_SHELL}" || exit 1
     fi
 
-    printf "INFO: Copy asdf-vm .tool-versions to user \$HOME to prevent \"No version is set ...\" error\n."
-    cp -rf ".tool-versions" "$HOME/.tool-versions" || exit 1
+    append_add_path "$HOME/.asdf/shims" "$SESSION_SHELL"
 
     which asdf
     asdf version
@@ -49,7 +47,7 @@ function asdf_install() {
 function asdf_install_gtoet_0_16_0() {
     printf "INFO: starting asdf_install_gtoet_0_16_0().\n"
 
-    if [[ ! $(which asdf) || $(asdf --version) != $(cat .asdf-version)* ]]
+    if [[ ! $(which asdf) || $(cat .asdf-version) != *$(asdf --version)* ]]
     then
         # Remove if exists to clear the installed plugins and related resources
         if [[ -d "$HOME/.asdf" ]]
@@ -58,7 +56,7 @@ function asdf_install_gtoet_0_16_0() {
         fi
 
         printf "INFO: Copy asdf-vm .tool-versions to user \$HOME to prevent \"No version is set ...\" error\n."
-        echo "" > "$HOME/.tool-versions" || exit 1
+        cp -rf .tool-versions "$HOME/.tool-versions" || exit 1
 
         # because vendors can not seem to settle on consistent ARCH values
         local ARCH
@@ -89,7 +87,9 @@ function asdf_install_gtoet_0_16_0() {
         fi
     fi
 
+    # Install the binary
     sudo install ".tmp/asdf" "/usr/bin"
+
     append_add_path "$HOME/.asdf/shims" "$SESSION_SHELL"
 
     which asdf

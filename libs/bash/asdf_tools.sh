@@ -34,38 +34,21 @@ function asdf_tools_install() {
         sudo dnf reinstall --assumeyes python3-pip # I do not know why we have to do this but if we do not then pip is not found on the $PATH.
     fi
 
-    # Since we use this CLI invocation we can not (currently) have comments in the source file so here is what we would have
-    # https://asdf-vm.com/manage/configuration.html
-    # Provided by well-known plugin short list
-    # https://github.com/asdf-vm/asdf-plugins
-    # Added via local `plugin add`
-    # https://asdf-vm.com/manage/configuration.html
-    # https://github.com/asdf-vm/asdf/issues/276
-    if [[ $(asdf plugin list installed) != "*" ]]
-    then
-        printf "INFO: Removing existing asdf-vm plugins.\n"
-        {
-            asdf plugin list installed | xargs -I{} asdf plugin remove {}
-        } || {
-            printf "WARN: Unable to clear asdf-vm plugin list, skipping.\n"
-        }
-    fi
+    # Add plugins not listed in https://github.com/asdf-vm/asdf-plugins if missing
+    asdf plugin add sonarscanner https://github.com/virtualstaticvoid/asdf-sonarscanner.git || true
 
-    # Add plugins not listed in https://github.com/asdf-vm/asdf-plugins
-    asdf plugin add sonarscanner https://github.com/virtualstaticvoid/asdf-sonarscanner.git
+    # we do need to add each if missing
+    cut -d' ' -f1 .tool-versions | xargs -I{} asdf plugin add {} || true
 
-    # we do need to add each 
-    cut -d' ' -f1 .tool-versions | xargs -I{} asdf plugin add {}
+    # To be sure all tools, including additional plugin tools, are available to asdf globally
+    printf "INFO: Copy asdf-vm .tool-versions to user \$HOME to prevent \"No version is set ...\" error\n."
+    cp -rf ".tool-versions" "$HOME/.tool-versions" || exit 1
 
     # Install packages
     asdf install
 
     # Just to be sure
     asdf reshim
-
-    # To be sure all tools, including additional plugin tools, are available to asdf globally
-    printf "INFO: Copy asdf-vm .tool-versions to user \$HOME to prevent \"No version is set ...\" error\n."
-    cp -rf ".tool-versions" "$HOME/.tool-versions" || exit 1
 
     # output package list
     asdf list
