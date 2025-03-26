@@ -12,6 +12,13 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.66.6] - 2025-03-25
+
+### FIX
+
+- append_path to shims not properly evaluating asdf shim path during install
+- do not track log outputs
+
 ## [0.66.5] - 2025-03-26
 
 ### FIX

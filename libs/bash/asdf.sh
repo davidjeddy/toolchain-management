@@ -81,6 +81,7 @@ function asdf_install_gtoet_0_16_0() {
         cat ".tmp/asdf-v$(cat .asdf-version)-linux-${ARCH}.tar.gz.md5"
         md5sum ".tmp/asdf" ".tmp/asdf-v$(cat .asdf-version)-linux-${ARCH}.tar.gz.md5"
         
+        # shellcheck disable=SC2181
         if [[ "$?" != "0" ]]
         then
             printf "ERR: asdf checksum does not match.\n"
@@ -89,7 +90,7 @@ function asdf_install_gtoet_0_16_0() {
     fi
 
     sudo install ".tmp/asdf" "/usr/bin"
-    append_add_path "$ASDF_DATA_DIR/shims" "$SESSION_SHELL"
+    append_add_path "$HOME/.asdf/shims" "$SESSION_SHELL"
 
     which asdf
     asdf version
