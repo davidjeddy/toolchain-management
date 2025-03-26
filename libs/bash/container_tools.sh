@@ -29,16 +29,9 @@ short-name-mode = \"enforcing\"" | sudo tee /etc/containers/registries.conf
     cat /etc/containers/registries.conf
     
     # enable invocation of `podman` as a binary replacement for `docker` due to the jenkins-pipeline-lib requiring `docker` all over the place
-    if [[ ! -e "/usr/bin/docker" ]]
+    if [[ $(grep -E "alias docker" "$HOME/.bashrc") == "" ]]
     then
-        # We tried to make a sym link from /usr/bin/docker but it appears `yum/dnf` clears it when run a second time.
-        # So lets make it a user alias instead
-        # But first, check if the alias already exists
-        # Shellcheck says this is the syntax to check exit code (we are not comparing output VALUE here)
-        if [[ $(grep -q "alias docker" "$HOME/.bashrc") != "0" ]]
-        then
-            echo "alias docker=/usr/bin/podman" >> .bashrc
-        fi
+        echo "alias docker=/usr/bin/podman" >> .bashrc
     fi
 
     # Allow non-root users to execute Podman commands that require lingering shell sessions
