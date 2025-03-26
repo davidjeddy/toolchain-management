@@ -24,3 +24,6 @@ SCRATCH.md
 
 # KICS
 kics-*
+
+# log output 
+*.log
