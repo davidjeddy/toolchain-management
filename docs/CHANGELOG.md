@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.66.5] - 2025-03-26
+
+### FIX
+
+- possible for docker alias to podman now a user alias instead of an alias in /usr/bin; which was getting cleared on re-run of dnf/yum
+
 ## [0.66.4] - 2025-03-25
 
 ### FIX
