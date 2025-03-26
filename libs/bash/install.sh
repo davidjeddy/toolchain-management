@@ -100,8 +100,14 @@ if [[ ! "${WL_GC_TOOLCHAIN_ASDF_SKIP}" ]]
 then
     # shellcheck disable=SC1091
     source "./libs/bash/asdf.sh" || exit 1
-    # asdf_install
-    asdf_install_gtoet_0_16_0
+    asdf_install
+    # Some issue w/ Bambora egress traffic management causes Golang program connections to be reset.
+    # Same problem as with Aqua (also Golang based)
+    # So until Bambora figures out its network misconfiguration, we have to stay on the Shell based version of asdf-vm
+    # https://github.com/asdf-vm/asdf/issues/2043
+    # https://github.com/aquaproj/aqua/issues/3152
+    # ~> 0.15
+    # asdf_install_gtoet_0_16_0
 fi
 
 if [[ ! "${WL_GC_TOOLCHAIN_ASDF_TOOLS_SKIP}" ]]

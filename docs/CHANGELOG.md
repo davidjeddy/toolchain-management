@@ -12,6 +12,15 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.66.7] - 2025-03-26
+
+### FIX
+
+- asdf-vm back to 0.15.x release family due to problem with egress network connection handling when using Golang programs
+  - https://github.com/asdf-vm/asdf/issues/2043 and https://github.com/aquaproj/aqua/issues/3152
+- asdf-vm version checking logic for updating, comparisons where backwards
+- alias creation for docker in user bashrc
+
 ## [0.66.6] - 2025-03-25
 
 ### FIX

@@ -35,7 +35,7 @@ short-name-mode = \"enforcing\"" | sudo tee /etc/containers/registries.conf
         # So lets make it a user alias instead
         # But first, check if the alias already exists
         # Shellcheck says this is the syntax to check exit code (we are not comparing output VALUE here)
-        if grep -q "alias\ docker" "$HOME/.bashrc"
+        if [[ $(grep -q "alias docker" "$HOME/.bashrc") != "0" ]]
         then
             echo "alias docker=/usr/bin/podman" >> .bashrc
         fi
