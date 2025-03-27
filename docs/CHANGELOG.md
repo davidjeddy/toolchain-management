@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.66.9] - 2025-03-27
+
+### FIX
+
+- the podman alias should be in the projects .toolchainrc, not changing the users profile .bashrc
+
 ## [0.66.8] - 2025-03-26
 
 ### FIX
