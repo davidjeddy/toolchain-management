@@ -31,7 +31,7 @@ short-name-mode = \"enforcing\"" | sudo tee /etc/containers/registries.conf
     # enable invocation of `podman` as a binary replacement for `docker` due to the jenkins-pipeline-lib requiring `docker` all over the place
     if [[ -f "$HOME/.toolchainrc" && $(grep -E "alias docker" "$HOME/.toolchainrc") == "" ]]
     then
-        echo "alias docker=/usr/bin/podman" >> .toolchainrc
+        echo "alias docker=/usr/bin/podman" >> "$HOME/.toolchainrc"
     fi
 
     # Allow non-root users to execute Podman commands that require lingering shell sessions

@@ -12,6 +12,12 @@ Action Keywords:
 - `FIX`   : Functionality existed but did not behave as expected.
 - `REMOVE` : Functionality is no longer available.
 
+## [0.66.10] - 2025-03-27
+
+### FIX
+
+- docker to podman alias should be created in the users $HOME/.toolchainrc
+
 ## [0.66.9] - 2025-03-27
 
 ### FIX
