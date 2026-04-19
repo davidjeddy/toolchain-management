@@ -1,0 +1,25 @@
+# https://docs.gitlab.com/ee/user/project/codeowners/
+
+# User IDS
+# Centaurus: W128214 - David, W104184 - Kevin, W104279 - Mano, W103979 - Selin
+# K2: W103993 - Arvin, W127197 - Damian, W128214 - David, W119082 - Deeppuk, W104262 - Jem
+# Others: W104080 - Lucio, W127225 - Volkan B.
+
+## Custom rules
+
+
+
+## Typical rules
+
+[/docs/, /examples/]
+*.md @cicd
+/docs/ @cicd
+/examples/ @cicd
+
+[/libs/bash/git/install.sh]
+/libs/bash/git/install.sh @cicd
+
+[.]
+aqua* @W128214 @W104184 @W104279 @W103979 @W127197
+Jenkinsfile @W128214 @W104184 @W104279 @W103979 @W127197
+versions.sh @W128214 @W104184 @W104279 @W103979 @W127197
