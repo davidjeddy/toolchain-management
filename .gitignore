@@ -1,0 +1,29 @@
+# Editor meta-data
+.idea/
+.vscode/
+*.iml
+
+# Misc cache files
+*.tmp
+.tmp
+
+# Do not track binary archives
+*.deb
+*.gz
+*.jar
+*.rpm
+*.tar
+*.zip
+
+# OSX and Windows folder configs
+.DS_Store
+Thumbs.db
+
+# Localhost notes
+SCRATCH.md
+
+# KICS
+kics-*
+
+# log output 
+*.log
